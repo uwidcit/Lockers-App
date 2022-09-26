@@ -67,5 +67,4 @@ migrate = get_migrate(app)
 ui = FlaskUI(app, width=1366, height=768, start_server='flask')
 
 if __name__ == "__main__":
-    # app.run() for debug
     ui.run()
