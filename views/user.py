@@ -6,10 +6,18 @@ from controllers import (
     create_user, 
     get_all_users,
     get_all_users_json,
+    store_file,
 )
 
 user_views = Blueprint('user_views', __name__, template_folder='../templates')
 
+@user_views.route('/upload', methods=['POST'])
+def upload_file_route():
+    user_file = request.files.getlist('upload')
+
+    for f in user_file:
+        store_file(f)
+    return []
 
 @user_views.route('/users', methods=['GET'])
 def get_user_page():

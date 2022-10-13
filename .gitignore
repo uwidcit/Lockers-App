@@ -2,3 +2,4 @@ __pycache__/*
 build/*
 dist/*
 temp-database.db
+.gitpod.yml
