@@ -13,3 +13,4 @@ Werkzeug==2.0.0
 coverage==6.4.4
 flaskwebgui==0.3.7
 waitress==2.1.2
+flask-excel==0.0.7
