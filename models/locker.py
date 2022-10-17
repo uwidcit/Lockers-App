@@ -10,7 +10,7 @@ class Status(Enum):
 class Locker (db.Model):
     locker_code = db.Column(db.String, primary_key= True)
     area = db.Column(db.Integer, db.ForeignKey('area.id') ,nullable = False)
-    locker_type = db.Column(db.Integer, db.ForeignKey('locker_types'),nullable = False)
+    locker_type = db.Column(db.Integer, db.ForeignKey('locker_types.id'),nullable = False)
     status = db.Column(db.Enum(Status), nullable=False)
     key_id = db.Column(db.String, db.ForeignKey('key.key_id') ,nullable = False)
 
