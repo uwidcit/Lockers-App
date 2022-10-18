@@ -1,6 +1,6 @@
 from database import db
 
-class Locker_Types(db.Model):
+class LockerTypes(db.Model):
     id = db.Column(db.Integer, primary_key= True)
     locker_type = db.Column(db.String, nullable = False, unique=True)
     price = db.Column(db.Float, nullable = False)
