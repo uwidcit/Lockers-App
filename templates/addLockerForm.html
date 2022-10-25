@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block title %}Add Locker{% endblock %}
+{% block page %}Add Locker{% endblock %}
+
+{{ super() }}
+
+{% block content %}
+   <div class="row">
+    <form id="newLocker" method="POST" action="/addLocker">
+        {{form.csrf_token}}
+
+        <div>
+        {{form.locker_code.label}}
+           {{form.locker_code}}
+        </div>
+           {{form.area.label}}
+           {{form.area (style="display:inline")}}
+         </div>
+
+         <div>
+            {{form.key_id.label}}
+            {{form.key_id (style="display:inline")}}
+         </div>
+
+         <div>
+            {{form.locker_type.label}}
+            {{form.locker_type (style="display:inline")}}
+         </div>
+
+         <div>
+            {{form.submit}}
+         </div>
+        
+    </form>
+   </div>
+
+
+{% endblock %}
