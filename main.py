@@ -17,6 +17,7 @@ from controllers import (
 
 from views import (
     user_views,
+    keys_views,
     index_views
 )
 
@@ -24,6 +25,7 @@ from views import (
 
 views = [
     user_views,
+    keys_views,
     index_views
 ]
 

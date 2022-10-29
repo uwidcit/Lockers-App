@@ -1,4 +1,4 @@
-import string
+
 from database import db
 from enum import Enum
 
@@ -13,9 +13,9 @@ class Key(db.Model):
 
     def __init__(self, key_id, key_1_status, key_2_status):
        self.key_id = key_id
-       if string.upper(key_1_status) in Status.__members__ and string.upper(key_2_status) in Status.__members__: 
-            self.key_1_status = string.upper(key_1_status)
-            self.key_2_status = string.upper(key_2_status)
+       if key_1_status.upper() in Status.__members__ and key_2_status.upper() in Status.__members__: 
+            self.key_1_status = Status[key_1_status.upper()]
+            self.key_2_status = Status[key_2_status.upper()]
 
     def toggle_key_1_status(self):
         if self.key_1_status is Status.TRUE:
