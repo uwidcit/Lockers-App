@@ -18,14 +18,19 @@ from controllers import (
 from views import (
     user_views,
     keys_views,
+    locker_types_views,
+    locker_views,
+    area_views,
     index_views
 )
 
 # New views must be imported and added to this list
-
 views = [
     user_views,
     keys_views,
+    locker_types_views,
+    locker_views,
+    area_views,
     index_views
 ]
 
