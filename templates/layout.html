@@ -44,25 +44,6 @@
     <div class="container" id="content">{% block content %}{% endblock %}</div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    <script>
-      document.addEventListener('DOMContentLoaded', function () {
-  
-  function keep_alive_server() {
-   fetch(document.location + "flaskwebgui-dumb-request-for-middleware-keeping-the-server-online", {
-      method: 'GET',
-      cache: 'no-cache'
-    })
-      .then(res => { })
-      .catch(err => { })
-  }
-  
-  try {
-    setInterval(keep_alive_server, 3 * 1000)()
-  } catch (error) {
-    // doesn't matter handled by middleware
-  }
-  
-  })
-  </script> 
+    <script src = "/static/keep_alive.js"></script>
   </body>
 </html>

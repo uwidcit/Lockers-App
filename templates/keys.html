@@ -23,9 +23,14 @@
         
         <input type="submit"/>
     </form>
+    <div id ="keyTable">
+      
+    </div>
     <script src="/static/util.js"></script>
     <script src="/static/keys.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded',getAllKeys)
         document.forms['newKey'].addEventListener('submit',addKey)
+
     </script>
 {% endblock %}

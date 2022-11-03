@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     function keep_alive_server() {
-     fetch(document.location + "flaskwebgui-dumb-request-for-middleware-keeping-the-server-online", {
+     fetch ("/flaskwebgui-dumb-request-for-middleware-keeping-the-server-online", {
         method: 'GET',
         cache: 'no-cache'
       })

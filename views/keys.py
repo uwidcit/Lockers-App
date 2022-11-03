@@ -2,6 +2,7 @@ from flask import Blueprint, redirect, render_template, request, send_from_direc
 
 from controllers import (
     add_new_key,
+    get_all_keys,
 )
 
 keys_views = Blueprint('keys_views', __name__, template_folder='../templates')
@@ -23,6 +24,9 @@ def create_new_key():
         return jsonify({"message":"Key alread exist or some error has occurred"}),400
 
     return jsonify({"data":newKey.toJSON()}),201
+@keys_views.route('/get/keys/all',methods=['GET'])
+def get_every_keys():
+    return jsonify({"data":get_all_keys()}),200
 
 @keys_views.route('/get/keys/available', methods=['GET'])
 def get_available_keys():

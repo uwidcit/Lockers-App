@@ -21,15 +21,14 @@ async function addKey(event){
         window.location.href= '/keys';
       }
 }
-
 async function getAllKeys(){
     let html = ""
-    let result = await sendRequest(window.document.domain +'/key/all','GET')
-
+    let result = await sendRequest('/get/keys/all','GET')
+    
     data = document.querySelector('#keyTable')
-
-    if (result == []){
-        html = ` There are no keys`
+    
+    if (result.data == []){
+        html = ` <p> There are no keys </p>`
     }
     else{
         html += `
@@ -39,7 +38,7 @@ async function getAllKeys(){
             <th>Key 1 Status</th>
             <th>Key 2 Status</th>
         </tr>`  
-        for (let d in data){
+        for (let d of result.data){
             html += ` 
             <tr> 
             <td> ${d.key_id}</td>
