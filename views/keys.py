@@ -9,7 +9,6 @@ keys_views = Blueprint('keys_views', __name__, template_folder='../templates')
 
 @keys_views.route('/keys', methods=['GET'])
 def key_page():
-    
     return render_template('keys.html')
 
 @keys_views.route('/key/add', methods=['POST'])

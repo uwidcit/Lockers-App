@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+{% block title %}Add Locker{% endblock %}
+{% block page %}Add Locker{% endblock %}
+
+{{ super() }}
+
+{% block content %}
+   <div class="row">
+    <form id="newLocker" method="POST" action="/addLocker">
+        <div>
+         <label for="locker_code"> Locker Code</label>
+         <input type="text" id="locker_code" name="locker_code"/>
+        </div>
+
+        <label for="area"> Area</label>
+        <select name="area" id="area" style="display: inline;">
+         <!-- Add function to get area -->
+            <option value="TRUE">True</option>
+            <option value="FALSE">False</option>
+        </select>
+
+          
+         </div>
+
+         <div>
+            <label for="key_id"> Key ID</label>
+            <select name="key_id" id="key_id" style="display: inline;">
+                <option value="TRUE">True</option>
+                <option value="FALSE">False</option>
+                <!--Add function to get available keys-->
+            </select>
+         </div>
+
+         <div>
+            <label for="locker_type"> Locker Type</label>
+            <select name="locker_type" id="locker_type" style="display: inline;">
+                <option value="TRUE">True</option>
+                <option value="FALSE">False</option>
+                <!--Add function to get available types-->
+            </select>
+         </div>
+
+         <div>
+            <input type="submit"/>
+         </div>
+        <div id="lockerTable">
+         
+        </div>
+    </form>
+   </div>
+
+   <script src="/static/lockers.js"></script>
+{% endblock %}

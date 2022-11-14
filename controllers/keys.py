@@ -1,7 +1,5 @@
 from models import Key
 from database import db
-
-import sqlalchemy
 from sqlalchemy.exc import SQLAlchemyError
 
 def add_new_key(key_id,key_1_status, key_2_status):
