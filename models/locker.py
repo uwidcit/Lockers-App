@@ -7,26 +7,37 @@ class Status(Enum):
     REPAIR = "Repair"
     FREE = "Free"
 
+class LockerTypes(Enum):
+    SMALL = "Small"
+    MEDIUM = "Medium"
+    COMBINATION = "Combination"
+
+class Key(Enum):
+    AVAILABLE = "Available"
+    UNAVAILABLE = "Unavailable"
+    LOST = "Lost"
+
 class Locker (db.Model):
     locker_code = db.Column(db.String, primary_key= True)
-    area = db.Column(db.Integer, db.ForeignKey('area.id') ,nullable = False)
-    locker_type = db.Column(db.Integer, db.ForeignKey('locker_types.id'),nullable = False)
+    locker_type = db.Column(db.Enum(LockerTypes),nullable = False)
     status = db.Column(db.Enum(Status), nullable=False)
-    key_id = db.Column(db.String, db.ForeignKey('key.key_id') ,nullable = False)
+    key = db.Column(db.Enum(Key) ,nullable = False)
+    area = db.relationship('Area', backref='locker', lazy=True, cascade="all, delete-orphan")
 
-    def __init__(self,locker_code,area,locker_type,status,key_id):
+    def __init__(self,locker_code,locker_type,status,key):
         self.locker_code = locker_code
-        self.area = area
-        self.locker_type = locker_type
         if string.upper(status) in Status.__members__:
             self.status = Status[string.upper(status)]
-        self.key_id = key_id
-    
+        if string.upper(locker_type) in LockerTypes.__members__:
+            self.locker_type = LockerTypes[string.upper(locker_type)]
+        if string.upper(key) in Key.__members__:
+            self.key = Key[string.upper(key)]
+            
     def toJSON(self):
         return {
             'locker_code': self.locker_code,
             'area': self.area.location,
-            'locker_type':self.locker_type.locker_type,
+            'locker_type':self.locker_type.name,
             'status': self.status.name,
-            'key_id':self.key_id
+            'key':self.key.name,
         }
