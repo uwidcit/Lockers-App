@@ -12,6 +12,38 @@
     <title>{% block title %}{% endblock %}</title>
 
   </head>
+<<<<<<< HEAD
+  <body style ="overflow: hidden;">
+    <nav class="purple ">
+      <div class="nav-wrapper">
+        <a href="#!" class="brand-logo center">{% block page %}{% endblock %}</a>
+        <div class="nav-wrapper">
+            
+        </div>
+      </div>
+    </nav>
+    <div class="row">
+
+      <div class="black col s2" style="height: 100vh; width: 15vw;" > 
+        <ul class="side-nav" >
+      
+          <li><a href="/availpage">Check Availability</a></li>
+          <li><a href="/rentpage">Rent Locker</a></li>
+          <li><a href="/releasepage">Release Locker</a></li>
+          <li><a href="/addpage">Add Page</a></li>
+          <li><a href="/removepage">Remove Page</a></li>
+          
+        </ul>
+      </div>
+
+      <div class="green col s10" style="height: 100vh; width: 85vw; position: relative;" > 
+        {% block content %}{% endblock %}
+      </div>
+
+    </div>
+      
+    
+=======
   <body>
       <nav>
         <a href="#!" class="brand-logo center">{% block page %}{% endblock %}</a>
@@ -27,6 +59,7 @@
         </div>
         <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
       </nav>
+>>>>>>> DB-Modelling
     
     {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -42,7 +75,7 @@
     {% endif %}
     {% endwith %}
 
-    <div class="container" id="content">{% block content %}{% endblock %}</div>
+   
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="/static/util.js"></script>

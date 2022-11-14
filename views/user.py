@@ -32,3 +32,27 @@ def client_app():
 @user_views.route('/static/users')
 def static_user_page():
   return send_from_directory('static', 'static-user.html')
+
+@user_views.route('/addpage',methods=['GET'])
+def add_page():
+  return render_template('add.html')
+
+@user_views.route('/availpage',methods=['GET'])
+def avail_page():
+  return render_template('availability.html')
+
+@user_views.route('/loginpage',methods=['GET'])
+def login_page():
+  return render_template('index.html')
+
+@user_views.route('/releasepage',methods=['GET'])
+def release_page():
+  return render_template('release.html')
+
+@user_views.route('/removepage',methods=['GET'])
+def remove_page():
+  return render_template('remove.html')
+
+@user_views.route('/rentpage',methods=['GET'])
+def rent_page():
+  return render_template('rent.html')
