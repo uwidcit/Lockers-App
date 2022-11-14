@@ -1,5 +1,4 @@
 from flask import Blueprint, redirect, render_template, request, send_from_directory
-from models import AddLocker
 
 index_views = Blueprint('index_views', __name__, template_folder='../templates')
 
@@ -13,9 +12,7 @@ def empty_function():
 
 @index_views.route('/addLocker', methods=['GET'])
 def addLockerPage():
-    form = AddLocker()
-    form.area.choices = [('1', 'FST'),('2','ENG'), ('3','FSS')]
-    return render_template('addLockerForm.html', form = form)
+    return render_template('addLockerForm.html')
 
 @index_views.route('/addLocker', methods=['POST'])
 def addLockerAPI():

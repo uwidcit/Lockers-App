@@ -17,7 +17,6 @@ from controllers import (
 
 from views import (
     user_views,
-    keys_views,
     locker_types_views,
     locker_views,
     area_views,
@@ -27,7 +26,6 @@ from views import (
 # New views must be imported and added to this list
 views = [
     user_views,
-    keys_views,
     locker_types_views,
     locker_views,
     area_views,
