@@ -2,3 +2,8 @@ from .user import *
 from .auth import *
 from .manage_uploads import *
 from .lockers import *
+from .area import *
+from .rent import *
+from .rentType import *
+from .student import *
+from .transactionLog import *

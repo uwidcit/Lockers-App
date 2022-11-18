@@ -3,9 +3,9 @@ from database import db
 from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
 
-def add_new_locker(locker_code,area,locker_type,status,key_id):
+def add_new_locker(locker_code,locker_type,status,key):
     try:
-        locker = Locker(locker_code,area,locker_type,status,key_id)
+        locker = Locker(locker_code,locker_type,status,key)
         db.session.add(locker)
         db.session.commit()
         return locker

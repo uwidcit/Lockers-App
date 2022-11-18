@@ -1,6 +1,6 @@
 from database import db
 
-class renttypes(db.Model):
+class RentTypes(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     period = db.Column(db.String, nullable = False)
     type = db.Column(db.String, nullable = False)
