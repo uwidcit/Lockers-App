@@ -1,12 +1,28 @@
-{% extends "layout.html" %}
+{% extends "layout_no_nav.html" %}
 {% block title %}Flask MVC App{% endblock %}
 {% block page %}Flask MVC App{% endblock %}
 
-{{ super() }}
+
 
 {% block content %}
-    <h1>Flask MVC</h1>
-    <p>Login</p>
+
+    <div class="center">
+        <h1>Login</h1>
+        <form action="/availpage" method="get">
+            <div class="txt_fld">
+                <input type="text" id="username" name="username" required class="white-text center-align" value="username">
+                <span></span>
+                <label>Enter Username</label>
+            </div>
+            <div class="txt_fld">
+                <input type="password" id="password" name="password" required class="white-text center-align" value="password">
+                <span></span>
+                <label>Enter Password</label>
+            </div>
+            <input type="Submit" value="Login" class="btn orange darken-4">
+            
+        </form>
+    </div>
 {% endblock %}
 
 <script src="/static/keep_alive.js"> </script> 

@@ -5,10 +5,31 @@
 {{ super() }}
 
 {% block content %}
+<div class="row" style="background-color: blueviolet; margin:20px;height: 25vh;">
+    <p>
+        avail
+    </p>
+</div>
+<div class="row" style="background-color: coral; margin:20px;height: 53vh; padding-left: 11px;padding-right: 11px;">
     <div class="row">
-        <p>
-           add
-        </p>
-    </div>
-    
+        <table style="overflow-y: scroll; height: inherit;background-color: chocolate;">
+          <thead style="background-color: deepskyblue;">
+            <tr>
+              <th>Locker Code</th><th>Area</th><th>Type</th><th>Status</th><th>Key</th>
+            </tr>
+          </thead>
+          <tbody >
+            {% for result in results %}
+              <tr>
+                  <td>{{result.locker_code}}</td>
+                  <td>{{result.area}}</td>
+                  <td>{{result.locker_type}}</td>
+                  <td>{{result.status}}</td>
+                  <td>{{result.key}}</td>
+              </tr>
+            {% endfor %}
+          <tbody>
+        </table>
+      </div>
+</div>
 {% endblock %}
