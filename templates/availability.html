@@ -5,20 +5,46 @@
 {{ super() }}
 
 {% block content %}
-    <div class="row" style="background-color: blueviolet; margin:20px;padding-bottom: 250px;">
-        <p>
-            avail
-        </p>
+    <div class="row" style="background-color: blueviolet; margin:20px;height: 25vh;">
+      <div>
+         <form action="/search" method="get">
+        <div  style ="width: 100vw; ;white-space: nowrap;visibility: hidden; position:fixed;" >
+            <h6 style="margin-top:10px;display: inline-block;margin-left:20px;"> Locker ID: </h6>
+            <input type="text" id="fname" name="fname" style ="width:300px ;display: inline-block ;margin-left:20px;">
+            <input type="Submit" value="Search" style="display: inline-block;margin-left:20px;margin-top:20px;" >
+        </div>
+        <div  style ="width: 100vw; ;white-space: nowrap; visibility: visible; " >
+          <h6 style="margin-top:10px;display: inline-block;margin-left:20px;"> Area: </h6>
+          <select name="Areas" id="area"style="display: inline-block;width:300px;margin-left:20px;">
+            <option value="SAC">SAC</option>
+            <option value="ENG">Engineer</option>
+            <option value="FST">FST</option>
+            <option value="FSS">FSS</option>
+          </select>
+          <input type="Submit" value="Search" style="display: inline-block;margin-left:20px;margin-top:20px;" >
+        </div>
+        <div style ="width: 100vw;  margin-top:13px;">
+          <h6 style="margin-top:10px;display: inline-block;margin-left:20px;"> Search By: </h6>
+          <input type="radio" id="locID" name="search_type" value="Locker ID" style="margin-left:20px;opacity: 1;">
+          <label for="locID" style="margin-top:10px;margin-left:20px;">Location ID</label>
+          <input type="radio" id="area" name="search_type" value="Area" style="margin-left:20px;opacity: 1;">
+          <label for="area" style="margin-top:10px;margin-left:20px;">Area</label>
+        </div>
+        
+        
+        
+    </form>
+      </div>
     </div>
-    <div class="row" style="background-color: coral; margin:20px;padding-bottom: 460px; padding-left: 11px;padding-right: 11px;">
+    <div class="row" style="background-color: coral; margin:20px;height: 53vh; padding-left: 11px;padding-right: 11px;">
         <div class="row">
-            <table>
+            <table style="overflow-y: scroll; height: inherit;background-color: chocolate;">
               <thead style="background-color: deepskyblue;">
                 <tr>
                   <th>Locker Code</th><th>Area</th><th>Type</th><th>Status</th><th>Key</th>
                 </tr>
               </thead>
-              <tbody style="overflow-y: scroll; height: 600px;background-color: chocolate;">
+              <tbody >
                 {% for result in results %}
                   <tr>
                       <td>{{result.locker_code}}</td>

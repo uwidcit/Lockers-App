@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+  <head>
+  
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+     <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>{% block title %}{% endblock %}</title>
+
+  </head>
+  <body style ="overflow: hidden;">
+    <nav class="purple ">
+      <div class="nav-wrapper">
+        <a href="#!" class="brand-logo center">{% block page %}{% endblock %}</a>
+        <div class="nav-wrapper">
+            
+        </div>
+      </div>
+    </nav>
+    <div class="row">
+
+
+      <div class="green col s10" style="height: 100vh; width: 100vw; position: relative;" > 
+        {% block content %}{% endblock %}
+      </div>
+
+    </div>
+      
+    
+    
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <nav class="white black-text" style="padding: 10px">
+      <div class="nav-wrapper">
+          <ul class="flashes">
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+          </ul>
+      </div>
+    </nav>
+    {% endif %}
+    {% endwith %}
+
+   
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="/static/util.js"></script>
+    <script src = "/static/keep_alive.js"></script>
+  </body>
+</html>
+
