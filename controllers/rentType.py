@@ -45,7 +45,7 @@ def update_rentType_price(id,new_price):
     if rent:
         return []
     try:
-        rentType = get_rentType_id(id)
+        rentType = get_rentType_by_id(id)
 
         if not rentType:
             return None
@@ -55,4 +55,64 @@ def update_rentType_price(id,new_price):
     except SQLAlchemyError:
         db.session.rollback()
         return None
+
+def update_rentType_period(id, period):
+    rent = Rent.query.filter_by(rent_type = id).first()
+
+    if rent:
+        return []
+
+    rent_type = get_rentType_by_id(id)
+
+    if not rent_type:
+        return []
     
+    rent_type.period = period
+    try:
+        db.session.add(rent_type)
+        db.session.commit()
+        return rent_type
+
+    except SQLAlchemyError:
+        db.session.rollback()
+        return []
+
+def update_rentType_type(id,type):
+    rent = Rent.query.filter_by(rent_type = id).first()
+
+    if rent:
+        return []
+
+    rent_type = get_rentType_by_id(id)
+
+    if not rent_type:
+        return []
+    
+    rent_type.type = type
+    try:
+        db.session.add(rent_type)
+        db.session.commit()
+        return rent_type
+
+    except SQLAlchemyError:
+        db.session.rollback()
+        return []
+        
+def delete_rent_type():
+    rent = Rent.query.filter_by(rent_type = id).first()
+    
+    if rent:
+        return []
+
+    rent_type = get_rentType_by_id(id)
+
+    if not rent_type:
+        return []
+    try:
+        db.session.delete(rent_type)
+        db.session.commit()
+        return rent_type
+
+    except SQLAlchemyError:
+        db.session.rollback()
+        return []    
