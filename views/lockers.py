@@ -11,7 +11,7 @@ from controllers import (
 locker_views = Blueprint('locker_views', __name__, template_folder='../templates')
 
 
-@locker_views.route('/lockers/', methods=['GET'])
+@locker_views.route('/locker', methods=['GET'])
 def return_locker_page():
     return render_template('locker.html')
 

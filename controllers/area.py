@@ -3,9 +3,9 @@ from database import db
 
 from sqlalchemy.exc import SQLAlchemyError
 
-def add_new_area(locker_id, description, longitude,latitude):
+def add_new_area(locker_id, description, longitude, latitude):
     try:
-        new_area = Area(locker_id,description,longitude,latitude)
+        new_area = Area(description,locker_id,longitude, latitude)
         db.session.add(new_area)
         db.session.commit()
         return new_area

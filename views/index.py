@@ -10,9 +10,6 @@ def index_page():
 def empty_function():
     return {},200
 
-@index_views.route('/addLocker', methods=['GET'])
-def addLockerPage():
-    return render_template('addLockerForm.html')
 
 @index_views.route('/addLocker', methods=['POST'])
 def addLockerAPI():
