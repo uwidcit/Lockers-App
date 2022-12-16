@@ -1,63 +1,101 @@
-from database import db
 from models import Student
+from database import db
 from sqlalchemy.exc import SQLAlchemyError
 
-def add_student(student_id, first_name, last_name, faculty,phone_number,email):
+def add_new_student(s_id, f_name, l_name, faculty,p_no,email):
+    if get_student_by_id(s_id):
+        return []
+
     try:
-        new_student = Student(student_id, first_name,last_name, faculty,phone_number,email)
+        new_student = Student(s_id,f_name,l_name,faculty,p_no,email) 
         db.session.add(new_student)
         db.session.commit()
+        return new_student
+
     except SQLAlchemyError:
         db.session.rollback()
-        return []
+        return None
 
-def get_student(id):
-    student = Student.query.filter_by(id = id).first()
-
+def get_student_by_id(s_id):
+    student = Student.query.filter_by(student_id = s_id).first()
     if not student:
-        return []
-
+        return None
     return student
 
-def get_student_json(id):
-    student = get_student(id)
-
+def get_student_by_id_json(s_id):
+    student = get_student_by_id(s_id)
     if not student:
-        return []
-
+        return None
     return student.toJSON()
 
-def update_student(id,first_name, last_name, faculty,phone_number,email):
-    student = get_student(id)
+def update_student_first_name(s_id, new_f_name):
+    student = get_student_by_id(s_id)
 
     if not student:
-        return []
-
-    if first_name != "":
-        student.first_name = first_name
-    if last_name != "":
-        student.last_name = last_name
-    if faculty != "":
-        student.faculty = faculty
-    if phone_number != "":
-        student.phone_number = phone_number
-    if email != "":
-        student.email = email
+        return None
     
     try:
+        student.first_name = new_f_name
         db.session.add(student)
         db.session.commit()
 
     except SQLAlchemyError:
         db.session.rollback()
-        return []
+
+
+def update_student_last_name(s_id, new_l_name):
+    student = get_student_by_id(s_id)
+
+    if not student:
+        return None
     
+    try:
+        student.last_name = new_l_name
+        db.session.add(student)
+        db.session.commit()
 
-def get_all_students():
-    students = Student.query.all()
+    except SQLAlchemyError:
+        db.session.rollback()
 
-    if not students:
-        return []
+def update_student_phone_number(s_id, new_phone_no):
+    student = get_student_by_id(s_id)
 
-    return [s.toJSON for s in students]
+    if not student:
+        return None
+    
+    try:
+        student.phone_number = new_phone_no
+        db.session.add(student)
+        db.session.commit()
 
+    except SQLAlchemyError:
+        db.session.rollback()
+
+
+def update_student_email(s_id, new_email):
+    student = get_student_by_id(s_id)
+
+    if not student:
+        return None
+    
+    try:
+        student.email = new_email
+        db.session.add(student)
+        db.session.commit()
+
+    except SQLAlchemyError:
+        db.session.rollback()
+
+def update_student_faculty(s_id, new_faculty):
+    student = get_student_by_id(s_id)
+
+    if not student:
+        return None
+    
+    try:
+        student.faculty = new_faculty
+        db.session.add(student)
+        db.session.commit()
+
+    except SQLAlchemyError:
+        db.session.rollback()

@@ -1,7 +1,6 @@
 from models import Area
 from database import db
 
-import sqlalchemy
 from sqlalchemy.exc import SQLAlchemyError
 
 def add_new_area(locker_id, description, longitude, latitude):
@@ -14,8 +13,22 @@ def add_new_area(locker_id, description, longitude, latitude):
         db.session.rollback()
         return []
 
+def get_area_by_id(id):
+    area = Area.query.filter_by(id = id).first()
+    if not area: 
+        return None
+    return area
+
+def get_area_by_locker(locker_id):
+    area = Area.query.filter_by(locker_id = locker_id).first()
+    if not area: 
+        return None
+    return area
+
+
 def get_area_all():
     areas = Area.query.all()
     if not areas:
         return []
     return [a.toJSON() for a in areas]
+

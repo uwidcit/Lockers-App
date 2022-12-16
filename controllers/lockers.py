@@ -1,4 +1,5 @@
 from models import Locker
+from models.locker import Status
 from database import db
 from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
@@ -14,7 +15,7 @@ def add_new_locker(locker_code,locker_type,status,key):
         return []
 
 def get_lockers_available():
-    locker_list = Locker.query.filter_by(status = "FREE").all()
+    locker_list = Locker.query.filter_by(status = Status.FREE).all()
     if not locker_list:
         return []
     return [l.toJSON() for l in locker_list]
@@ -32,7 +33,7 @@ def get_all_lockers():
     return [l.toJSON() for l in locker_list]
 
 def get_lockers_unavailable():
-    locker_list = Locker.query.filter_by(or_(status == "RENTED" , status == "REPAIR")).all()
+    locker_list = Locker.query.filter_by(or_(status == Status.RENTED , status == Status.RENTED)).all()
     if not locker_list:
         return []
     return [l.toJSON() for l in locker_list]

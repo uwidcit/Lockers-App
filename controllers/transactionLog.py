@@ -33,3 +33,5 @@ def get_all_transactions():
         return []
 
     return [t.toJSON() for t in transactions]
+
+    

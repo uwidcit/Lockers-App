@@ -1,47 +1,73 @@
+from models import RentType,Rent
 from database import db
-from models import RentTypes
 from sqlalchemy.exc import SQLAlchemyError
 
-def create_new_rent_type(period,type,price):
+
+def new_rentType(period, type, price):
     try:
-        new_rent_type = RentTypes(period,type,price)
-        db.session.add(new_rent_type)
+        rentType = RentType(period,type,price)
+        db.session.add(rentType)
         db.session.commit()
-        return new_rent_type
     except SQLAlchemyError:
         db.session.rollback()
+        return None
+
+def get_rentType_by_id(id):
+    rentType = RentType.query.filter_by(id = id).first()
+
+    if not rentType:
+        return None
+
+    return rentType
+
+
+
+def get_rentType_period(period):
+    rentType = RentType.query.filter_by(period = period)
+
+    if not rentType:
+        return None
+        
+    return [r.toJSON() for r in rentType]
+
+def get_rentType_price(price):
+    rentType = RentType.query.filter_by(price = price)
+
+    if not rentType:
+        return None
+        
+    return [r.toJSON() for r in rentType]
+
+def update_rentType_price(id,new_price):
+    #first check to see if a rentType exist in rent
+    rent = Rent.query.filter_by(rent_type = id).first()
+
+    if rent:
+        return []
+    try:
+        rentType = get_rentType_by_id(id)
+
+        if not rentType:
+            return None
+        rentType.price = new_price
+        db.session.add(rentType)
+        db.session.commit()
+    except SQLAlchemyError:
+        db.session.rollback()
+        return None
+
+def update_rentType_period(id, period):
+    rent = Rent.query.filter_by(rent_type = id).first()
+
+    if rent:
         return []
 
-def get_rent_type_by_id(id):
-    rent_type = RentTypes.query.filter_by(id=id).first()
-
-    if not rent_type:
-        return []
-
-    return rent_type
-
-def rent_type_toJSON(id):
-    rent_type_json = get_rent_type_by_id(id)
-
-    if not rent_type_json:
-        return []
-
-    return rent_type_json.toJSON()
-
-def update_rent_type(id, period,type,price):
-    #Write some code to check if a rent record exist with this id before updating it
-
-    rent_type = get_rent_type_by_id(id)
+    rent_type = get_rentType_by_id(id)
 
     if not rent_type:
         return []
     
-    if period !="":
-        rent_type.period = period
-    if type != "":
-        rent_type.type = type
-    if price !="":
-        rent_type.price = price
+    rent_type.period = period
     try:
         db.session.add(rent_type)
         db.session.commit()
@@ -51,8 +77,34 @@ def update_rent_type(id, period,type,price):
         db.session.rollback()
         return []
 
+def update_rentType_type(id,type):
+    rent = Rent.query.filter_by(rent_type = id).first()
+
+    if rent:
+        return []
+
+    rent_type = get_rentType_by_id(id)
+
+    if not rent_type:
+        return []
+    
+    rent_type.type = type
+    try:
+        db.session.add(rent_type)
+        db.session.commit()
+        return rent_type
+
+    except SQLAlchemyError:
+        db.session.rollback()
+        return []
+        
 def delete_rent_type():
-    rent_type = get_rent_type_by_id(id)
+    rent = Rent.query.filter_by(rent_type = id).first()
+    
+    if rent:
+        return []
+
+    rent_type = get_rentType_by_id(id)
 
     if not rent_type:
         return []
@@ -63,12 +115,4 @@ def delete_rent_type():
 
     except SQLAlchemyError:
         db.session.rollback()
-        return []
-
-def get_all_rent_types():
-    rent_types = RentTypes.query.all()
-
-    if not rent_types:
-        return []
-
-    return [r.toJSON() for r in rent_types]
+        return []    
