@@ -1,5 +1,5 @@
 from models import Rent, Status 
-from .rentType import get_rentType_by_id
+from controllers.rentType import get_rentType_by_id
 from datetime import datetime
 from database import db 
 from sqlalchemy.exc import SQLAlchemyError
@@ -18,14 +18,14 @@ def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to, da
         return None
 
 def calculate_amount_owed(rentType, rent_date_from, rent_date_to):
-    type = get_rent_by_id(rentType)
+    type = get_rentType_by_id(rentType)
     if not type:
         return None
     
     return type.price * (rent_date_to - rent_date_from)
 
 def calculate_late_fees(rentType, rent_date_to, date_returned):
-    type = get_rent_by_id(rentType)
+    type = get_rentType_by_id(rentType)
     if not type:
         return None
     

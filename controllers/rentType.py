@@ -1,8 +1,6 @@
 from models import RentTypes,Rent
 from database import db
 from sqlalchemy.exc import SQLAlchemyError
-
-
 def new_rentType(period, type, price):
     try:
         rentType = RentTypes(period,type,price)
