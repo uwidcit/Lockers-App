@@ -17,6 +17,7 @@ def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to, da
         db.session.rollback()   
         return None
 
+    
 def calculate_amount_owed(rentType, rent_date_from, rent_date_to):
     type = get_rentType_by_id(rentType)
     if not type:
@@ -36,6 +37,8 @@ def get_rent_by_id(id):
 
     if not rent:
         return None
+    if datetime.now() > rent.rent_date_to:
+        rent.amount_owed = rent.amount_owed + calculate_late_fees(rent.rentType,rent.rent_date_to,datetime.now())
     return rent
 
 def get_overdue_rent_by_student(s_id):
@@ -72,3 +75,15 @@ def release_rental(id,date_returned):
     except SQLAlchemyError:
         db.session.rollback()
         return None
+
+def get_all_rentals():
+    rents = Rent.query.all()
+
+    if not rents:
+        return None
+    
+    for r in rents:
+         if datetime.now() > r.rent_date_to:
+            r.amount_owed = r.amount_owed + calculate_late_fees(r.rentType,r.rent_date_to,datetime.now())
+
+    return[r.toJSON() for r in rents]

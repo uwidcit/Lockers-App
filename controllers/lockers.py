@@ -1,5 +1,5 @@
 from models import Locker
-from models.locker import Status
+from models.locker import Status, LockerTypes,Key
 from database import db
 from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
@@ -37,4 +37,13 @@ def get_lockers_unavailable():
     if not locker_list:
         return []
     return [l.toJSON() for l in locker_list]
+
+
+def getStatuses():
+    return [ {e.name:e.value} for e in Status ]
+
+def getLockerTypes():
+    return [{e.name:e.value} for e in LockerTypes]
     
+def getKey():
+    return [ {e.name:e.value} for e in Key]

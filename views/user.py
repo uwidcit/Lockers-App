@@ -53,6 +53,3 @@ def release_page():
 def remove_page():
   return render_template('remove.html')
 
-@user_views.route('/rentpage',methods=['GET'])
-def rent_page():
-  return render_template('rent.html')

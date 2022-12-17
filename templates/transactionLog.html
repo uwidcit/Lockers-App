@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block title %}Transaction Log{% endblock %}
+{% block page %}Transaction Log{% endblock %}
+
+{{ super() }}
+
+{% block content %}
+   <table>
+    <tr>
+        <th>ID</th>
+        <th>Rent ID</th>
+        <th>Currency </th>
+        <th>Transaction Date </th>
+        <th> Amount </th>
+        <th> Type </th>
+    </tr>
+    {% if transaction %}
+    {% for t in transaction %}
+        <tr>
+            <td>{{t.id}}</td>
+            <td>{{t.rent_id}}</td>
+            <td>{{t.currency}}</td>
+            <td>{{t.transaction_date}}</td>
+            <td>{{t.amount}}</td>
+            <td>{{t.type}}</td>
+        </tr>
+    {% endfor %}
+    {% else %}
+        <p> No Transaction </p>
+    {% endif %}
+   </table>
+{% endblock %}

@@ -36,7 +36,6 @@ class Locker (db.Model):
     def toJSON(self):
         return {
             'locker_code': self.locker_code,
-            'area': self.area.location,
             'locker_type':self.locker_type.name,
             'status': self.status.name,
             'key':self.key.name,

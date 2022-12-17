@@ -17,7 +17,8 @@ from controllers import (
 
 from views import (
     user_views,
-    locker_types_views,
+    transactionLog_views,
+    rent_views,
     locker_views,
     area_views,
     index_views
@@ -26,7 +27,8 @@ from views import (
 # New views must be imported and added to this list
 views = [
     user_views,
-    locker_types_views,
+    transactionLog_views,
+    rent_views,
     locker_views,
     area_views,
     index_views
