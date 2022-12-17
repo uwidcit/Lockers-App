@@ -1,5 +1,7 @@
 from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify
 
+from forms import Add
+
 from controllers import (
     add_new_locker,
     get_lockers_available,
@@ -13,17 +15,17 @@ locker_views = Blueprint('locker_views', __name__, template_folder='../templates
 
 @locker_views.route('/locker', methods=['GET'])
 def return_locker_page():
-    return render_template('locker.html')
+    form = Add()
+    return render_template('locker.html',form=form)
 
 @locker_views.route('/locker/add', methods=['POST'])
 def create_new_locker():
-    locker_code = request.get.json('locker_code')
-    area = request.get.json('area')
-    locker_type = request.get.json('locker_type')
-    status = request.get.json('staus')
-    key_id = request.get.json('key_id')
+    form = Add() # create form object
+    if form.validate_on_submit():
+        data = request.form # get data from form submission
+        new_locker = add_new_locker(locker_code=data['locker_code'], area=data['area'], locker_type=data['locker_type'], staus=data['staus'], key_id=data['key_id'])
 
-    new_locker = add_new_locker(locker_code,area,locker_type,status,key_id)
+
 
     if not new_locker:
         return jsonify({"message":"Locker already exist or some error has occurred"}),400
