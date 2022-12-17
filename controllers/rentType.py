@@ -1,11 +1,11 @@
-from models import RentType,Rent
+from models import RentTypes,Rent
 from database import db
 from sqlalchemy.exc import SQLAlchemyError
 
 
 def new_rentType(period, type, price):
     try:
-        rentType = RentType(period,type,price)
+        rentType = RentTypes(period,type,price)
         db.session.add(rentType)
         db.session.commit()
     except SQLAlchemyError:
@@ -13,7 +13,7 @@ def new_rentType(period, type, price):
         return None
 
 def get_rentType_by_id(id):
-    rentType = RentType.query.filter_by(id = id).first()
+    rentType = RentTypes.query.filter_by(id = id).first()
 
     if not rentType:
         return None
@@ -23,7 +23,7 @@ def get_rentType_by_id(id):
 
 
 def get_rentType_period(period):
-    rentType = RentType.query.filter_by(period = period)
+    rentType = RentTypes.query.filter_by(period = period)
 
     if not rentType:
         return None
@@ -31,7 +31,7 @@ def get_rentType_period(period):
     return [r.toJSON() for r in rentType]
 
 def get_rentType_price(price):
-    rentType = RentType.query.filter_by(price = price)
+    rentType = RentTypes.query.filter_by(price = price)
 
     if not rentType:
         return None
