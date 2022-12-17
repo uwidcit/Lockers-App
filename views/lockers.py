@@ -1,5 +1,7 @@
 from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify
 
+from forms import Add
+
 from controllers import (
     add_new_locker,
     get_lockers_available,
