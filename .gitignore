@@ -1,9 +1,14 @@
 __pycache__/*
+models/__pycache__/*
+controllers/__pycache__/*
+views/__pycache__/*
 build/*
 dist/*
 models/__pycache__/*
 controllers/__pycache__/*
 views/__pycache__/*
 temp-database.db
+test_database.db
 .gitpod.yml
 Dockerfile
+test_database.db
