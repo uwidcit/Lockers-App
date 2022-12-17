@@ -13,10 +13,17 @@ class Rent(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     student_id = db.Column (db.Integer, db.ForeignKey("student.student_id"), nullable= False)
     locker_id = db.Column(db.String, db.ForeignKey("locker.locker_code"), nullable= False)
+<<<<<<< HEAD
     rent_type =  db.Column(db.Integer, db.ForeignKey("RentTypes.id"), nullable= False)
     rent_date_from =  db.Column(db.DateTime, nullable= False)
     rent_date_to = db.Column(db.DateTime, nullable= False)
     date_returned = db.Column(db.DateTime, nullable = True)
+=======
+    rent_type =  db.Column(db.Integer, db.ForeignKey("rentType.id"), nullable= False)
+    rent_date_from =  db.Column(db.Date, nullable= False)
+    rent_date_to = db.Column(db.Date, nullable= False)
+    date_returned = db.Column(db.Date, nullable = True)
+>>>>>>> main
     amount_owed = db.Column(db.Float, nullable= False)
     status = db.Column(db.Enum(Status), nullable = False)
 
