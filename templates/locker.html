@@ -11,23 +11,37 @@
          {{ form.csrf_token }}
 
          <div class="input-field col s12 m8 offset-m2"> 
+          <p>Locker Code</p>
            {{ form.locker_code(size=20, class="validate") }}
            {{ form.locker_code.label }}
          </div>
 
          <div class="input-field col s12 m8 offset-m2">
-           {{ form.area(size=50, class="validate") }}
-           {{ form.area.label }}
+          <p>Area</p>
+          <select name="comp_select" style="display:inline;">
+            {% for subfield in form.area %}
+              <option value = '{{subfield}}'>{{subfield}}</option>
+            {% endfor %}
+          </select>
+         </div>
+         
+
+         <div class="input-field col s12 m8 offset-m2">
+          <p>Locker Type</p>
+          <select name="comp_select" style="display:inline;">
+            {% for subfield in form.locker_type %}
+              <option value = '{{subfield}}'>{{subfield}}</option>
+            {% endfor %}
+          </select>
          </div>
 
          <div class="input-field col s12 m8 offset-m2">
-           {{ form.locker_type(size=20, class="validate") }}
-           {{ form.locker_type.label }}
-         </div>
-
-         <div class="input-field col s12 m8 offset-m2">
-           {{ form.status(size=20, class="validate") }}
-           {{ form.status.label }}
+          <p>Status</p>
+          <select name="comp_select" style="display:inline;">
+            {% for subfield in form.status %}
+              <option value = '{{subfield}}'>{{subfield}}</option>
+            {% endfor %}
+          </select>
          </div>
 
          <div class="input-field col s12 m8 offset-m2">
@@ -35,9 +49,13 @@
             {{ form.key_id.label }}
           </div>
 
-         <div class="input-field col s12 m8 offset-m2">
+         <div class="input-field col s12 m8 offset-m2" style="display:inline;">
            {{form.submit}}
          </div> 
+
+         <div class="input-field col s12 m8 offset-m2">
+          <p> {{data}}</p>
+        </div> 
 
      </form>
    </div>
