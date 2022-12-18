@@ -12,25 +12,25 @@ from controllers import (
 
 locker_views = Blueprint('locker_views', __name__, template_folder='../templates')
 
+@locker_views.route("/locker", methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        form = Add() # create form object
+        if form.validate_on_submit():
+            data = request.form # get data from form submission
+            new_locker = add_new_locker(locker_code=data['locker_code'], area=data['area'], locker_type=data['locker_type'], staus=data['staus'], key_id=data['key_id'])
+            if not new_locker:
+                return jsonify({"message":"Locker already exist or some error has occurred"}),400
 
-@locker_views.route('/locker', methods=['GET'])
-def return_locker_page():
-    form = Add()
-    return render_template('locker.html',form=form)
-
-@locker_views.route('/locker/add', methods=['POST'])
-def create_new_locker():
-    form = Add() # create form object
-    if form.validate_on_submit():
-        data = request.form # get data from form submission
-        new_locker = add_new_locker(locker_code=data['locker_code'], area=data['area'], locker_type=data['locker_type'], staus=data['staus'], key_id=data['key_id'])
+            return jsonify({"data":new_locker.toJSON()}),201
+    elif request.method == 'GET':
+        form = Add()
+        return render_template('index.html', form=form)
+    
+    return render_template("index.html")
 
 
-
-    if not new_locker:
-        return jsonify({"message":"Locker already exist or some error has occurred"}),400
-
-    return jsonify({"data":new_locker.toJSON()}),201
+    
 
 @locker_views.route('/lockers/get/available', methods=['GET'])
 def get_available_lockers():
