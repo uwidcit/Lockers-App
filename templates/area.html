@@ -24,6 +24,8 @@
             <td>{{a.description}}</td>
             <td>{{a.longitude}} </td>
             <td>{{a.latitude}} </td>
+            <td><a href="/area/{{a.id}}/edit">Edit</a></td>
+            <td><a href="/area/{{a.id}}/delete">Remove</a></td>
         </tr>
             
         {% endfor %}
