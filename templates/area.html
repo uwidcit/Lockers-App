@@ -5,9 +5,31 @@
 {{ super() }}
 
 {% block content %}
-<form>
-    <!-- Add Form -->
-</form>
+<div class="row">
+      <div class="row">
+        <table class="col s12 m8 offset-m2">
+        <tr>
+            <th>ID</th>
+            <th>LockerID</th>
+            <th>Description</th>
+            <th>Longitude</th>
+            <th> Latitude</th>
+        </tr>
 
+        {% if areaData %}
+        {% for a in areaData %}
+        <tr>
+            <td>{{a.id}}</td>
+            <td>{{a.locker_id}}</td>
+            <td>{{a.description}}</td>
+            <td>{{a.longitude}} </td>
+            <td>{{a.latitude}} </td>
+        </tr>
+            
+        {% endfor %}
+        {% endif %}
+      </table>
+
+      </div>
 
 {% endblock %}

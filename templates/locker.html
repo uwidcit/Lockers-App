@@ -12,41 +12,38 @@
 
          <div class="input-field col s12 m8 offset-m2"> 
           <p>Locker Code</p>
+          
            {{ form.locker_code(size=20, class="validate") }}
-           {{ form.locker_code.label }}
-         </div>
-
-         <div class="input-field col s12 m8 offset-m2">
-          <p>Area</p>
-          <select name="comp_select" style="display:inline;">
-            {% for subfield in form.area %}
-              <option value = '{{subfield}}'>{{subfield}}</option>
-            {% endfor %}
-          </select>
-         </div>
-         
+         </div>   
 
          <div class="input-field col s12 m8 offset-m2">
           <p>Locker Type</p>
-          <select name="comp_select" style="display:inline;">
+          <select name="locker_type" style="display:inline;">
+            <option value=”” disabled selected>Select a Locker Type</option>
             {% for subfield in form.locker_type %}
-              <option value = '{{subfield}}'>{{subfield}}</option>
+              {{subfield}}
             {% endfor %}
           </select>
          </div>
 
          <div class="input-field col s12 m8 offset-m2">
           <p>Status</p>
-          <select name="comp_select" style="display:inline;">
+          <select name="status" style="display:inline;">
+            <option value=”” disabled selected>Select a Status</option>
             {% for subfield in form.status %}
-              <option value = '{{subfield}}'>{{subfield}}</option>
+             {{subfield}}
             {% endfor %}
           </select>
          </div>
 
          <div class="input-field col s12 m8 offset-m2">
-            {{ form.key_id(size=20, class="validate") }}
-            {{ form.key_id.label }}
+          <p>Key Status</p>
+          <select name="key" style="display:inline;">
+            <option value=”” disabled selected>Select a Key Status</option>
+            {% for subfield in form.key %}
+             {{subfield}}
+            {% endfor %}
+          </select>
           </div>
 
          <div class="input-field col s12 m8 offset-m2" style="display:inline;">
@@ -61,5 +58,4 @@
    </div>
 </div>
 
-   <script src="/static/lockers.js"></script>
 {% endblock %}

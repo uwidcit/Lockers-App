@@ -40,10 +40,10 @@ def get_lockers_unavailable():
 
 
 def getStatuses():
-    return [ {e.name:e.value} for e in Status ]
+    return [ e.value for e in Status ]
 
 def getLockerTypes():
-    return [{e.name:e.value} for e in LockerTypes]
+    return [ e.value for e in LockerTypes]
     
 def getKey():
-    return [ {e.name:e.value} for e in Key]
+    return [ e.value for e in Key]
