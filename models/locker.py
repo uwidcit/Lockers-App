@@ -1,4 +1,3 @@
-import string
 from database import db
 from enum import Enum
 
@@ -26,12 +25,12 @@ class Locker (db.Model):
 
     def __init__(self,locker_code,locker_type,status,key):
         self.locker_code = locker_code
-        if string.upper(status) in Status.__members__:
-            self.status = Status[string.upper(status)]
-        if string.upper(locker_type) in LockerTypes.__members__:
-            self.locker_type = LockerTypes[string.upper(locker_type)]
-        if string.upper(key) in Key.__members__:
-            self.key = Key[string.upper(key)]
+        if status.upper() in Status.__members__:
+            self.status = Status[status.upper()]
+        if locker_type.upper() in LockerTypes.__members__:
+            self.locker_type = LockerTypes[locker_type.upper()]
+        if key.upper() in Key.__members__:
+            self.key = Key[key.upper()]
             
     def toJSON(self):
         return {
