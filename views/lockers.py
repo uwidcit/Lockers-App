@@ -25,9 +25,9 @@ def index():
             return jsonify({"data":new_locker.toJSON()}),201
     elif request.method == 'GET':
         form = Add()
-        return render_template('index.html', form=form)
+        return render_template('locker.html', form=form)
     
-    return render_template("index.html")
+    return render_template("locker.html")
 
 
     
