@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, SubmitField,DecimalField,HiddenField, DateField
+from wtforms import StringField, SelectField, SubmitField,DecimalField,HiddenField, DateField,DateTimeField
 from wtforms.validators import InputRequired, EqualTo, Email
 
 from controllers import (
@@ -41,7 +41,13 @@ class RentTypeAdd(FlaskForm):
     price = DecimalField('price',validators=[InputRequired()],places=2)
     submit = SubmitField('New Price Model', render_kw={'class': 'btn waves-effect waves-light white-text'})
 
-
+class RentAdd(FlaskForm):
+    student_id = StringField('student_id', validators=[InputRequired()])
+    rent_type =  StringField('rent_type', validators=[InputRequired()])
+    rent_date_from = DateTimeField('rent_date_from', format='%Y-%m-%d %H:%M:%S')
+    rent_date_to = DateTimeField('rent_date_to', format='%Y-%m-%d %H:%M:%S')
+    amount_owed = DecimalField('amount_owed', places=2, rounding=None, use_locale=False, number_format=None)
+    submit = SubmitField('Rent', render_kw={'class': 'btn waves-effect waves-light white-text'})
 
     
     
