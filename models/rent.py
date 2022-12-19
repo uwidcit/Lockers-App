@@ -28,7 +28,7 @@ class Rent(db.Model):
         self.rent_date_to  = rent_date_to
         self.date_returned = date_returned
         self.amount_owed = amount_owed
-        self.status = Status[string.upper(status)]
+        self.status = status
         
     def toJSON(self):
         return {
