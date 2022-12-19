@@ -1,5 +1,6 @@
 from database import db 
 from models import TransactionLog
+from models.transactionLog import TransactionType
 from sqlalchemy.exc import SQLAlchemyError
 
 def add_new_transaction(rent_id, currency, transaction_date, amount, description, t_type):
@@ -33,5 +34,8 @@ def get_all_transactions():
         return []
 
     return [t.toJSON() for t in transactions]
+
+def getT_Type():
+    return [ e.value for e in TransactionType ]
 
     

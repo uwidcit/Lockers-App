@@ -41,6 +41,13 @@ def get_rent_by_id(id):
         rent.amount_owed = rent.amount_owed + calculate_late_fees(rent.rentType,rent.rent_date_to,datetime.now())
     return rent
 
+def get_all_rented():
+    rentals = db.session.execute("select * from rent where status != 'Returned'")
+    #Rent.query.filter_by(status != Status.RETURNED).all()
+    if not rentals :
+        return None
+    return rentals
+
 def get_overdue_rent_by_student(s_id):
     rent = Rent.query.filter_by(student_id= s_id,status = Status.OVERDUE).first()
     if not rent :
@@ -65,7 +72,7 @@ def release_rental(id,date_returned):
     elif date_returned < rent.rent_date_to and date_returned >= rent.rent_date_from:
         rent.amount_owed = calculate_amount_owed(rent.rent_type,rent.rent_date_from, date_returned)
 
-    rent.status = Status.PAID
+    rent.status = Status.RETURNED
 
     try:
         db.session.add(rent)
@@ -87,3 +94,5 @@ def get_all_rentals():
             r.amount_owed = r.amount_owed + calculate_late_fees(r.rentType,r.rent_date_to,datetime.now())
 
     return[r.toJSON() for r in rents]
+
+    

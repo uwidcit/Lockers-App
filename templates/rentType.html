@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block title %}New Price Model{% endblock %}
+{% block page %}Price{% endblock %}
+
+{{ super() }}
+
+{% block content %}
+
+<div class="row">
+ <form id="new_rentType" class="col s12 m8 offset-m2" method="POST" action="/transaction">
+
+    {{ form.csrf_token }}
+    <div class="input-field col s12 m8 offset-m2">
+    <p> Period</p>
+    {{form.period(size=20,class="validate")}}
+    </div>
+
+    <div class="input-field col s12 m8 offset-m2">
+    <p> Locker Type </p>
+    <select name="locker_type" style="display:inline;">
+        <option value=”” disabled selected>Select a Locker Type</option>
+        {% for subfield in form.type %}
+          {{subfield}}
+        {% endfor %}
+      </select>
+      </div>
+    <div class="input-field col s12 m8 offset-m2">
+    <p> Price </p>
+    {{form.price (size=20,class="validate")}}
+    </div>
+    <div class="input-field col s12 m8 offset-m2">
+        {{form.submit}}
+       </div>
+    </form>   
+    {% endblock %}

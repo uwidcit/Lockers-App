@@ -41,19 +41,12 @@
             <li class="indentMenu"><a href="/student">Add New Student</a></li>
             <li class="indentMenu"><a href="/student/manage">Update Student</a></li>
           <li>Transaction Log</li>
-          <li class="indentMenu"><a href="/transactionLog"> View transaction log</a></li>
+          <li class="indentMenu"><a href="/transactionLog"> New transaction</a></li>
+          <li class="indentMenu"><a href="/transactionLog/view"> View transaction log</a></li>
         </ul>
       </div>
 
-      <div class="white col s10" style="height: 100vh; width: 85vw; position: relative;" > 
-        {% block content %}{% endblock %}
-      </div>
-
-    </div>
-      
-    
-    
-    {% with messages = get_flashed_messages() %}
+      {% with messages = get_flashed_messages() %}
     {% if messages %}
     <nav class="white black-text" style="padding: 10px">
       <div class="nav-wrapper">
@@ -68,6 +61,15 @@
     {% endwith %}
 
    
+      <div class="white col s10" style="height: 90vh; width: 85vw; position: relative; overflow-y: auto;" > 
+        {% block content %}{% endblock %}
+      </div>
+
+    </div>
+      
+    
+    
+    
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="/static/util.js"></script>

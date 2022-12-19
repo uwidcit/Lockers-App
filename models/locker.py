@@ -38,4 +38,11 @@ class Locker (db.Model):
             'locker_type':self.locker_type.name,
             'status': self.status.name,
             'key':self.key.name,
+            'area': self.check_area()
         }
+    def check_area(self):
+        if not self.area:
+            return ''
+        return [a.toJSON() for a in self.area]
+
+    

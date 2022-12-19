@@ -5,11 +5,6 @@
 {{ super() }}
 
 {% block content %}
-<div class="row" style="background-color: blueviolet; margin:20px;height: 25vh;">
-    <p>
-        avail
-    </p>
-</div>
 <div class="row" style="background-color: coral; margin:20px;height: 53vh; padding-left: 11px;padding-right: 11px;">
     <div class="row">
         <table style="overflow-y: scroll; height: inherit;background-color: chocolate;">
@@ -19,6 +14,8 @@
             </tr>
           </thead>
           <tbody >
+            {% if results %}
+            {{results}}
             {% for result in results %}
               <tr>
                   <td>{{result.locker_code}}</td>
@@ -26,8 +23,14 @@
                   <td>{{result.locker_type}}</td>
                   <td>{{result.status}}</td>
                   <td>{{result.key}}</td>
+                  <td><a href="/rent/{{result.locker_code}}/release">Release</a></td>
               </tr>
             {% endfor %}
+            {% else %}
+            <tr>
+               <td> No Rentals to Release </td>
+            </tr>
+            {% endif %}
           <tbody>
         </table>
       </div>

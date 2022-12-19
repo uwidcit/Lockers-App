@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+{% block title %}Manage Price{% endblock %}
+{% block page %}Manage Price {% endblock %}
+
+{{ super() }}
+
+{% block content %}
+<div class="row">
+      <div class="row">
+        <table class="col s12 m8 offset-m2">
+        <tr>
+            <th>ID</th>
+            <th>Period</th>
+            <th>Locker Type</th>
+            <th>Price</th>
+        </tr>
+
+        {% if results %}
+        {% for r in results %}
+        <tr>
+            <td>{{r.id}}</td>
+            <td>{{r.period}}</td>
+            <td>{{r.type}}</td>
+            <td>{{r.price}} </td>
+            <td><a href="/rentType/{{r.id}}/edit">Edit</a></td>
+            <td><a href="/rentType/{{r.id}}/delete">Remove</a></td>
+        </tr>
+            
+        {% endfor %}
+        {% else %}
+        <tr><td> No Price Models </td></tr>
+        {% endif %}
+      </table>
+
+      </div>
+
+{% endblock %}

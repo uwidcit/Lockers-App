@@ -1,5 +1,5 @@
 from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify
-
+from forms import TransactionAdd
 from controllers import (
   add_new_transaction,
   get_all_transactions,
@@ -9,6 +9,10 @@ from controllers import (
 transactionLog_views = Blueprint('transactionLog_views', __name__, template_folder='../templates')
 
 @transactionLog_views.route('/transactionLog', methods=['GET'])
+def render_transaction_page():
+    return render_template('release_transaction.html', form = TransactionAdd())
+
+@transactionLog_views.route('/transactionLog/view', methods=['GET'])
 def transactionLog_page():
     return render_template('transactionLog.html', transaction = get_all_transactions())
 

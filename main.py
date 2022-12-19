@@ -18,6 +18,7 @@ from controllers import (
 from views import (
     user_views,
     transactionLog_views,
+    rentType_views,
     rent_views,
     locker_views,
     area_views,
@@ -28,6 +29,7 @@ from views import (
 views = [
     user_views,
     transactionLog_views,
+    rentType_views,
     rent_views,
     locker_views,
     area_views,

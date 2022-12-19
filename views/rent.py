@@ -4,9 +4,11 @@ from controllers import (
     create_rent,
     get_rent_by_id,
     get_all_rentals,
+    get_all_rented,
     release_rental,
     get_lockers_available,
     )
+from forms import TransactionAdd
 
 rent_views = Blueprint('rent_views', __name__, template_folder='../templates')
 
@@ -41,6 +43,10 @@ def get_rent_id(id):
 def get_all_rent(id):
     return jsonify(get_all_rentals()),200
 
+@rent_views.route('/rent/<id>/release', methods=['GET'])
+def render_release_locker(id):
+    #get a better way to calculate late fees 
+   return render_template('release_transaction.html', form=TransactionAdd())
 @rent_views.route('/rent/<id>/release', methods=['PUT'])
 def release_locker(id):
     #get a better way to calculate late fees 
@@ -52,3 +58,9 @@ def release_locker(id):
         return jsonify({"Message": "Error releasing rental"}),400
     
     return jsonify(rental.toJSON()),200
+
+@rent_views.route('/releasepage',methods=['GET'])
+def release_page():
+    rentals = get_all_rented()
+    rentals = [r.toJSON for r in rentals]
+    return render_template('release.html', results = rentals)

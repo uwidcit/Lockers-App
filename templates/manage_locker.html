@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block title %}Manage Lockers {% endblock %}
+{% block page %}Manage Lockers{% endblock %}
+
+{{ super() }}
+
+{% block content %}
+<div class="row">
+      <div class="row">
+        <table class="col s12 m8 offset-m2">
+        <tr>
+            <th>Locker Code</th>
+            <th>Locker Type </th>
+            <th>Status</th>
+            <th>Key Status</th>
+            <th>Area</th>
+        </tr>
+
+        {% if lockerData %}
+        {% for l in lockerData %}
+        <tr>
+            <td>{{l.locker_code}}</td>
+            <td>{{l.locker_type}}</td>
+            <td>{{l.status}}</td>
+            <td>{{l.key}} </td>
+            {% if l.area %}
+            <td>{{l.area[0].description}} </td>
+            {% else %}
+            <td><a href="/locker/{{l.locker_code}}/area">Add a Area</a></td>
+            {% endif %}
+            <td><a href="/locker/{{l.locker_code}}/edit">Edit</a></td>
+            <td><a href="/locker/{{l.locker_code}}/delete">Remove</a></td>
+        </tr>
+            
+        {% endfor %}
+        {% endif %}
+      </table>
+
+      </div>
+
+{% endblock %}

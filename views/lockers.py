@@ -17,7 +17,12 @@ locker_views = Blueprint('locker_views', __name__, template_folder='../templates
 def index():
     form = LockerAdd()
     return render_template('locker.html', form=form)
-    
+
+@locker_views.route("/locker/manage", methods=['GET'])
+def manage_locker():
+    lockerData = get_all_lockers()
+    return render_template('manage_locker.html', lockerData=lockerData)
+      
 
 @locker_views.route("/locker", methods=['POST'])
 def add_locker():

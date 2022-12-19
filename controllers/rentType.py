@@ -114,3 +114,11 @@ def delete_rent_type():
     except SQLAlchemyError:
         db.session.rollback()
         return []    
+
+def get_All_rentType():
+    rentType = RentTypes.query.all()
+
+    if not rentType:
+        return None
+        
+    return [r.toJSON() for r in rentType]

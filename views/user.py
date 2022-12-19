@@ -45,9 +45,7 @@ def avail_page():
 def login_page():
   return render_template('index.html')
 
-@user_views.route('/releasepage',methods=['GET'])
-def release_page():
-  return render_template('release.html')
+
 
 @user_views.route('/removepage',methods=['GET'])
 def remove_page():
