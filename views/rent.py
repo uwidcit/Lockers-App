@@ -65,7 +65,7 @@ def release_page():
     rentals = [r.toJSON for r in rentals]
     return render_template('release.html', results = rentals)
 
-@rent_views.route("/makerent/<id>", methods=['GET'])
+@rent_views.route('/makerent/<id>', methods=['GET'])
 def render(id):
     form = RentAdd()
     return render_template('addrent.html', form=form, id = id)
@@ -86,7 +86,19 @@ def rent_locker(id):
 
 
 
-@rent_views.route("/makerent/<id>/<student_id>", methods=['GET'])
+@rent_views.route('/makerent/<id>/<student_id>', methods=['GET'])
 def student_add(id,student_id):
     form = StudentAdd()
     return render_template('student.html', form=form, id = id, student_id=student_id)
+
+@rent_views.route('/makerent/<id>/<student_id>', methods=['POST'])
+def add_student(id,student_id):
+    form = StudentAdd()
+    #get a better way to calculate late fees 
+    data = request.form
+    student = add_new_student(s_id = data['student_id'], f_name=data['f_name'], l_name=data['l_name'], faculty=data['faculty'],p_no=data['p_no'],email=data['email'])
+    if not student:
+        return redirect(url_for('rent_views.render', id = id))
+    
+
+    return redirect(url_for('rent_views.render', id = id))
