@@ -9,7 +9,7 @@ def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to, da
         return []
     try:
         amount_owed= calculate_amount_owed(rentType, rent_date_from, rent_date_to)
-        rent = Rent(student_id, locker_id, rentType,rent_date_from,rent_date_to,date_returned,amount_owed,status=Status.LOAN)
+        rent = Rent(student_id, locker_id, rentType,rent_date_from,rent_date_to,date_returned,amount_owed,status=Status.OWED)
         db.session.add(rent)
         db.session.commit()
         return rent

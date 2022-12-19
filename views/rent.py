@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify
+from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify,url_for
 
 from controllers import (
     create_rent,
@@ -69,3 +69,24 @@ def release_page():
 def render(id):
     form = RentAdd()
     return render_template('addrent.html', form=form, id = id)
+
+@rent_views.route('/makerent/<id>', methods=['POST'])
+def rent_locker(id):
+    form = RentAdd()
+    #get a better way to calculate late fees 
+    data = request.form
+    rental = create_rent(student_id=data['student_id'], locker_id=id,rentType=data['rent_type'], rent_date_from=data['rent_date_from'], rent_date_to=data['rent_date_to'],date_returned =  "2018-12-19 09:26:03.478039")
+
+    if not rental:
+        return redirect(url_for('rent_views.render', id = id))
+    
+    return jsonify(rental.toJSON()),200
+    return redirect(url_for('.student_add',id =id, student_id=student_id))
+
+
+
+
+@rent_views.route("/makerent/<id>/<student_id>", methods=['GET'])
+def student_add(id,student_id):
+    form = StudentAdd()
+    return render_template('student.html', form=form, id = id, student_id=student_id)
