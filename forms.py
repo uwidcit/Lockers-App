@@ -51,10 +51,13 @@ class RentAdd(FlaskForm):
 
 class StudentAdd(FlaskForm):
     student_id = StringField('student_id', validators=[InputRequired()])
-    rent_type =  StringField('rent_type', validators=[InputRequired()])
-    rent_date_from = DateTimeField('rent_date_from', format='%Y-%m-%d %H:%M:%S')
-    rent_date_to = DateTimeField('rent_date_to', format='%Y-%m-%d %H:%M:%S')
-    amount_owed = DecimalField('amount_owed', places=2, rounding=None, use_locale=False, number_format=None)
-    submit = SubmitField('Rent', render_kw={'class': 'btn waves-effect waves-light white-text'})   
+    f_name =  StringField('f_name', validators=[InputRequired()])
+    l_name =  StringField('l_name', validators=[InputRequired()])
+    faculty =  StringField('faculty', validators=[InputRequired()])
+    p_no =  StringField('p_no', validators=[InputRequired()])
+    email =  StringField('email', validators=[InputRequired()])
+    submit = SubmitField('Add', render_kw={'class': 'btn waves-effect waves-light white-text'})  
+
+
     
     
