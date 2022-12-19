@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify
+from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify,url_for
 
 from controllers import (
     create_rent,
