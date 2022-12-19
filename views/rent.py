@@ -8,7 +8,7 @@ from controllers import (
     release_rental,
     get_lockers_available,
     )
-from forms import TransactionAdd
+from forms import TransactionAdd, RentAdd 
 
 rent_views = Blueprint('rent_views', __name__, template_folder='../templates')
 
@@ -64,3 +64,8 @@ def release_page():
     rentals = get_all_rented()
     rentals = [r.toJSON for r in rentals]
     return render_template('release.html', results = rentals)
+
+@rent_views.route("/makerent/<id>", methods=['GET'])
+def render(id):
+    form = RentAdd()
+    return render_template('addrent.html', form=form, id = id)

@@ -1,0 +1,55 @@
+{% extends "layout_no_nav.html" %}
+{% block title %}Flask MVC App{% endblock %}
+{% block page %}Flask MVC App{% endblock %}
+
+
+
+{% block content %}
+<div class="row">
+    <div class="row">
+      <form id="newLocker" class="col s12 m8 offset-m2" method="POST" action="/makerent/{{id}}">
+          {{ form.csrf_token }}
+ 
+          <div class="input-field col s12 m8 offset-m2"> 
+           <p>Student ID</p>
+           
+            {{ form.student_id(size=20, class="validate") }}
+          </div>  
+          
+          <div class="input-field col s12 m8 offset-m2"> 
+            <p>Rent Type</p>
+            
+             {{ form.rent_type(size=20, class="validate") }}
+           </div> 
+
+           <div class="input-field col s12 m8 offset-m2" style="display:inline;"> 
+            <p style="display:inline;">Rent From</p>
+            {{form.rent_date_from(class='datepicker')}}
+             
+           </div> 
+
+           <div class="input-field col s12 m8 offset-m2" style="display:inline;"> 
+            <p style="display:inline;">Rent To</p>
+            {{form.rent_date_to(class='datepicker')}}
+             
+           </div> 
+
+           
+           
+ 
+          
+ 
+          <div class="input-field col s12 m8 offset-m2" style="display:inline;">
+            {{form.submit}}
+          </div> 
+ 
+          <div class="input-field col s12 m8 offset-m2">
+           <p> {{data}}</p>
+         </div> 
+ 
+      </form>
+    </div>
+ </div>
+{% endblock %}
+
+<script src="/static/keep_alive.js"> </script> 

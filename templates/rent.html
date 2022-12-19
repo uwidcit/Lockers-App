@@ -7,20 +7,7 @@
 {% block content %}
 <div class="row" style="background-color: blueviolet; margin:20px;height: 25vh;">
     <table>
-      {% if lockers %}
-      {% for l in lockers %}
-      <tr>
-        <td>{{l.locker_code}}</td>
-        <td>{{l.locker_type}}</td>
-        <!--
-          Use JS to choose locker
-        -->
-        <td><a href="/rent/{{l.locker_code}}/rent">Select</a></td>
-      </tr>
-      {% endfor %}
-      {% else %}
-        <p> No lockers currently available </p>
-      {% endif %}
+      
     </table>
   
 </div>
@@ -29,29 +16,33 @@
         <table style="overflow-y: scroll; height: inherit;background-color: chocolate;">
           <thead style="background-color: deepskyblue;">
             <tr>
-              <th>ID</th>
-              <th>StudentID</th>
               <th>Locker Code</th>
-              <th>Date From </th>
-              <th>Date To</th>
-              <th>Amount Owed</th>
+              <th>Locker Type </th>
               <th>Status</th>
+              <th>Key Status</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody >
-            {% if results %}
-            {% for result in results %}
-              <tr>
-                  <td>{{result.id}}</td>
-                  <td>{{student_id}}</td>
-                  <td>{{result.locker_id}}</td>
-                  <td>{{result.rent_date_from}}</td>
-                  <td>{{result.rent_date_to}}</td>
-                  <td>{{result.amount_owed}}</td>
-                  <td>{{result.status}}</td>
-              </tr>
+            {% if lockers %}
+            {% for l in lockers %}
+            <tr>
+              <td>{{l.locker_code}}</td>
+              <td>{{l.locker_type}}</td>
+              <td>{{l.status}}</td>
+              <td>{{l.key}}</td>
+              <!--
+                Use JS to choose locker
+              -->
+              <td><a href="/makerent/{{l.locker_code}}">Select</a></td>
+            </tr>
             {% endfor %}
+            {% else %}
+              <p> No lockers currently available </p>
             {% endif %}
+
+
+            
           <tbody>
         </table>
       </div>
