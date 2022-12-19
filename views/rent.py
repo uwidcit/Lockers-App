@@ -75,7 +75,7 @@ def rent_locker(id):
     form = RentAdd()
     #get a better way to calculate late fees 
     data = request.form
-    rental = create_rent(student_id=data['student_id'], id=id,rentType=data['rent_type'], rent_date_from=data['rent_date_from'], rent_date_to=data['rent_date_to'],date_returned =  "2018-12-19 09:26:03.478039")
+    rental = create_rent(student_id=data['student_id'], locker_id=id,rentType=data['rent_type'], rent_date_from=data['rent_date_from'], rent_date_to=data['rent_date_to'],date_returned =  "2018-12-19 09:26:03.478039")
 
     if not rental:
         return redirect(url_for('.render', id = id))
