@@ -1,13 +1,14 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, SubmitField,DecimalField,HiddenField, DateField,DateTimeField
+from wtforms import StringField, SelectField, SubmitField,DecimalField,HiddenField, DateField,DateTimeLocalField
 from wtforms.validators import InputRequired, EqualTo, Email
 
 from controllers import (
     getLockerTypes,
     getStatuses,
     getKey,
-    getT_Type
+    getT_Type,
 )
+
 
 class LockerAdd(FlaskForm):
     status = getStatuses()
@@ -29,7 +30,7 @@ class AreaAdd(FlaskForm):
 class TransactionAdd(FlaskForm):
     rent_id = StringField('rent_id', validators=[InputRequired()])
     currency = StringField('currency',validators=[InputRequired()])
-    transaction_date = DateField('transaction_date',validators=[InputRequired()])
+    transaction_date = DateTimeLocalField('transaction_date',validators=[InputRequired()])
     amount = DecimalField('amount',validators=[InputRequired()],places=2)
     description = StringField('description',validators=[InputRequired()])
     t_type = SelectField('t_type',choices=getT_Type())
@@ -37,16 +38,15 @@ class TransactionAdd(FlaskForm):
 
 class RentTypeAdd(FlaskForm):
     period = StringField('period', validators=[InputRequired()])
-    type =  SelectField(u'locker_type', choices= getLockerTypes())
+    type =  StringField('type', validators=[InputRequired()])
     price = DecimalField('price',validators=[InputRequired()],places=2)
     submit = SubmitField('New Price Model', render_kw={'class': 'btn waves-effect waves-light white-text'})
 
 class RentAdd(FlaskForm):
     student_id = StringField('student_id', validators=[InputRequired()])
-    rent_type =  StringField('rent_type', validators=[InputRequired()])
-    rent_date_from = DateTimeField('rent_date_from', format='%Y-%m-%d %H:%M:%S')
-    rent_date_to = DateTimeField('rent_date_to', format='%Y-%m-%d %H:%M:%S')
-    amount_owed = DecimalField('amount_owed', places=2, rounding=None, use_locale=False, number_format=None)
+    rent_type =  SelectField('rent_type', choices=[])
+    rent_date_from = DateTimeLocalField('rent_date_from', format='%Y-%m-%d %H:%M:%S')
+    rent_date_to = DateTimeLocalField('rent_date_to', format='%Y-%m-%d %H:%M:%S')
     submit = SubmitField('Rent', render_kw={'class': 'btn waves-effect waves-light white-text'})
 
 class StudentAdd(FlaskForm):
@@ -58,6 +58,7 @@ class StudentAdd(FlaskForm):
     email =  StringField('email', validators=[InputRequired()])
     submit = SubmitField('Add', render_kw={'class': 'btn waves-effect waves-light white-text'})  
 
-
+class ConfirmDelete(FlaskForm):
+    submit = SubmitField('Confirm Delete', render_kw={'class': 'btn waves-effect waves-light white-text'})  
     
     

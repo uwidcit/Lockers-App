@@ -1,4 +1,4 @@
-{% extends "layout_no_nav.html" %}
+{% extends "layout.html" %}
 {% block title %}Flask MVC App{% endblock %}
 {% block page %}Flask MVC App{% endblock %}
 
@@ -7,7 +7,11 @@
 {% block content %}
 <div class="row">
     <div class="row">
-      <form id="newLocker" class="col s12 m8 offset-m2" method="POST" action="/makerent/{{id}}/{{student_id}}">
+      {% if updateMode %}
+      <form id="newLocker" class="col s12 m8 offset-m2" method="POST" action="/student/{{form.student_id.data}}/update">
+      {% else %}
+      <form id="newLocker" class="col s12 m8 offset-m2" method="POST" action="/student">
+      {% endif %}
           {{ form.csrf_token }}
  
           <div class="input-field col s12 m8 offset-m2"> 

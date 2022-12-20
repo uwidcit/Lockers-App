@@ -7,13 +7,16 @@
 {% block content %}
 <div class="row">
    <div class="row">
+    {% if updateMode %}
+    <form id="AddArea" class="col s12 m8 offset-m2" method="POST" action="/locker/{{form.locker_code.data}}/update">
+    {% else %}
      <form id="newLocker" class="col s12 m8 offset-m2" method="POST" action="/locker">
+      {% endif %}
          {{ form.csrf_token }}
 
          <div class="input-field col s12 m8 offset-m2"> 
           <p>Locker Code</p>
-          
-           {{ form.locker_code(size=20, class="validate") }}
+          {{ form.locker_code(size=20, class="validate")}}
          </div>   
 
          <div class="input-field col s12 m8 offset-m2">

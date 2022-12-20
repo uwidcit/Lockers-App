@@ -5,3 +5,5 @@ from .lockers import *
 from .transactionLog import *
 from .rentType import *
 from .rent import * 
+from .forms import *
+from .student import *

@@ -1,11 +1,13 @@
 from models import RentTypes,Rent
 from database import db
 from sqlalchemy.exc import SQLAlchemyError
+
 def new_rentType(period, type, price):
     try:
         rentType = RentTypes(period,type,price)
         db.session.add(rentType)
         db.session.commit()
+        return rentType
     except SQLAlchemyError:
         db.session.rollback()
         return None
@@ -96,16 +98,16 @@ def update_rentType_type(id,type):
         db.session.rollback()
         return []
         
-def delete_rent_type():
+def delete_rent_type(id):
     rent = Rent.query.filter_by(rent_type = id).first()
     
     if rent:
-        return []
+        return None
 
     rent_type = get_rentType_by_id(id)
 
     if not rent_type:
-        return []
+        return None
     try:
         db.session.delete(rent_type)
         db.session.commit()

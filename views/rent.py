@@ -1,14 +1,17 @@
-from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify,url_for
-
+from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify,url_for,flash
+from datetime import datetime
+from models.rent import Status
 from controllers import (
     create_rent,
     get_rent_by_id,
     get_all_rentals,
-    get_all_rented,
     release_rental,
     get_lockers_available,
+    get_student_by_id,
+    get_All_rentType,
+    update_rent
     )
-from forms import TransactionAdd, RentAdd 
+from views.forms import  RentAdd 
 
 rent_views = Blueprint('rent_views', __name__, template_folder='../templates')
 
@@ -44,61 +47,53 @@ def get_all_rent(id):
     return jsonify(get_all_rentals()),200
 
 @rent_views.route('/rent/<id>/release', methods=['GET'])
-def render_release_locker(id):
-    #get a better way to calculate late fees 
-   return render_template('release_transaction.html', form=TransactionAdd())
-@rent_views.route('/rent/<id>/release', methods=['PUT'])
 def release_locker(id):
-    #get a better way to calculate late fees 
-    d_return = request.json.get('date_returned')
-
-    rental = release_rental(id,d_return)
+    rental = get_rent_by_id(id)
 
     if not rental:
-        return jsonify({"Message": "Error releasing rental"}),400
+        return redirect(url_for('.rent_page'))
     
-    return jsonify(rental.toJSON()),200
+    rental = update_rent(id)
+    if rental.status == Status.PAID :
+        d_return = datetime.now()
+        rental = release_rental(id,d_return)
+    elif rental.status == Status.RETURNED:
+        flash('Cannot release locker it has already been released')
+        return redirect(url_for('.rent_page'))
+    else:
+        flash('Need to pay off balance first')
+        return redirect(url_for('transactionLog_views.transactionLog_page'))
+    flash('Success')
+    return redirect(url_for('.rent_page'))
 
 @rent_views.route('/releasepage',methods=['GET'])
 def release_page():
-    rentals = get_all_rented()
-    rentals = [r.toJSON for r in rentals]
+    rentals = get_all_rentals()
     return render_template('release.html', results = rentals)
 
 @rent_views.route('/makerent/<id>', methods=['GET'])
 def render(id):
     form = RentAdd()
+    rentType_list = get_All_rentType()
+    rentType_list = [(r["id"], r["type"]+" $"+str(r["price"]) +" Yr: "+r["period"]) for r in rentType_list]
+    form.rent_type.choices =  rentType_list
     return render_template('addrent.html', form=form, id = id)
 
 @rent_views.route('/makerent/<id>', methods=['POST'])
 def rent_locker(id):
-    form = RentAdd()
-    #get a better way to calculate late fees 
-    data = request.form
-    rental = create_rent(student_id=data['student_id'], locker_id=id,rentType=data['rent_type'], rent_date_from=data['rent_date_from'], rent_date_to=data['rent_date_to'],date_returned =  "2018-12-19 09:26:03.478039")
-
-    if not rental:
-        return redirect(url_for('rent_views.render', id = id))
+    form = RentAdd() 
     
-    return jsonify(rental.toJSON()),200
-    return redirect(url_for('.student_add',id =id, student_id=student_id))
+    if form.validate_on_submit:
+       data = request.form 
+       student = get_student_by_id(data['student_id'])
+       if student:
+            rental = create_rent(student_id=data['student_id'], locker_id=id,rentType=data['rent_type'], rent_date_from=data['rent_date_from'], rent_date_to=data['rent_date_to'])
+            if rental:
+                flash("Success")
+            return redirect(url_for('.rent_page'))
+       else:
+        flash('Student doesn''t exist add them')
+        return redirect(url_for('student_views.student_add')) 
 
 
 
-
-@rent_views.route('/makerent/<id>/<student_id>', methods=['GET'])
-def student_add(id,student_id):
-    form = StudentAdd()
-    return render_template('student.html', form=form, id = id, student_id=student_id)
-
-@rent_views.route('/makerent/<id>/<student_id>', methods=['POST'])
-def add_student(id,student_id):
-    form = StudentAdd()
-    #get a better way to calculate late fees 
-    data = request.form
-    student = add_new_student(s_id = data['student_id'], f_name=data['f_name'], l_name=data['l_name'], faculty=data['faculty'],p_no=data['p_no'],email=data['email'])
-    if not student:
-        return redirect(url_for('rent_views.render', id = id))
-    
-
-    return redirect(url_for('rent_views.render', id = id))

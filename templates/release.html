@@ -10,20 +10,32 @@
         <table style="overflow-y: scroll; height: inherit;background-color: chocolate;">
           <thead style="background-color: deepskyblue;">
             <tr>
-              <th>Locker Code</th><th>Area</th><th>Type</th><th>Status</th><th>Key</th>
+              <th>ID</th>
+              <th>Locker Code</th>
+              <th>Rented By</th>
+              <th>Type</th>
+              <th> Rented From </th>
+              <th> Rented To </th>
+              <th> Date Returned </th>
+              <th>Status</th>
+              <th>Amount Owed</th>
+              <th> </th>
             </tr>
           </thead>
           <tbody >
             {% if results %}
-            {{results}}
             {% for result in results %}
               <tr>
-                  <td>{{result.locker_code}}</td>
-                  <td>{{result.area}}</td>
-                  <td>{{result.locker_type}}</td>
-                  <td>{{result.status}}</td>
-                  <td>{{result.key}}</td>
-                  <td><a href="/rent/{{result.locker_code}}/release">Release</a></td>
+                  <td>{{results.id}}</td>
+                  <td>{{result.locker_id}}</td>
+                  <td>{{result.student_id}}</td>
+                  <td>{{result.rent_type}}</td>
+                  <td>{{result.rent_date_from}}</td>
+                  <td>{{result.rent_date_to}}</td>
+                  <td>{{result.date_returned}}</td>
+                  <td>{{result.status.value}}</td>
+                  <td>$ {{result.amount_owed}}</td>
+                  <td><a href="/rent/{{result.id}}/release">Release</a></td>
               </tr>
             {% endfor %}
             {% else %}

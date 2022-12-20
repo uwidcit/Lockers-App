@@ -1,4 +1,4 @@
-{% extends "layout_no_nav.html" %}
+{% extends "layout.html" %}
 {% block title %}Flask MVC App{% endblock %}
 {% block page %}Flask MVC App{% endblock %}
 
@@ -18,13 +18,17 @@
           
           <div class="input-field col s12 m8 offset-m2"> 
             <p>Rent Type</p>
-            
-             {{ form.rent_type(size=20, class="validate") }}
+            <select name="rent_type" style="display:inline;">
+              <option value=”” disabled selected>Select Transaction Type</option>
+              {% for subfield in form.rent_type %}
+               {{subfield}}
+              {% endfor %}
+            </select>
            </div> 
 
            <div class="input-field col s12 m8 offset-m2" style="display:inline;"> 
             <p style="display:inline;">Rent From</p>
-            {{form.rent_date_from(class='datepicker')}}
+            {{form.rent_date_from}}
              
            </div> 
 
@@ -34,11 +38,6 @@
              
            </div> 
 
-           
-           
- 
-          
- 
           <div class="input-field col s12 m8 offset-m2" style="display:inline;">
             {{form.submit}}
           </div> 

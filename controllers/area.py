@@ -50,7 +50,6 @@ def set_latitude(id, new_latitude):
     except SQLAlchemyError:
         db.session.rollback()
         return None
-    return
 
 def set_longitude(id,new_longitude):
     area = get_area_by_id(id)
@@ -64,7 +63,6 @@ def set_longitude(id,new_longitude):
     except SQLAlchemyError:
         db.session.rollback()
         return None
-    return
 
 def delete_area(id):
     area = get_area_by_id(id)
@@ -77,7 +75,6 @@ def delete_area(id):
     except SQLAlchemyError:
         db.session.rollback()
         return None
-    return
 
 def get_area_all():
     areas = Area.query.all()

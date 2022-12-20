@@ -9,7 +9,8 @@ def add_new_transaction(rent_id, currency, transaction_date, amount, description
         db.session.add(new_transaction)
         db.session.commit()
         return new_transaction
-    except SQLAlchemyError:
+    except SQLAlchemyError as e:
+        print(e)
         db.session.rollback()
         return []
 

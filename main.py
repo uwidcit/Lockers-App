@@ -20,6 +20,7 @@ from views import (
     transactionLog_views,
     rentType_views,
     rent_views,
+    student_views,
     locker_views,
     area_views,
     index_views
@@ -31,6 +32,7 @@ views = [
     transactionLog_views,
     rentType_views,
     rent_views,
+    student_views,
     locker_views,
     area_views,
     index_views

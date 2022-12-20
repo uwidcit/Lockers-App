@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block title %}Delete Locker {% endblock %}
+{% block page %}Delete Locker{% endblock %}
+
+{{ super() }}
+
+{% block content %}
+<div class="row">
+    <div class="row">
+      <form id="deleteLocker" class="col s12 m8 offset-m2" method="POST" action="/locker/{{locker.locker_code}}/confirmed">
+          {{ form.csrf_token }}
+          <div class="input-field col s12 m8 offset-m2" style="display:inline;">
+            <a href="/locker/manage" style="padding: 2rem;">Cancel</a> 
+            {{form.submit}}
+          </div> 
+{% endblock %}

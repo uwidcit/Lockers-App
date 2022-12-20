@@ -10,7 +10,7 @@ from controllers import (
     set_longitude,
 )
 
-from forms import AreaAdd
+from views.forms import AreaAdd,ConfirmDelete
 
 area_views = Blueprint('area_views', __name__, template_folder='../templates')
 
@@ -37,6 +37,74 @@ def create_new_area():
 def render_area_page():
     return render_template('area.html', areaData = get_area_all())
 
+@area_views.route('/area/<id>/edit',methods=['GET'])
+def render_edit_area_page(id):
+    area = get_area_by_id(id)
+    if not area:
+        return redirect(url_for('.render_area_page'))
+    
+    form = AreaAdd()
+    form.l_code.data = area.locker_id
+    form.locker_code.data = area.id
+    form.description.data = area.description
+    form.latitude.data =  area.latitude
+    form.longitude.data = area.longitude
+    form.submit.label.text ="Update Area"
+
+    return render_template('locker_area.html', form = form, updateMode = True)
+
+@area_views.route('/area/<id>/update', methods=['POST'])
+def update_area(id):
+
+    area = get_area_by_id(id)
+    if not area:
+        flash('Area not found')
+        return redirect(url_for('.render_area_page'))
+
+    form = AreaAdd()
+    if form.validate_on_submit:
+        print(request.form)
+        description = request.form.get('description')
+        longitude = request.form.get('longitude')
+        latitude = request.form.get('latitude')
+
+
+    if area.description != description:
+        if not set_description(id,description):
+            flash('Error in setting description')
+    if area.longitude != longitude:
+        if not set_longitude (id, longitude):
+            flash ("Error in processing longitude")
+    if area.latitude != latitude:
+        if not set_latitude (id,latitude):
+            flash("Error in processing latitude")
+    
+    return  redirect(url_for('.render_area_page'))
+
+
+@area_views.route('/area/<id>/delete', methods=['GET'])
+def render_confirm_delete(id):
+    area = get_area_by_id(id)
+
+    if not area:
+        flash('Area does not exist')
+        return redirect(url_for('.render_area_page'))
+    
+    return render_template('delete_area.html',area = area, form = ConfirmDelete() )
+
+@area_views.route('/area/<id>/confirmed', methods=['POST'])
+def remove_area(id):
+    form = ConfirmDelete()
+    if form.validate_on_submit:
+        area = delete_area(id)
+
+        if not area:
+            flash("Area doesn't exist")
+            return redirect(url_for('.render_area_page'))
+        flash('Area deleted !')
+    return redirect(url_for('.render_area_page'))
+
+
 @area_views.route('/areas', methods=['GET'])
 def get_all_areas():
     return jsonify(get_area_all()),200
@@ -48,27 +116,4 @@ def get_area_id(id):
         return jsonify({"Message": "Area not found"}),404
     return jsonify(area),200
 
-@area_views.route('/area/<id>', methods=['DELETE'])
-def remove_area(id):
-    area = delete_area(id)
 
-    if not area:
-        return jsonify({"Message": "Area not deleted"}),400
-
-    return jsonify({"Message": "Area deleted"}),200
-
-@area_views.route('/area/<id>', methods=['PUT'])
-def update_area(id):
-
-    description = request.json.get('description')
-    longitude = request.json.get('longitiude')
-    latitude = request.json.get('latitude')
-
-    if not set_description(id,description):
-        return jsonify({"Message": "Error in processing description"}),400
-    if not set_longitude (id, longitude):
-        return jsonify({"Message": "Error in processing longitude"}),400
-    if not set_latitude (id,latitude):
-        return jsonify({"Message": "Error in processing latitude"}),400
-    area = get_area_by_id(id)
-    return jsonify(area.toJSON()),200

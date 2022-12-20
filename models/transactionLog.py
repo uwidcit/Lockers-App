@@ -1,4 +1,4 @@
-import string
+from datetime import datetime
 from database import db
 from enum import Enum
 
@@ -18,11 +18,12 @@ class TransactionLog(db.Model):
     def __init__(self, rent_id, currency, transaction_date, amount, description, type):
         self.rent_id = rent_id
         self.currency = currency
-        self.transaction_date = transaction_date
+        self.transaction_date = datetime.strptime(transaction_date,'%Y-%m-%dT%H:%M')
+        
         self.amount = amount
         self.description = description
-        if string.upper(type) in TransactionType.__members__:
-            self.type = TransactionType[string.upper(type)]
+        if type.upper() in TransactionType.__members__:
+            self.type = TransactionType[type.upper()]
     
     def toJSON(self):
         return {

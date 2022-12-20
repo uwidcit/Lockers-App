@@ -28,6 +28,20 @@ def get_student_by_id_json(s_id):
         return None
     return student.toJSON()
 
+def update_student_id(s_id,new_s_id):
+    student = get_student_by_id(s_id)
+
+    if not student:
+        return None
+    
+    try:
+        student.student_id = new_s_id
+        db.session.add(student)
+        db.session.commit()
+
+    except SQLAlchemyError:
+        db.session.rollback()
+
 def update_student_first_name(s_id, new_f_name):
     student = get_student_by_id(s_id)
 
@@ -99,3 +113,10 @@ def update_student_faculty(s_id, new_faculty):
 
     except SQLAlchemyError:
         db.session.rollback()
+
+def get_all_students():
+    students = Student.query.all()
+
+    if not students:
+        return None
+    return [s.toJSON() for s in students]

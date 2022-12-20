@@ -21,10 +21,10 @@ def get_lockers_available():
     return [l.toJSON() for l in locker_list]
 
 def get_locker_id(id):
-    locker = Locker.query.filter_by(id = id).first()
+    locker = Locker.query.filter_by(locker_code = id).first()
     if not locker:
-        return []
-    return locker.toJSON()
+        return None
+    return locker
 
 def get_all_lockers():
     locker_list = Locker.query.all()
@@ -32,11 +32,90 @@ def get_all_lockers():
         return []
     return [l.toJSON() for l in locker_list]
 
-def get_lockers_unavailable():
-    locker_list = Locker.query.filter_by(or_(status == Status.RENTED , status == Status.RENTED)).all()
-    if not locker_list:
-        return []
-    return [l.toJSON() for l in locker_list]
+def rent_locker(id):
+    locker = get_locker_id(id)
+    if not locker or Locker.status == Status.RENTED:
+        return None
+    locker.status = Status.RENTED
+    try:
+        db.session.add(locker)
+        db.session.commit()
+        return True
+    except SQLAlchemyError:
+        db.session.rollback()
+        return None
+
+def release_locker(id):
+    locker = get_locker_id(id)
+    
+    if not locker :
+        return None
+    
+    locker.status = Status.FREE
+    
+    try:
+        db.session.add(locker)
+        db.session.commit()
+        
+        return locker
+    except SQLAlchemyError as e:
+        print(e)
+        db.session.rollback()
+        return None
+
+def delete_locker(id):
+    locker = get_locker_id(id)
+    if not locker:
+        return None
+    try:
+        db.session.delete(locker)
+        db.session.commit()
+        return locker
+    except SQLAlchemyError:
+        db.session.rollback()
+        return None
+    
+def update_key(id, new_key):
+    locker = get_locker_id(id)
+    if not locker:
+        return None
+    try:
+         if new_key.upper() in Key.__members__:
+            locker.key = Key[new_key.upper()]
+            db.session.add(locker)
+            db.session.commit()
+            return locker
+    except SQLAlchemyError:
+        db.session.rollback()
+        return None
+
+def update_locker_status(id, new_status):
+    locker = get_locker_id(id)
+    if not locker:
+        return None
+    try:
+        if new_status.upper() in Status.__members__:
+            locker.status = Status[new_status.upper()]
+            db.session.add(locker)
+            db.session.commit()
+            return locker
+    except SQLAlchemyError:
+        db.session.rollback()
+        return None
+
+def update_locker_type(id, new_type):
+    locker = get_locker_id(id)
+    if not locker:
+        return None
+    try:
+        if new_type.upper() in LockerTypes.__members__:
+            locker.locker_type = LockerTypes[new_type.upper()]
+            db.session.add(locker)
+            db.session.commit()
+            return locker
+    except SQLAlchemyError:
+        db.session.rollback()
+        return None
 
 
 def getStatuses():
