@@ -1,4 +1,10 @@
 from database import db
+from enum import Enum
+class RentStanding(Enum):
+    GOOD = "GOOD"
+    RENTING = "RENTING"
+    OVERDUE = "OVERDUE"
+    OWED = "OWED"
 
 class Student(db.Model):
     student_id = db.Column(db.Integer, primary_key = True)
@@ -6,8 +12,9 @@ class Student(db.Model):
     last_name = db.Column(db.String, nullable= False)	
     faculty = db.Column(db.String(3), nullable= False)	
     phone_number = db.Column(db.String, nullable= False) 	
-    email = db.Column(db.String, nullable= False, unique = True) 	
-   
+    email = db.Column(db.String, nullable= False, unique = True)
+    rentStanding = db.Column(db.Enum(RentStanding), nullable=False)
+    
 
     def __init__(self, student_id, first_name, last_name,faculty, phone_number, email):
         self.student_id = student_id
@@ -16,6 +23,7 @@ class Student(db.Model):
         self.faculty = faculty
         self.phone_number = phone_number
         self.email = email
+        self.rentStanding = RentStanding.GOOD
         
     def toJSON(self):
         return{
@@ -25,4 +33,5 @@ class Student(db.Model):
             'faculty':self.faculty,
             'phone_number':self.phone_number,
             'email':self.email,
+            'rentStanding':self.rentStanding.value
         }

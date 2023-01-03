@@ -35,14 +35,14 @@ class Locker (db.Model):
     def toJSON(self):
         return {
             'locker_code': self.locker_code,
-            'locker_type':self.locker_type.name,
-            'status': self.status.name,
-            'key':self.key.name,
+            'locker_type':self.locker_type.value,
+            'status': self.status.value,
+            'key':self.key.value,
             'area': self.check_area()
         }
     def check_area(self):
         if not self.area:
-            return ''
+            return []
         return [a.toJSON() for a in self.area]
 
     

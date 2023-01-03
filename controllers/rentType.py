@@ -2,9 +2,9 @@ from models import RentTypes,Rent
 from database import db
 from sqlalchemy.exc import SQLAlchemyError
 
-def new_rentType(period, type, price):
+def new_rentType(period_from, period_to, type, price):
     try:
-        rentType = RentTypes(period,type,price)
+        rentType = RentTypes(period_from,period_to,type,price)
         db.session.add(rentType)
         db.session.commit()
         return rentType
@@ -20,10 +20,16 @@ def get_rentType_by_id(id):
 
     return rentType
 
+def get_rentType_daily_period(period_from, period_to):
+    rentType = RentTypes.query.filter_by(type = "Daily", period_from = period_from , period_to = period_to).first()
+     
+    if not rentType:
+        return None
 
+    return rentType
 
-def get_rentType_period(period):
-    rentType = RentTypes.query.filter_by(period = period)
+def get_rentType_period(period_to):
+    rentType = RentTypes.query.filter_by(period_to = period_to)
 
     if not rentType:
         return None

@@ -18,8 +18,7 @@ class TransactionLog(db.Model):
     def __init__(self, rent_id, currency, transaction_date, amount, description, type):
         self.rent_id = rent_id
         self.currency = currency
-        self.transaction_date = datetime.strptime(transaction_date,'%Y-%m-%dT%H:%M')
-        
+        self.transaction_date = transaction_date
         self.amount = amount
         self.description = description
         if type.upper() in TransactionType.__members__:
@@ -27,9 +26,11 @@ class TransactionLog(db.Model):
     
     def toJSON(self):
         return {
+            "id": self.id,
             "rent_id":self.rent_id,
             "currency":self.currency,
             "transaction_date":self.transaction_date,
             "amount":self.amount,
-            "description": self.description 
+            "description": self.description,
+            "type":self.type.value
         }
