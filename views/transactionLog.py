@@ -1,5 +1,6 @@
 from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify,flash,url_for
 from views.forms import TransactionAdd
+from datetime import datetime
 from controllers import (
   add_new_transaction,
   get_all_transactions,
@@ -23,7 +24,8 @@ def create_new_transaction():
         
         rent_id = request.form.get('rent_id')
         currency = request.form.get('currency')
-        transaction_date = request.form.get('transaction_date')
+        transaction_date = datetime.strptime(request.form.get('transaction_date'),'%Y-%m-%dT%H:%M')
+        
         amount = request.form.get('amount')
         description = request.form.get('description')
         t_type =request.form.get('t_type')

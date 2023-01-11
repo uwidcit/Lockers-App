@@ -5,7 +5,7 @@ class Types (Enum):
     HOURLY = "Hourly"
     DAILY = "Daily"
     WEEKLY = "Weekly"
-    MONTH = "MONTHLY"
+    MONTHLY = "Monthly"
     SEMESTER = "Semester"
 
 class RentTypes(db.Model):

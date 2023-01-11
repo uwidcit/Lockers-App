@@ -12,7 +12,7 @@ def add_new_locker(locker_code,locker_type,status,key):
         return locker
     except SQLAlchemyError:
         db.session.rollback()
-        return []
+        return None
 
 def get_lockers_available():
     locker_list = Locker.query.filter_by(status = Status.FREE).all()
@@ -34,7 +34,7 @@ def get_all_lockers():
 
 def rent_locker(id):
     locker = get_locker_id(id)
-    if not locker or Locker.status == Status.RENTED:
+    if not locker or locker.status == Status.RENTED:
         return None
     locker.status = Status.RENTED
     try:

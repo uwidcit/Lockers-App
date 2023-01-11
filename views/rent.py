@@ -75,7 +75,8 @@ def release_page():
 def render(id):
     form = RentAdd()
     rentType_list = get_All_rentType()
-    rentType_list = [(r["id"], r["type"]+" $"+str(r["price"]) +" Yr: "+r["period"]) for r in rentType_list]
+    if rentType_list:
+        rentType_list = [(r["id"], r["type"]+" $"+str(r["price"]) +" Yr: "+ str(r["period_from"].year) +'/'+str(r["period_from"].month) + "to" + str(r["period_to"].year) +'/'+ str(r["period_to"].month)) for r in rentType_list]
     form.rent_type.choices =  rentType_list
     return render_template('addrent.html', form=form, id = id)
 
@@ -87,7 +88,9 @@ def rent_locker(id):
        data = request.form 
        student = get_student_by_id(data['student_id'])
        if student:
-            rental = create_rent(student_id=data['student_id'], locker_id=id,rentType=data['rent_type'], rent_date_from=data['rent_date_from'], rent_date_to=data['rent_date_to'])
+            rent_date_from = datetime.strptime(data['rent_date_from'],'%Y-%m-%dT%H:%M')
+            rent_date_to =datetime.strptime(data['rent_date_to'],'%Y-%m-%dT%H:%M')
+            rental = create_rent(student_id=data['student_id'], locker_id=id,rentType=data['rent_type'],rent_date_from = rent_date_from,rent_date_to = rent_date_to)
             if rental:
                 flash("Success")
             return redirect(url_for('.rent_page'))

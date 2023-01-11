@@ -33,7 +33,7 @@ class Rent(db.Model):
     
     def check_status(self):
         if not self.Transactions:
-            if datetime.now() > self.rent_date_to:
+            if datetime.now() > self.rent_date_to and not self.date_returned:
                 return Status.OVERDUE
             return Status.OWED
         else:

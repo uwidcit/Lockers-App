@@ -15,6 +15,7 @@
             <th>Faculty</th>
             <th>Phone no.</th>
             <th>Email </th>
+            <th>Standing</th>
         </tr>
 
         {% if studentData %}
@@ -26,6 +27,7 @@
             <td>{{s.faculty}} </td>
             <td>{{s.phone_number}} </td>
             <td>{{s.email}}</td>
+            <td>{{s.rentStanding}}</td>
             <td><a href="/student/{{s.student_id}}/edit">Edit</a></td>
         </tr>
             
