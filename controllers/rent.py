@@ -16,6 +16,7 @@ from controllers.transactionLog import cal_transaction_amount
 
 from datetime import datetime,timedelta
 from database import db 
+from sqlalchemy import and_
 from sqlalchemy.exc import SQLAlchemyError
 
 def period_elapsed(rentType_id, rent_date_from, rent_date_to):
@@ -55,10 +56,7 @@ def recal_amount_owed(rentType_id,date_returned,rent_date_from,rent_date_to):
     if date_returned:
         if date_returned > rent_date_to:
             return init_amount_owed(rentType_id,rent_date_from,rent_date_to) + late_fees(rentType_id,date_returned,rent_date_from,rent_date_to)
-
-        if date_returned < rent_date_to:
-            return init_amount_owed(rentType_id,rent_date_from,date_returned)
-        return init_amount_owed(rentType_id,rent_date_from,date_returned)
+        return init_amount_owed(rentType_id,rent_date_from,rent_date_to)
     elif not date_returned:
         timestamp = datetime.now()
         if timestamp > rent_date_to:
@@ -119,7 +117,7 @@ def get_rent_by_id(id):
 
     if not rent:
         return None
-   
+    
     return rent
 
 def update_rent(id):
@@ -146,32 +144,72 @@ def get_overdue_rent_by_student(s_id):
     rent = Rent.query.filter_by(student_id= s_id,status = Status.OVERDUE).first()
     if not rent :
         return None
+    rent = update_rent(rent.id)
     return rent
 
 def get_owed_rent_by_student(s_id):
     rent = Rent.query.filter_by(student_id= s_id,status = Status.OWED).first()
     if not rent :
         return None
+    rent = update_rent(rent.id)
     return rent
 
-def release_rental(id,d_returned):
-    rent = get_rent_by_id(id)
+def get_student_current_rental(s_id):
+    rent = Rent.query.filter(and_(Rent.student_id == s_id, Rent.status != Status.RETURNED, Rent.status != Status.VERIFIED)).first()
 
     if not rent:
         return None
-    rent.date_returned = d_returned
-    rent.status = Status.RETURNED
+    rent = update_rent(rent.id)
+    return rent
+
+def get_student_current_rental_toJSON(s_id):
+    rent = get_student_current_rental(s_id)
+
+    if not rent:
+        return None
+
+    return rent.toJSON()
+
+
+def release_rental(id,d_returned):
+    rent = update_rent(id)
+
+    if not rent:
+        return None
+
+    if rent.status == Status.RETURNED or rent.status == Status.VERIFIED:
+        return None
     
     try:
+        rent.date_returned = d_returned
+        rent.status = Status.RETURNED
         db.session.add(rent)
         db.session.commit()
-        release_locker(rent.locker_id)
         return rent
 
     except SQLAlchemyError:
         db.session.rollback()
         return None
 
+def verify_rental(id):
+    rent = update_rent(id)
+
+    if not rent:
+        return None
+    
+    if rent.status != Status.RETURNED or rent.status == Status.VERIFIED:
+        return None
+    
+    try:
+        rent.status = Status.VERIFIED
+        db.session.add(rent)
+        db.session.commit()
+        release_locker(rent.locker_id)
+        return rent
+    except SQLAlchemyError:
+        db.session.rollback()
+        return None
+        
 def get_all_rentals():
     rents = Rent.query.all()
 

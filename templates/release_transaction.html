@@ -43,6 +43,12 @@
         {% endfor %}
       </select>
     </div>
+
+    <div class="input-field col s12 m8 offset-m2">
+      <p> Receipt Number </p>
+      {{form.receipt_number(size=18, class="validate")}}
+      </div>
+
     <div class="input-field col s12 m8 offset-m2">
      {{form.submit}}
     </div>

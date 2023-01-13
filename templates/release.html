@@ -35,7 +35,13 @@
                   <td>{{result.date_returned}}</td>
                   <td>{{result.status.value}}</td>
                   <td>$ {{result.amount_owed}}</td>
+                  {% if result.status.value != "Returned" and result.status.value != "Verified"%}
                   <td><a href="/rent/{{result.id}}/release">Release</a></td>
+                  {% elif result.status.value == "Returned"%}
+                  <td><a href="/rent/{{result.id}}/release/verify">Verify Release</a></td>
+                  {% elif result.status.value != "Verified"%}
+
+                  {% endif %}
               </tr>
             {% endfor %}
             {% else %}

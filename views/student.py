@@ -4,6 +4,7 @@ from controllers import (
     add_new_student,
     get_all_students,
     get_student_by_id,
+    get_student_current_rental_toJSON,
     update_student_id,
     update_student_first_name,
     update_student_last_name,
@@ -12,7 +13,7 @@ from controllers import (
     update_student_faculty,
 
     )
-from views.forms import StudentAdd 
+from views.forms import StudentAdd, SearchForm
 
 student_views = Blueprint('student_views', __name__, template_folder='../templates')
 
@@ -36,7 +37,9 @@ def add_student():
 @student_views.route('/student/manage',methods=['GET'])
 def render_manage_student():
     studentData = get_all_students()
-    return render_template("manage_student.html",studentData=studentData)
+    search = SearchForm()
+    search.submit.label.text = "Search Student"
+    return render_template("manage_student.html",studentData=studentData,search=search)
 
 @student_views.route("/student/<id>/edit", methods=['GET'])
 def render_edit_student(id):
@@ -56,6 +59,20 @@ def render_edit_student(id):
     form.email.data = student.email
     form.submit.label.text = "Update Student"
     return render_template('student.html', form=form, updateMode=True)
+
+@student_views.route("/students/search",methods=['GET'])
+def render_search_student():
+    
+    return render_template('student_search.html')
+
+@student_views.route("/student/search",methods=['POST'])
+def search_student():
+    form = SearchForm()
+    if form.validate_on_submit:
+        id = request.form.get('search_query')
+        student = get_student_by_id(id)
+        rent = get_student_current_rental_toJSON(id)
+    return render_template('student_search.html',form=form,student = student,rent= rent)
 
 @student_views.route("/student/<id>/update", methods=['POST'])
 def update_student_info(id):

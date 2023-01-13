@@ -6,6 +6,21 @@
 
 {% block content %}
 <div class="row">
+  <form id="new_rentType" class="col s12 m8 offset-m2" method="POST" action="/student/search">
+
+    {{ search.csrf_token }}
+    <div class="input-field col s12 m8 offset-m2">
+    <p> Enter Search Critera </p>
+    {{search.search_query(size=20,class="validate")}}
+    </div>
+
+    <div class="input-field col s12 m8 offset-m2">
+        {{search.submit}}
+    </div>
+
+</form>
+</div>
+<div class="row">
       <div class="row">
         <table class="col s12 m8 offset-m2">
         <tr>

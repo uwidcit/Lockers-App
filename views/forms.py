@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, SubmitField,DecimalField,HiddenField, DateField,DateTimeLocalField
+from wtforms import StringField, SelectField, SubmitField,DecimalField,HiddenField, DateField,DateTimeLocalField,IntegerField
 from wtforms.validators import InputRequired, EqualTo, Email
 
 from controllers import (
@@ -35,6 +35,7 @@ class TransactionAdd(FlaskForm):
     amount = DecimalField('amount',validators=[InputRequired()],places=2)
     description = StringField('description',validators=[InputRequired()])
     t_type = SelectField('t_type',choices=getT_Type())
+    receipt_number = IntegerField('receipt_number',validators=[InputRequired()])
     submit = SubmitField('Submit Payment', render_kw={'class': 'btn waves-effect waves-light white-text'})
 
 class RentTypeAdd(FlaskForm):
@@ -61,6 +62,10 @@ class StudentAdd(FlaskForm):
     submit = SubmitField('Add', render_kw={'class': 'btn waves-effect waves-light white-text'})  
 
 class ConfirmDelete(FlaskForm):
-    submit = SubmitField('Confirm Delete', render_kw={'class': 'btn waves-effect waves-light white-text'})  
+    submit = SubmitField('Confirm Delete', render_kw={'class': 'btn waves-effect waves-light white-text'}) 
+
+class SearchForm(FlaskForm):
+    search_query = StringField('search_string', validators=[InputRequired()])
+    submit = SubmitField('Confirm Delete', render_kw={'class': 'btn waves-effect waves-light white-text'}) 
     
     

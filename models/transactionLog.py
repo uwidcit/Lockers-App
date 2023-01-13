@@ -13,9 +13,10 @@ class TransactionLog(db.Model):
     transaction_date = db.Column(db.Date,nullable = False)
     amount = db.Column(db.Float , nullable = False)
     description = db.Column(db.String, nullable = False)
+    receipt_number = db.Column(db.Integer,nullable=False,unique=True)
     type = db.Column(db.Enum(TransactionType), nullable = False)
 
-    def __init__(self, rent_id, currency, transaction_date, amount, description, type):
+    def __init__(self, rent_id, currency, transaction_date, amount, description, type,receipt_number):
         self.rent_id = rent_id
         self.currency = currency
         self.transaction_date = transaction_date
@@ -23,6 +24,7 @@ class TransactionLog(db.Model):
         self.description = description
         if type.upper() in TransactionType.__members__:
             self.type = TransactionType[type.upper()]
+        self.receipt_number = receipt_number
     
     def toJSON(self):
         return {
@@ -32,5 +34,6 @@ class TransactionLog(db.Model):
             "transaction_date":self.transaction_date,
             "amount":self.amount,
             "description": self.description,
-            "type":self.type.value
+            "type":self.type.value,
+            "receipt_number":self.receipt_number
         }

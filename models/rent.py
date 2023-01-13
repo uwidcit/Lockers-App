@@ -9,6 +9,7 @@ class Status(Enum):
     PAID = "Paid"
     OWED = "Owed"
     OVERDUE = "Overdue"
+    VERIFIED = "Verified"
 
 class Rent(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -42,6 +43,8 @@ class Rent(db.Model):
                 return Status.PARTIAL
             elif self.amount_owed == 0:
                 if self.date_returned:
+                    if self.status == Status.VERIFIED:
+                        return Status.VERIFIED
                     return Status.RETURNED
                 return Status.PAID
             return Status.OWED

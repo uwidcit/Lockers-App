@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+{% block title %}New Price Model{% endblock %}
+{% block page %}Price{% endblock %}
+
+{{ super() }}
+
+{% block content %}
+    <h6><a href="/student/manage">Back</a></h6>
+    {% if student %}
+    <div class="column">
+        <h5>Student Details</h5> 
+        <a href="/student/{{student.student_id}}/edit">Edit</a>
+        <a href="/transactionLog/sID={{student.student_id}}">Make Payment</a>
+    </div>
+    
+    <table>
+        <tr>
+            <td>ID</td>
+            <td>{{student.student_id}} </td>
+        </tr>
+        <tr>
+            <td>First Name</td>
+            <td>{{student.first_name}} </td> 
+            <td>Last Name</td>
+            <td>{{student.last_name}} </td>
+        </tr>
+
+        <tr>
+            <td>Faculty</td>
+            <td>{{student.faculty}} </td>
+            <td>Phone Number</td>
+            <td>{{student.phone_number}} </td>
+        </tr>
+
+        <tr>
+            <td>Email</td>
+            <td>{{student.email}} </td>
+            <td>Student's Standing</td>
+            <td>{{student.rentStanding.value}}  </td>
+        </tr>
+
+    </table>
+
+    {% if rent %}
+    <h6> Rental Details</h6>
+    <table>
+        <tr>
+            <td>ID:</td>
+            <td>{{rent.id}} </td>
+            <td>Amount Owed: </td>
+            <td>${{rent.amount_owed}}</td>
+        </tr>
+
+        <tr>
+            <td>Locker Code:</td>
+            <td>{{rent.locker_id}}</td>
+            <td>Rent Type :</td>
+            <td>{{rent.rent_type}}</td>
+        </tr>
+
+        <tr>
+            <td>Rented From</td>
+            <td>{{rent.rent_date_from}}</td>
+            <td> Rented To</td>
+            <td>{{rent.rent_date_to}}</td>
+        </tr>
+
+        <tr>
+            <td>Date Returned</td>
+            <td>{{rent.date_returned}} </td>
+            <td>Rental Status</td>
+            <td>{{rent.status.value}}</td>
+        </tr>
+    </table>
+    
+    {% else %}
+    <p>Student isn't currently renting <a href="/rent/sID={{student.student_id}}">  click here to add rental</a></p>
+    {% endif %}
+    {% else %}
+    <p> Student doesn't exist <a href="/student">add them here </a></p>
+    {% endif %}
+
+{% endblock %}

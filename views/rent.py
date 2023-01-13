@@ -9,7 +9,8 @@ from controllers import (
     get_lockers_available,
     get_student_by_id,
     get_All_rentType,
-    update_rent
+    update_rent,
+    verify_rental
     )
 from views.forms import  RentAdd 
 
@@ -36,24 +37,23 @@ def create_new_rent():
 
 @rent_views.route('/rent/<id>', methods=['GET'])
 def get_rent_id(id):
-    rental = get_rent_by_id(id)
+    rental = update_rent(id)
 
     if not rental:
         return jsonify({"Message": "Rental does not exist"}),404
     return jsonify(rental.toJSON()),200
 
 @rent_views.route('/rent/all', methods=['GET'])
-def get_all_rent(id):
+def get_all_rent():
     return jsonify(get_all_rentals()),200
 
 @rent_views.route('/rent/<id>/release', methods=['GET'])
 def release_locker(id):
-    rental = get_rent_by_id(id)
+    rental = update_rent(id)
 
     if not rental:
         return redirect(url_for('.rent_page'))
     
-    rental = update_rent(id)
     if rental.status == Status.PAID :
         d_return = datetime.now()
         rental = release_rental(id,d_return)
@@ -65,6 +65,28 @@ def release_locker(id):
         return redirect(url_for('transactionLog_views.transactionLog_page'))
     flash('Success')
     return redirect(url_for('.rent_page'))
+
+@rent_views.route('/rent/<id>/release/verify', methods=['GET'])
+def return_locker_to_pool(id):
+    rental = update_rent(id)
+
+    if not rental:
+        return redirect(url_for('.rent_page'))
+
+    if rental.status == Status.VERIFIED:
+        flash('Cannot verify locker it has already been verified')
+        return redirect(url_for('.rent_page'))
+    elif rental.status != Status.RETURNED:
+        flash('Cannot verify locker it has already fees attached')
+        return redirect(url_for('.rent_page'))
+    else:
+        result = verify_rental(id)
+        if result:
+            flash('Success')
+            return redirect(url_for('.rent_page'))
+        else:
+            flash("An error has occured checked the logs")
+            return redirect(url_for('.rent_page'))
 
 @rent_views.route('/releasepage',methods=['GET'])
 def release_page():
