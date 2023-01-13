@@ -17,7 +17,7 @@ def create_log(id, message,timestamp):
         return None
 
 def get_all_logs():
-    logs = Log.query.all()
+    logs = Log.query.order_by(Log.timestamp.desc()).all()
 
     if not logs:
         return None
