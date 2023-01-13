@@ -13,7 +13,8 @@ from controllers.lockers import(
 )
 
 from controllers.transactionLog import cal_transaction_amount
-
+from controllers.log import create_log
+from flask import flash
 from datetime import datetime,timedelta
 from database import db 
 from sqlalchemy import and_
@@ -95,6 +96,7 @@ def late_fees(rentType_id, date_returned, rent_date_from, rent_date_to):
 
 def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to):
     if get_overdue_rent_by_student(student_id) or get_owed_rent_by_student(student_id):
+        flash("Unable to create rent. Rent Owed")
         return []
 
     if get_locker_id(locker_id): 
@@ -106,7 +108,8 @@ def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to):
             rent_locker(locker_id)
             return rent
         except SQLAlchemyError as e:
-            print(e)
+            create_log(student_id, type(e), datetime.now())
+            flash("Unable to create rent. Check Error Log for more Details")
             db.session.rollback()   
             return None
         
@@ -116,6 +119,7 @@ def get_rent_by_id(id):
     rent = Rent.query.filter_by(id=id).first()
 
     if not rent:
+        flash("Rent does not exist")
         return None
     
     return rent
@@ -135,7 +139,9 @@ def update_rent(id):
         db.session.commit()
         return rent
 
-    except SQLAlchemyError:
+    except SQLAlchemyError as e:
+        create_log(id, type(e), datetime.now())
+        flash("Unable to create rent. Check Error Log for more Details")
         db.session.rollback()
         return None
 
@@ -187,7 +193,9 @@ def release_rental(id,d_returned):
         db.session.commit()
         return rent
 
-    except SQLAlchemyError:
+    except SQLAlchemyError as e:
+        create_log(id, type(e), datetime.now())
+        flash("Unable to release Rental. Check Error Log for more Details")
         db.session.rollback()
         return None
 
@@ -206,7 +214,9 @@ def verify_rental(id):
         db.session.commit()
         release_locker(rent.locker_id)
         return rent
-    except SQLAlchemyError:
+    except SQLAlchemyError as e:
+        create_log(id, type(e), datetime.now())
+        flash("Unable to verify Rental. Check Error Log for more Details")
         db.session.rollback()
         return None
         

@@ -3,6 +3,9 @@ from models.rentTypes import Types
 from database import db
 from sqlalchemy import and_
 from sqlalchemy.exc import SQLAlchemyError
+from flask import flash
+from controllers.log import create_log
+from datetime import datetime
 
 def new_rentType(period_from, period_to, type, price):
     try:
@@ -10,7 +13,9 @@ def new_rentType(period_from, period_to, type, price):
         db.session.add(rentType)
         db.session.commit()
         return rentType
-    except SQLAlchemyError:
+    except SQLAlchemyError as e:
+        create_log(price, type(e), datetime.now())
+        flash("Unable to create new Rent Type. Check Error Log for more Details")
         db.session.rollback()
         return None
 
@@ -18,6 +23,7 @@ def get_rentType_by_id(id):
     rentType = RentTypes.query.filter_by(id = id).first()
 
     if not rentType:
+        flash("Rent Type does not exist")
         return None
 
     return rentType
@@ -51,6 +57,7 @@ def update_rentType_price(id,new_price):
     rent = Rent.query.filter_by(rent_type = id).first()
 
     if rent:
+        flash("Unable to update Rent Type Period. A rent exists with this model")
         return []
     try:
         rentType = get_rentType_by_id(id)
@@ -61,7 +68,9 @@ def update_rentType_price(id,new_price):
         db.session.add(rentType)
         db.session.commit()
         return rentType
-    except SQLAlchemyError:
+    except SQLAlchemyError as e:
+        create_log(id, type(e), datetime.now())
+        flash("Unable to update Rent Type. Check Error Log for more Details")
         db.session.rollback()
         return None
 
@@ -83,7 +92,9 @@ def update_rentType_period(id, period_from, period_to):
         db.session.commit()
         return rent_type
 
-    except SQLAlchemyError:
+    except SQLAlchemyError as e:
+        create_log(id, type(e), datetime.now())
+        flash("Unable to update Rent Type Period. Check Error Log for more Details")
         db.session.rollback()
         return None
 
@@ -105,6 +116,8 @@ def update_rentType_type(id,type):
             db.session.commit()
             return rent_type
     except SQLAlchemyError:
+        create_log(id, type(e), datetime.now())
+        flash("Unable to update Rent Type Period. Check Error Log for more Details")
         db.session.rollback()
         return []
         
@@ -124,6 +137,8 @@ def delete_rent_type(id):
         return rent_type
 
     except SQLAlchemyError:
+        create_log(id, type(e), datetime.now())
+        flash("Unable to update Rent Type Period. Check Error Log for more Details")
         db.session.rollback()
         return []    
 

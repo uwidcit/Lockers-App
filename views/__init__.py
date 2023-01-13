@@ -7,3 +7,4 @@ from .rentType import *
 from .rent import * 
 from .forms import *
 from .student import *
+from .log import *
