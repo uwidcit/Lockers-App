@@ -7,7 +7,6 @@ from controllers import (
     get_all_users,
     get_all_users_json,
     store_file,
-    get_all_lockers
 )
 
 user_views = Blueprint('user_views', __name__, template_folder='../templates')
@@ -34,18 +33,10 @@ def client_app():
 def static_user_page():
   return send_from_directory('static', 'static-user.html')
 
-@user_views.route('/addpage',methods=['GET'])
-def add_page():
-  return render_template('add.html')
-
-@user_views.route('/availpage',methods=['GET'])
-def avail_page():
-  return render_template('availability.html', results = get_all_lockers())
 
 @user_views.route('/loginpage',methods=['GET'])
 def login_page():
   return render_template('index.html')
-
 
 
 @user_views.route('/removepage',methods=['GET'])

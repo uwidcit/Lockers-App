@@ -1,7 +1,7 @@
 
 from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify,url_for,flash
 
-from views.forms import LockerAdd, AreaAdd, ConfirmDelete
+from views.forms import LockerAdd, AreaAdd, ConfirmDelete,SearchForm
 
 from controllers import (
     add_new_locker,
@@ -16,15 +16,11 @@ from controllers import (
 
 locker_views = Blueprint('locker_views', __name__, template_folder='../templates')
 
-@locker_views.route("/locker", methods=['GET'])
-def index():
-    form = LockerAdd()
-    return render_template('locker.html', form=form)
 
-@locker_views.route("/locker/manage", methods=['GET'])
+@locker_views.route("/locker", methods=['GET'])
 def manage_locker():
     lockerData = get_all_lockers()
-    return render_template('manage_locker.html', lockerData=lockerData)
+    return render_template('manage_locker.html', lockerData=lockerData, form = LockerAdd(),delete=ConfirmDelete(), search=SearchForm(),searchMode=False)
 
 @locker_views.route('/locker/<id>/delete', methods=['GET'])
 def render_confirm_delete(id):
@@ -43,12 +39,24 @@ def add_locker():
         data = request.form # get data from form submission
         new_locker = add_new_locker(locker_code=data['locker_code'], locker_type=data['locker_type'], status=data['status'], key=data['key'])
         if not new_locker:
-            return redirect(url_for('locker_views.index'))
+            return redirect(url_for('.manage_locker'))
             #jsonify({"message":"Locker already exist or some error has occurred"}),400
        
     return redirect(url_for('.return_locker_area', id = new_locker.locker_code))
     #jsonify({"data":new_locker.toJSON()}),201
 
+@locker_views.route('/locker/search',methods=['POST'])
+def locker_search():
+    form = SearchForm()
+    if form.validate_on_submit:
+        query = request.form.get("search_query")
+        result = get_locker_id(query)
+        if result:
+           return render_template('manage_locker.html', lockerData=[result], form = LockerAdd(),delete=ConfirmDelete(), search=SearchForm(),searchMode=True) 
+        else:
+            flash('Record doesn''t exist')
+            return redirect(url_for('.manage_locker'))
+        
 
 @locker_views.route('/locker/<id>/confirmed', methods=['POST'])
 def remove_area(id):
@@ -61,22 +69,6 @@ def remove_area(id):
         flash('Locker deleted !')
     return redirect(url_for('.manage_locker'))
 
-@locker_views.route("/locker/<id>/edit", methods=['GET'])
-def render_edit_lockers(id):
-    locker = get_locker_id(id)
-
-    if not locker:
-        flash('Locker does not exist')
-        return redirect(url_for('.render_area_page'))
-
-    form = LockerAdd()
-    form.locker_code.data = locker.locker_code
-    form.locker_code.render_kw = {'disabled':''}
-    form.locker_type.default = locker.locker_type
-    form.status.default = locker.status
-    form.key.default = locker.key
-    form.submit.label.text = "Update Locker"
-    return render_template('locker.html', form=form, updateMode=True)
 
 @locker_views.route("/locker/<id>/update", methods=['POST'])
 def update_lockers(id):

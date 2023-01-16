@@ -66,6 +66,6 @@ class ConfirmDelete(FlaskForm):
 
 class SearchForm(FlaskForm):
     search_query = StringField('search_string', validators=[InputRequired()])
-    submit = SubmitField('Confirm Delete', render_kw={'class': 'btn waves-effect waves-light white-text'}) 
+    submit = SubmitField('Search', render_kw={'class': 'btn waves-effect waves-light white-text'}) 
     
     

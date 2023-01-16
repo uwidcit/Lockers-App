@@ -7,6 +7,18 @@
 {% block content %}
 <div class="row">
       <div class="row">
+        
+          {% if searchMode %}
+          <div class="col s12 m8 offset-m2" style="padding-top: 0.5rem;">
+            <a class="waves-effect waves-light btn" href="/locker">Go Back</a>
+          </div>
+          
+          {% else %}
+          <div class="col s12 m8 offset-m8" style="padding-top: 0.5rem;">
+             <a class="waves-effect waves-light btn modal-trigger" href="#new_locker" id="m_button">New Locker</a>
+             <a class="waves-effect waves-light btn modal-trigger" href="#search" id="s_button">Search</a>
+          </div>
+          {% endif %}  
         <table class="col s12 m8 offset-m2">
         <tr>
             <th>Locker Code</th>
@@ -28,8 +40,8 @@
             {% else %}
             <td><a href="/locker/{{l.locker_code}}/area">Add a Area</a></td>
             {% endif %}
-            <td><a href="/locker/{{l.locker_code}}/edit">Edit</a></td>
-            <td><a href="/locker/{{l.locker_code}}/delete">Remove</a></td>
+            <td><a href="#edit" onclick="editMode({{l}})">Edit</a></td>
+            <td><a href="#delete" onclick="removeMode({{l}})">Remove</a></td>
         </tr>
             
         {% endfor %}
@@ -37,5 +49,195 @@
       </table>
 
       </div>
+
+      <div class="row">
+
+        <div class ="modal" id="new_locker" style="max-height: 100%;">
+          <div class ="modal-content" id="content">
+            <h6> Add Locker </h6>
+            <form id="newLocker" class="col s12 m12" method="POST" action="/locker">
+                 {{ form.csrf_token }}
+        
+                 <div class="input-field col s12 m12">
+                 
+                  <div class="col s6">
+                    <p>Locker Code</p>
+                  {{ form.locker_code(size=20, class="validate")}}
+                  </div>  
+                  <div class="col s6">
+                    <p>Locker Type</p>
+                    <select id="locker_type" name="locker_type" style="display:inline;">
+                      <option value=”” disabled selected>Select a Locker Type</option>
+                      {% for subfield in form.locker_type %}
+                        {{subfield}}
+                      {% endfor %}
+                    </select>
+                  </div> 
+                 </div>   
+        
+                 <div class="input-field col s12 m12">
+                  <div class="col s6">
+                  <p>Status</p>
+                  <select id="stats" name="status" style="display:inline;">
+                    <option value=”” disabled selected>Select a Status</option>
+                    {% for subfield in form.status %}
+                     {{subfield}}
+                    {% endfor %}
+                  </select>
+                  </div>  
+                  
+                  <div class="col s6">
+                    <p>Key Status</p>
+                  <select id="l_key" name="key" style="display:inline;">
+                    <option value=”” disabled selected>Select a Key Status</option>
+                    {% for subfield in form.key %}
+                     {{subfield}}
+                    {% endfor %}
+                  </select>
+                  </div>  
+                  
+                 </div>
+                 <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+                   {{form.submit}}
+                   <a class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+                 </div>       
+             </form>
+          </div>     
+        </div>
+
+        <div class="modal" id="delete_locker" style="max-height: 100%;">
+          <div class="modal-content">
+            <form id="deleteLocker" class="col s12 m8 offset-m2" method="POST">
+            {{ delete.csrf_token }}
+            <div class="input-field col s12 m8 offset-m2" style="display:inline;">
+              <h5 id="deleteTitle"></h6>
+              <a class="modal-close waves-effect waves-green btn-flat" style="padding: 2rem;">Cancel</a> 
+              {{delete.submit}}
+          </div>
+          </form>
+        </div>
+      </div>
+
+      
+      <div class ="modal" id="edit_locker" style="max-height: 100%;">
+        <div class ="modal-content" id="content">
+          <form id="editLocker" class="col s8 m8 offset-m2" method="POST" action="#modal3">
+               {{ form.csrf_token }}
+               <div class="input-field col s12 m8 offset-m2"> 
+                <p>Locker Code</p>
+                {{ form.locker_code(size=20, class="validate",id="u_locker_code")}}
+               </div>   
+      
+               <div class="input-field col s12 m8 offset-m2">
+                <p>Locker Type</p>
+                <select id="u_locker_type" name="locker_type" style="display:inline;">
+                  <option value=”” disabled selected>Select a Locker Type</option>
+                  {% for subfield in form.locker_type %}
+                    {{subfield}}
+                  {% endfor %}
+                </select>
+               </div>
+      
+               <div class="input-field col s12 m8 offset-m2">
+                <p>Status</p>
+                <select id="u_stats" name="status" style="display:inline;">
+                  <option value=”” disabled selected>Select a Status</option>
+                  {% for subfield in form.status %}
+                   {{subfield}}
+                  {% endfor %}
+                </select>
+               </div>
+      
+               <div class="input-field col s12 m8 offset-m2">
+                <p>Key Status</p>
+                <select id="u_l_key" name="key" style="display:inline;">
+                  <option value=”” disabled selected>Select a Key Status</option>
+                  {% for subfield in form.key %}
+                   {{subfield}}
+                  {% endfor %}
+                </select>
+                </div>
+               <div class="input-field col s12 m8 offset-m2" style="display:inline;">
+                 {{form.submit(id="u_submit")}}
+                 <a class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+               </div>       
+           </form>
+        </div>     
+    </div>
+
+    <div class="modal" id="search">
+      <div class="modal-content">
+        <h6> Search Lockers</h6>
+        <form method="POST" action="/locker/search">
+          <div class="input-field col s12 m8 offset-m2">
+            {{search.search_query}}
+          </div>
+          <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+            {{search.submit}}
+            <a class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+   
+ <script>
+  document.addEventListener('DOMContentLoaded', function() {
+  var elems = document.querySelectorAll('.modal');
+  var instances = M.Modal.init(elems);
+  });
+
+  function editMode(locker){
+   form = document.getElementById('editLocker')
+   console.log(form)
+   form.action = "/locker/"+locker.locker_code+"/update"
+
+   id =  document.getElementById('u_locker_code')
+   id.value = locker.locker_code
+  
+   type = document.getElementById('u_locker_type')
+   key = document.getElementById('u_l_key')
+  
+   stats = document.getElementById('u_stats')
+   button = document.getElementById('u_submit')
+   button.value = "Update Locker"
+
+   for (i = 0; i < 4; i++){
+      if(type.options[i].value === locker.locker_type){
+        type.selectedIndex = i
+      }
+  
+      if(key.options[i].value === locker.key){
+        key.selectedIndex = i
+      }
+   }
+
+   for (i = 0; i < 3; i++){
+      if(stats.options[i].value === locker.status){
+        stats.selectedIndex = i
+      } 
+
+   }
+
+   elem = document.getElementById('edit_locker');
+   instance = M.Modal.getInstance(elem)
+   instance.open()
+  }
+
+  function removeMode(locker){
+
+    form = document.getElementById('deleteLocker')
+    title = document.getElementById('deleteTitle')
+    title.innerHTML = "Are you sure you want to delete "+locker.locker_code+"! This action cannot be undone"
+    form.action = "/locker/"+locker.locker_code+"/confirmed"
+
+    elem = document.getElementById('delete_locker');
+   instance = M.Modal.getInstance(elem)
+   instance.open()
+
+  }
+
+</script>
 
 {% endblock %}

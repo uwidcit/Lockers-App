@@ -23,8 +23,7 @@ from views import (
     student_views,
     locker_views,
     area_views,
-    index_views,
-    log_views
+    index_views
 )
 
 # New views must be imported and added to this list
@@ -36,8 +35,7 @@ views = [
     student_views,
     locker_views,
     area_views,
-    index_views,
-    log_views
+    index_views
 ]
 
 def add_views(app, views):
