@@ -1,5 +1,5 @@
 from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify,flash,url_for
-from views.forms import TransactionAdd
+from views.forms import TransactionAdd,SearchForm
 from datetime import datetime
 from controllers import (
   add_new_transaction,
@@ -10,10 +10,6 @@ from controllers import (
 )
 
 transactionLog_views = Blueprint('transactionLog_views', __name__, template_folder='../templates')
-
-@transactionLog_views.route('/transactionLog', methods=['GET'])
-def render_transaction_page():
-    return render_template('release_transaction.html', form = TransactionAdd())
 
 @transactionLog_views.route('/transactionLog/sID=<id>', methods=['GET'])
 def render_transaction_page_student(id):
@@ -32,11 +28,11 @@ def render_transaction_page_student(id):
     form.rent_id.data = rent.id
     form.amount.data = rent.amount_owed
 
-    return render_template('release_transaction.html', form = form)
+    return render_template('transactionLog.html', form = form)
 
-@transactionLog_views.route('/transactionLog/view', methods=['GET'])
+@transactionLog_views.route('/transactionLog', methods=['GET'])
 def transactionLog_page():
-    return render_template('transactionLog.html', transaction = get_all_transactions())
+    return render_template('transactionLog.html', transaction = get_all_transactions(),form = TransactionAdd(),search = SearchForm())
 
 @transactionLog_views.route('/transactionLog', methods=['POST'])
 def create_new_transaction():
