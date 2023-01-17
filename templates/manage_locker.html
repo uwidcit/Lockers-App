@@ -232,7 +232,7 @@
     title.innerHTML = "Are you sure you want to delete "+locker.locker_code+"! This action cannot be undone"
     form.action = "/locker/"+locker.locker_code+"/confirmed"
 
-    elem = document.getElementById('delete_locker');
+   elem = document.getElementById('delete_locker');
    instance = M.Modal.getInstance(elem)
    instance.open()
 
