@@ -6,19 +6,10 @@
 
 {% block content %}
 <div class="row">
-  <form id="new_rentType" class="col s12 m8 offset-m2" method="POST" action="/student/search">
-
-    {{ search.csrf_token }}
-    <div class="input-field col s12 m8 offset-m2">
-    <p> Enter Search Critera </p>
-    {{search.search_query(size=20,class="validate")}}
-    </div>
-
-    <div class="input-field col s12 m8 offset-m2">
-        {{search.submit}}
-    </div>
-
-</form>
+  <div class="col s12 m8 offset-m8" style="padding-top: 0.5rem;">
+    <a class="waves-effect waves-light btn modal-trigger" href="#new_student" id="m_button">New Student</a>
+    <a class="waves-effect waves-light btn modal-trigger" href="#search" id="s_button">Search</a>
+ </div>
 </div>
 <div class="row">
       <div class="row">
@@ -43,13 +34,146 @@
             <td>{{s.phone_number}} </td>
             <td>{{s.email}}</td>
             <td>{{s.rentStanding}}</td>
-            <td><a href="/student/{{s.student_id}}/edit">Edit</a></td>
+            <td><a href="#" onclick="editMode({{s}})">Edit</a></td>
         </tr>
             
         {% endfor %}
         {% endif %}
       </table>
 
+      <div class="modal" id="search">
+        <div class="modal-content">
+          <h6> Search Students</h6>
+          <form method="POST" action="/student/search">
+            <div class="input-field col s12 m8 offset-m2">
+              {{search.search_query}}
+            </div>
+            <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+              {{search.submit}}
+              <a class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+            </div>
+          </form>
+        </div>
       </div>
+
+      <div class="modal" id="new_student" style="max-height: 100%;">
+        <div class="modal-content">
+          <h6>Add Student </h6>
+         <form id="newStudent" class="col s12 m12" method="POST" action="/student">
+            {{ form.csrf_token }}
+            <div class="input-field col s12 m12"> 
+             <p>Student ID</p>           
+              {{ form.student_id(size=20, class="validate") }}
+            </div>  
+            <div class="input-field col s12 m4"> 
+              <p>First Name</p>
+               {{ form.f_name(size=20, class="validate") }}
+             </div> 
+  
+             <div class="input-field col s12 m4"> 
+              <p>Last Name</p>
+               {{ form.l_name(size=20, class="validate") }}
+             </div>
+  
+             <div class="input-field col s12 m3"> 
+              <p>Faculty</p>
+               {{ form.faculty(size=20, class="validate") }}
+             </div> 
+  
+             <div class="input-field col s12 m6"> 
+              <p>Phone Number</p>
+               {{ form.p_no(size=20, class="validate") }}
+             </div> 
+  
+             <div class="input-field col s12 m6"> 
+              <p>Email</p>
+               {{ form.email(size=20, class="validate") }}
+             </div> 
+             <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+              {{form.submit}}
+              <a class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+            </div>  
+        </form>
+    </div>
+  </div>
+
+  <div class="modal" id="edit_student" style="max-height: 100%;">
+    <div class="modal-content">
+      <h6>Update Student </h6>
+     <form id="updateStudent" class="col s12 m12" method="POST" >
+        {{ form.csrf_token }}
+        <div class="input-field col s12 m12"> 
+         <p>Student ID</p>           
+          {{ form.student_id(size=20, class="validate", id="u_sid") }}
+        </div>  
+        <div class="input-field col s12 m4"> 
+          <p>First Name</p>
+           {{ form.f_name(size=20, class="validate", id="u_fname") }}
+         </div> 
+
+         <div class="input-field col s12 m4"> 
+          <p>Last Name</p>
+           {{ form.l_name(size=20, class="validate", id="u_lname") }}
+         </div>
+
+         <div class="input-field col s12 m3"> 
+          <p>Faculty</p>
+           {{ form.faculty(size=20, class="validate", id="u_fac") }}
+         </div> 
+
+         <div class="input-field col s12 m6"> 
+          <p>Phone Number</p>
+           {{ form.p_no(size=20, class="validate", id="u_phno") }}
+         </div> 
+
+         <div class="input-field col s12 m6"> 
+          <p>Email</p>
+           {{ form.email(size=20, class="validate", id="u_email") }}
+         </div> 
+         <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+          {{form.submit (id="u_submit")}}
+          <a class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+        </div>  
+    </form>
+</div>
+</div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+  var elems = document.querySelectorAll('.modal');
+  var instances = M.Modal.init(elems);
+  });
+
+  function editMode(student){
+   form = document.getElementById('updateStudent')
+   form.action = "/student/"+student.student_id+"/update"
+
+   student_id =  document.getElementById('u_sid')
+   student_id.value = student.student_id
+  
+   fname = document.getElementById('u_fname')
+   fname.value = student.first_name
+
+   lname = document.getElementById('u_lname')
+   lname.value = student.last_name
+  
+   faculty = document.getElementById('u_fac')
+   faculty.value = student.faculty
+
+  phone_number = document.getElementById('u_phno')
+  phone_number.value = student.phone_number
+
+   email = document.getElementById('u_email')
+   email.value = student.email
+
+   button = document.getElementById('u_submit')
+   button.value = "Update Student"
+
+   elem = document.getElementById('edit_student');
+   instance = M.Modal.getInstance(elem)
+   instance.open()
+  }
+</script>      
 
 {% endblock %}

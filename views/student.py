@@ -17,11 +17,6 @@ from views.forms import StudentAdd, SearchForm
 
 student_views = Blueprint('student_views', __name__, template_folder='../templates')
 
-@student_views.route('/student',methods=['GET'])
-def render_student():
-    form = StudentAdd()
-    return render_template("student.html",form=form)
-
 @student_views.route('/student', methods=['POST'])
 def add_student():
     form = StudentAdd()
@@ -34,36 +29,12 @@ def add_student():
         flash("Success")
         return redirect(url_for('rent_views.rent_page'))
 
-@student_views.route('/student/manage',methods=['GET'])
+@student_views.route('/student',methods=['GET'])
 def render_manage_student():
     studentData = get_all_students()
     search = SearchForm()
     search.submit.label.text = "Search Student"
-    return render_template("manage_student.html",studentData=studentData,search=search)
-
-@student_views.route("/student/<id>/edit", methods=['GET'])
-def render_edit_student(id):
-    student = get_student_by_id(id)
-
-    if not student:
-        flash('Student does not exist')
-        return redirect(url_for('.render_manage_student'))
-
-    form = StudentAdd()
-    form.student_id.data = student.student_id
-    #form.student_id.render_kw= {'disabled':''}
-    form.f_name.data = student.first_name
-    form.l_name.data = student.last_name
-    form.faculty.data = student.faculty
-    form.p_no.data = student.phone_number
-    form.email.data = student.email
-    form.submit.label.text = "Update Student"
-    return render_template('student.html', form=form, updateMode=True)
-
-@student_views.route("/students/search",methods=['GET'])
-def render_search_student():
-    
-    return render_template('student_search.html')
+    return render_template("manage_student.html",studentData=studentData,form=StudentAdd(),search=search)
 
 @student_views.route("/student/search",methods=['POST'])
 def search_student():
