@@ -40,8 +40,8 @@
             {% else %}
             <td><a href="/locker/{{l.locker_code}}/area">Add a Area</a></td>
             {% endif %}
-            <td><a href="#edit" onclick="editMode({{l}})">Edit</a></td>
-            <td><a href="#delete" onclick="removeMode({{l}})">Remove</a></td>
+            <td><a href="#edit" onclick="editMode({l})">Edit</a></td>
+            <td><a href="#delete" onclick="removeMode({l})">Remove</a></td>
         </tr>
             
         {% endfor %}

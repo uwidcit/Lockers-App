@@ -12,10 +12,10 @@
     <title>{% block title %}{% endblock %}</title>
 
   </head>
-  <body style ="overflow: hidden;">
-    <nav class="purple ">
+  <body  class ="grey" style ="overflow: hidden;">
+    <nav class="white ">
       <div class="nav-wrapper">
-        <a href="#!" class="brand-logo center">{% block page %}{% endblock %}</a>
+        <a href="#!" class="black-text brand-logo center">{% block page %}{% endblock %}</a>
         <div class="nav-wrapper">
             
         </div>
@@ -23,9 +23,10 @@
     </nav>
     <div class="row">
 
-      <div class="grey col s2" style="height: 100vh; width: 15vw;" > 
-        <ul class="side-nav" >
-          <li><a href="/locker">Lockers</a></li>
+      <div class="black col s2" style="height: 100vh; width: 20vw;" > 
+        <ul class="white-text side-nav" >
+          <li> Locker </li>
+            <li class="indentMenu"><a href="/locker">Manage Lockers</a></li>
           <li> Area </li>
             <li class="indentMenu"><a href="/area">Manage Area</a></li>
           <li>Price</li>
@@ -37,9 +38,11 @@
           <li>Student</li>
             <li class="indentMenu"><a href="/student">Add New Student</a></li>
             <li class="indentMenu"><a href="/student/manage">Update Student</a></li>
-          <li><a href="/transactionLog/view"> Transaction Log</a></li>
+          <li>Logs</li>
+            <li class="indentMenu"><a href="/transactionLog/view"> Transaction Log</a></li>
         </ul>
       </div>
+      
 
       {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -56,7 +59,7 @@
     {% endwith %}
 
    
-      <div class="white col s10" > 
+      <div class="white col s10" style="height: 85vh; width: 75vw; margin-left:30px; margin-top:10px; border-radius: 25px;overflow-y: scroll;" > 
         {% block content %}{% endblock %}
       </div>
 
