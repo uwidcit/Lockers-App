@@ -6,9 +6,17 @@
 
 {% block content %}
 
-<div class="col s12 m8 offset-m8" style="padding-top: 0.5rem;">
-    <a class="waves-effect waves-light btn modal-trigger" href="#new_transaction" id="m_button">New Transaction</a>
-    <a class="waves-effect waves-light btn modal-trigger" href="#search" id="s_button">Search</a>
+<div class = "row">
+  <div class="col s12>
+    <h6> Search Transactions</h6>
+    <form method="POST" action="/transactionLog/search">
+      <div class="input-field col s12 m4 offset-m1" style ="display:inline;">
+        {{search.search_query}}
+      </div>
+      <div class="input-field col s2 m2" style="display:inline;">
+        {{search.submit(class="waves-light btn")}}
+      </div>
+    </form>
 </div>
 
    <table>
@@ -95,20 +103,15 @@
   </div>
   </div>
 
-  <div class="modal" id="search">
-    <div class="modal-content">
-      <h6> Search Transactions</h6>
-      <form method="POST" action="/transactionLog/search">
-        <div class="input-field col s12 m8 offset-m2">
-          {{search.search_query}}
-        </div>
-        <div class="input-field col s8 m8 offset-m4" style="display:inline;">
-          {{search.submit}}
-          <a class="modal-close waves-effect waves-green btn-flat">Cancel</a>
-        </div>
-      </form>
+  <div class="col s1 m1 offset-m11" style="padding: 0.75rem">
+    <div class="floating-action-btn">
+  <div class="col s12 m8 offset-m8" style="padding-top: 0.5rem;">
+      <a class="btn-floating btn-large waves-effect waves-light modal-trigger" href="#new_transaction" id="m_button"><i class="material-icons"> add </i></a>
+  </div>
     </div>
-  </div> 
+  </div>
+</div>
+
   <script>
     document.addEventListener('DOMContentLoaded', function() {
     var elems = document.querySelectorAll('.modal');
