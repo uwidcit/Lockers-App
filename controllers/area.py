@@ -5,15 +5,14 @@ from controllers.log import create_log
 from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
 
-def add_new_area(locker_id, description, longitude, latitude):
+def add_new_area(description, longitude, latitude):
     try:
-        new_area = Area(locker_id,description,longitude, latitude)
+        new_area = Area(description,longitude, latitude)
         db.session.add(new_area)
         db.session.commit()
         return new_area
     except SQLAlchemyError as e:
-        create_log(locker_id, type(e), datetime.now())
-        flash("Unable to add new Area. Check Error Log for more Details")
+        flash("Unable to add new Area")
         db.session.rollback()
         return None
 
@@ -24,12 +23,12 @@ def get_area_by_id(id):
         return None
     return area
 
-def get_area_by_locker(locker_id):
-    area = Area.query.filter_by(locker_id = locker_id).first()
+def get_lockers_in_area(id):
+    area = Area.query.filter_by(id = id).first()
     if not area:
         flash("Area does not exist")
         return None
-    return area
+    return area.getLockersInArea()
 
 def set_description(id,new_description):
     area = get_area_by_id(id)
@@ -80,6 +79,9 @@ def delete_area(id):
     area = get_area_by_id(id)
     if not area: 
         return None
+    if area.locker:
+        flash('Unable to delete area with lockers in it')
+        return None
     try:
         db.session.delete(area)
         db.session.commit()
@@ -89,6 +91,13 @@ def delete_area(id):
         flash("Unable to delete Area. Check Error Log for more Details")
         db.session.rollback()
         return None
+def get_area_choices():
+    areas = Area.query.with_entities(Area.id, Area.description).all()
+
+    if not areas:
+        return None
+    
+    return [(a.id,a.description) for a in areas]
 
 def get_area_all():
     areas = Area.query.all()

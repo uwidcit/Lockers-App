@@ -7,9 +7,9 @@ from flask import flash
 from sqlalchemy import or_,and_
 from sqlalchemy.exc import SQLAlchemyError
 
-def add_new_locker(locker_code,locker_type,status,key):
+def add_new_locker(locker_code,locker_type,status,key,area,):
     try:
-        locker = Locker(locker_code,locker_type,status,key)
+        locker = Locker(locker_code,locker_type,status,key,area)
         db.session.add(locker)
         db.session.commit()
         return locker
@@ -126,7 +126,7 @@ def update_locker_type(id, new_type):
             db.session.commit()
             return locker
     except SQLAlchemyError as e:
-        #db.session.rollback()
+        db.session.rollback()
         print(e.__dict__)
         create_log(id, type(e), datetime.now())
         flash("Unable to update locker status. Check Error Log for more Details")
