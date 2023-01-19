@@ -5,7 +5,7 @@ def create_log(exception, id):
         return 'A record already exists with value ' +id
     if exception == NoResultFound:
         return 'Record doesnt exists'
-    if NoReferenceError:
+    if exception == NoReferenceError:
         return 'Reference to value doesn''t exist'
     
 

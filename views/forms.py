@@ -1,15 +1,14 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, SubmitField,DecimalField,HiddenField, DateField,DateTimeLocalField,IntegerField
+from wtforms import StringField, SelectField, SubmitField,DecimalField, DateField,DateTimeLocalField,IntegerField
 from wtforms.validators import InputRequired, EqualTo, Email
 
 from controllers import (
+    getT_Type,
+    get_rt_Type,
     getLockerTypes,
     getStatuses,
     getKey,
-    getT_Type,
-    get_rt_Type,
 )
-
 
 class LockerAdd(FlaskForm):
     status = getStatuses()
@@ -18,11 +17,10 @@ class LockerAdd(FlaskForm):
     locker_type  = SelectField(u'locker_type', choices= getLockerTypes())
     status  = SelectField(u'status', choices=status)
     key = SelectField('key', choices= getKey(), validators=[InputRequired()])
+    area = SelectField('area', choices=[])
     submit = SubmitField('Add Locker', render_kw={'class': 'btn waves-effect waves-light white-text'})
 
 class AreaAdd(FlaskForm):
-    l_code = StringField('l_code', render_kw={'disabled':''})
-    locker_code = HiddenField('locker_code')
     description  = StringField('description', validators=[InputRequired()])
     longitude = DecimalField('longitude', validators=[InputRequired()])
     latitude = DecimalField('latitude', validators=[InputRequired()])
@@ -58,7 +56,7 @@ class StudentAdd(FlaskForm):
     l_name =  StringField('l_name', validators=[InputRequired()])
     faculty =  StringField('faculty', validators=[InputRequired()])
     p_no =  StringField('p_no', validators=[InputRequired()])
-    email =  StringField('email', validators=[InputRequired()])
+    email =  StringField('email', validators=[InputRequired(),Email()])
     submit = SubmitField('Add', render_kw={'class': 'btn waves-effect waves-light white-text'})  
 
 class ConfirmDelete(FlaskForm):

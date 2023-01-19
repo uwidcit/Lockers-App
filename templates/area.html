@@ -1,16 +1,26 @@
 {% extends "layout.html" %}
-{% block title %}App Users{% endblock %}
-{% block page %}App Users{% endblock %}
+{% block title %}Area{% endblock %}
+{% block page %}Area{% endblock %}
 
 {{ super() }}
 
 {% block content %}
 <div class="row">
-      <div class="row">
-        <table class="col s12 m8 offset-m2">
+  <div class="col s12">
+    <form method="POST" action="/area/search">
+      <div class="input-field col s12 m4 offset-m1">
+        {{search.search_query(placeholder="Enter search query")}}
+      </div>
+      <div class="input-field col s2 m2" style="display:inline;">
+        <label for="search_submit"><i class="material-icons">search</i></label>
+       {{search.submit(id="search_submit")}}
+      </div>
+    </form>
+  </div>
+   <div class="col s11 m11 offset-m1">
+        <table>
         <tr>
             <th>ID</th>
-            <th>LockerID</th>
             <th>Description</th>
             <th>Longitude</th>
             <th> Latitude</th>
@@ -20,18 +30,113 @@
         {% for a in areaData %}
         <tr>
             <td>{{a.id}}</td>
-            <td>{{a.locker_id}}</td>
             <td>{{a.description}}</td>
             <td>{{a.longitude}} </td>
             <td>{{a.latitude}} </td>
-            <td><a href="/area/{{a.id}}/edit">Edit</a></td>
-            <td><a href="/area/{{a.id}}/delete">Remove</a></td>
+            <td><a href="#edit" onclick="editMode({{a}})">Edit</a></td>
+            <td><a href="#delete onclick="removeMode{{l}}">Remove</a></td>
         </tr>
             
         {% endfor %}
         {% endif %}
       </table>
+      </div>
+      <div class="divider">
 
       </div>
+      <div class="col s1 m1 offset-m11" style="padding: 0.75rem">
+         <div class="floating-action-btn">
+          <a class="btn-floating btn-large waves-effect waves-light purple modal-trigger" href="#new_area"><i class="material-icons">add </i></a>
+        </div>
+      </div>
+
+      <div class="modal" id="new_area">
+        <div class="modal-content">
+          <h6> New Area </h6>
+          <form id="AddArea" class="col s12 m12" method="POST" action="/area">
+            {{ form.csrf_token }}
+            <div class="input-field col s12 m10"> 
+              <p>Description</p>
+              {{ form.description(size=20, class="validate") }}
+            </div>
+  
+             <div class="input-field col s6 m6"> 
+              <p>Longitude</p>
+               {{ form.longitude(size=20, class="validate") }}
+             </div>   
+  
+             <div class="input-field col s6 m6 "> 
+              <p>Latitude</p>
+               {{ form.latitude(size=20, class="validate") }}
+             </div> 
+             
+             <div class="input-field col s4 m2 offset-m4" style="display:inline;">
+              {{form.submit(class="waves-light btn")}}
+            </div>
+            <div class="input-field col s4 m4" style="display:inline;">
+             <a class="waves-effect waves-light btn modal-close">Cancel</a>
+            </div>  
+        </form>
+        </div>
+        </div>
+
+        <div class="modal" id="edit_area">
+          <div class="modal-content">
+            <h6> Edit Area </h6>
+            <form id="editArea" class="col s12 m12" method="POST" action="/area">
+              {{ form.csrf_token }}
+              <div class="input-field col s12 m10"> 
+                <p>Description</p>
+                {{ form.description(size=20, class="validate" ,id="u_description") }}
+              </div>
+    
+               <div class="input-field col s6 m6"> 
+                <p>Longitude</p>
+                 {{ form.longitude(size=20, class="validate", id="u_long") }}
+               </div>   
+    
+               <div class="input-field col s6 m6 "> 
+                <p>Latitude</p>
+                 {{ form.latitude(size=20, class="validate", id="u_lat")  }}
+               </div> 
+               
+               <div class="input-field col s4 m3 offset-m4" style="display:inline;">
+                {{form.submit(id="u_submit", class="waves-light btn")}}
+              </div>
+              <div class="input-field col s4 m2" style="display:inline;">
+               <a class="waves-effect waves-light btn modal-close">Cancel</a>
+              </div>  
+          </form>
+          </div>
+
+      </div>
+     
+
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        var elems = document.querySelectorAll('.modal');
+        var instances = M.Modal.init(elems);
+        var elems = document.querySelectorAll('.fixed-action-btn');
+        var instances = M.FloatingActionButton.init(elems);
+  });
+
+    function editMode(area){
+      form = document.getElementById('editArea')
+      form.action = "/area/"+area.id+"/update"
+
+      description = document.getElementById("u_description")
+      description.value = area.description
+      long = document.getElementById("u_long")
+      long.value = area.longitude
+      lat = document.getElementById("u_lat")
+      lat.value = area.latitude
+      submit = document.getElementById("u_submit")
+      submit.value = "Update Area"
+
+      elem = document.getElementById('edit_area');
+      instance = M.Modal.getInstance(elem)
+      instance.open()
+    }
+      </script>
 
 {% endblock %}

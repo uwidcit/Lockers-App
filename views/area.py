@@ -10,7 +10,7 @@ from controllers import (
     set_longitude,
 )
 
-from views.forms import AreaAdd,ConfirmDelete
+from views.forms import AreaAdd,ConfirmDelete,SearchForm
 
 area_views = Blueprint('area_views', __name__, template_folder='../templates')
 
@@ -18,40 +18,23 @@ area_views = Blueprint('area_views', __name__, template_folder='../templates')
 def create_new_area():
     form = AreaAdd()
     if form.validate_on_submit:
-        locker_id = request.form.get('locker_code')
         description = request.form.get('description')
         longitude = request.form.get('longitude')
         latitude = request.form.get('latitude')
 
-       
-        new_area = add_new_area(locker_id,description,longitude,latitude)
+        new_area = add_new_area(description,longitude,latitude)
         
         if not new_area:
             flash("Area not created")
-            return redirect(url_for('locker_views.index'))
-            #jsonify({"Message": }),400
+            return redirect(url_for('.render_area_page'))
         flash("Area created")
-        return redirect(url_for('locker_views.index'))
+        return redirect(url_for('.render_area_page'))
 
 @area_views.route('/area',methods=['GET'])
 def render_area_page():
-    return render_template('area.html', areaData = get_area_all())
+    search = SearchForm()
+    return render_template('area.html', areaData = get_area_all(),form=AreaAdd(),search=search)
 
-@area_views.route('/area/<id>/edit',methods=['GET'])
-def render_edit_area_page(id):
-    area = get_area_by_id(id)
-    if not area:
-        return redirect(url_for('.render_area_page'))
-    
-    form = AreaAdd()
-    form.l_code.data = area.locker_id
-    form.locker_code.data = area.id
-    form.description.data = area.description
-    form.latitude.data =  area.latitude
-    form.longitude.data = area.longitude
-    form.submit.label.text ="Update Area"
-
-    return render_template('locker_area.html', form = form, updateMode = True)
 
 @area_views.route('/area/<id>/update', methods=['POST'])
 def update_area(id):
@@ -63,7 +46,6 @@ def update_area(id):
 
     form = AreaAdd()
     if form.validate_on_submit:
-        print(request.form)
         description = request.form.get('description')
         longitude = request.form.get('longitude')
         latitude = request.form.get('latitude')

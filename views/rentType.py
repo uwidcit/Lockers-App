@@ -11,16 +11,13 @@ from controllers import (
     update_rentType_type
 )
 
-from views.forms import RentTypeAdd,ConfirmDelete
+from views.forms import RentTypeAdd,ConfirmDelete,SearchForm
 rentType_views = Blueprint('rentType_views', __name__, template_folder='../templates')
 
-@rentType_views.route('/rentType',methods=['GET'])
-def render_rentType_new():
-    return render_template('rentType.html',form = RentTypeAdd())
 
-@rentType_views.route('/rentType/manage',methods=['GET'])
+@rentType_views.route('/rentType',methods=['GET'])
 def render_rentType_all():
-    return render_template('rentType_manage.html', results=get_All_rentType())
+    return render_template('rentType_manage.html', results=get_All_rentType(),form = RentTypeAdd(),search=SearchForm(),delete= ConfirmDelete())
 
 @rentType_views.route('/rentType',methods=['POST'])
 def create_new_rentType():
