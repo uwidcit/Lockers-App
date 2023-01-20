@@ -39,7 +39,8 @@ def render_area_page():
     previous = 1
     next = previous + 1
     search = SearchForm()
-    return render_template('area.html', areaData = areaData,form=AreaAdd(),search=search,num_pages= num_pages,current_page=1, next= next, previous= previous)
+    delete = ConfirmDelete()
+    return render_template('area.html', areaData = areaData,form=AreaAdd(),delete= delete,search=search,num_pages= num_pages,current_page=1, next= next, previous= previous)
 
 @area_views.route('/area/page/<offset>',methods=['GET'])
 def render_area_page_offset(offset):
@@ -58,7 +59,8 @@ def render_area_page_offset(offset):
         next = offset + 1
 
     search = SearchForm()
-    return render_template('area.html', areaData = areaData,form=AreaAdd(),search=search,num_pages= num_pages,current_page=offset, next= next, previous= previous)
+    delete = ConfirmDelete()
+    return render_template('area.html', areaData = areaData,form=AreaAdd(),delete=delete,search=search,num_pages= num_pages,current_page=offset, next= next, previous= previous)
 
 
 @area_views.route('/area/<id>/update', methods=['POST'])
