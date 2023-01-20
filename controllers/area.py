@@ -111,6 +111,9 @@ def get_num_areas():
 def get_num_area_page(size):
     count = get_num_areas()
 
+    if count == 0:
+        return 1
+
     if count%size != 0:
         return int(count/size + 1)
 

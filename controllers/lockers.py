@@ -42,6 +42,9 @@ def get_num_lockers():
 def get_num_locker_page(size):
     count = get_num_lockers()
 
+    if count == 0:
+        return 1
+
     if count%size != 0:
         return int(count/size + 1)
 
@@ -85,9 +88,9 @@ def not_verified(id):
         
         return locker
     except SQLAlchemyError as e:
+        db.session.rollback()
         create_log(id, type(e), datetime.now())
         flash("Unable to release Locker. Check Error Log for more Details")
-        db.session.rollback()
         return None
 
 def release_locker(id):
