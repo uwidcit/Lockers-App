@@ -52,19 +52,19 @@ def release_locker(id):
     rental = update_rent(id)
 
     if not rental:
-        return redirect(url_for('.rent_page'))
+        return redirect(url_for('locker_views.manage_locker'))
     
     if rental.status == Status.PAID :
         d_return = datetime.now()
         rental = release_rental(id,d_return)
     elif rental.status == Status.RETURNED:
         flash('Cannot release locker it has already been released')
-        return redirect(url_for('.rent_page'))
+        return redirect(url_for('locker_views.manage_locker'))
     else:
         flash('Need to pay off balance first')
         return redirect(url_for('transactionLog_views.transactionLog_page'))
     flash('Success')
-    return redirect(url_for('.rent_page'))
+    return redirect(url_for('locker_views.manage_locker'))
 
 @rent_views.route('/rent/<id>/release/verify', methods=['GET'])
 def return_locker_to_pool(id):
@@ -115,7 +115,7 @@ def rent_locker(id):
             rental = create_rent(student_id=data['student_id'], locker_id=id,rentType=data['rent_type'],rent_date_from = rent_date_from,rent_date_to = rent_date_to)
             if rental:
                 flash("Success")
-            return redirect(url_for('.rent_page'))
+            return redirect(url_for('locker_view.manage_lockers'))
        else:
         flash('Student doesn''t exist add them')
         return redirect(url_for('student_views.student_add')) 

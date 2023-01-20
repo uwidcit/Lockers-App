@@ -4,6 +4,7 @@ from controllers import (
     add_new_student,
     get_all_students,
     get_student_by_id,
+    get_student_by_id_json,
     get_student_current_rental_toJSON,
     update_student_id,
     update_student_first_name,
@@ -25,9 +26,9 @@ def add_student():
         student = add_new_student(s_id = data['student_id'], f_name=data['f_name'], l_name=data['l_name'], faculty=data['faculty'],p_no=data['p_no'],email=data['email'])
         if not student:
             flash("Student not created")
-            return redirect(url_for('rent_views.rent_page'))
+            return redirect(url_for(".render_manage_student"))
         flash("Success")
-        return redirect(url_for('rent_views.rent_page'))
+        return redirect(url_for('.render_manage_student'))
 
 @student_views.route('/student',methods=['GET'])
 def render_manage_student():
@@ -89,3 +90,12 @@ def update_student_info(id):
                 flash("Error updating Faculty")
                 return redirect(url_for('.render_manage_student')) 
         return redirect(url_for('.render_manage_student'))
+
+@student_views.route('/api/student/<id>', methods=['GET'])
+def get_student_json(id):
+    result = get_student_by_id_json(id)
+
+    if not result:
+        return jsonify({"Message":"Student doesn't exist"}),404
+    return jsonify(result),200
+

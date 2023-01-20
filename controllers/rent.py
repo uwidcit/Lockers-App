@@ -9,7 +9,8 @@ from controllers.rentType import (
 from controllers.lockers import(
     get_locker_id,
     rent_locker,
-    release_locker
+    release_locker,
+    not_verified
 )
 
 from controllers.transactionLog import cal_transaction_amount
@@ -189,6 +190,7 @@ def release_rental(id,d_returned):
     try:
         rent.date_returned = d_returned
         rent.status = Status.RETURNED
+        not_verified(rent.locker_id)
         db.session.add(rent)
         db.session.commit()
         return rent
