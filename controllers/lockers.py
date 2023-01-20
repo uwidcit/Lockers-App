@@ -19,7 +19,7 @@ def add_new_locker(locker_code,locker_type,status,key,area,):
         return None
 
 def get_lockers_available():
-    locker_list = Locker.query.filter(and_(Locker.status == Status.FREE, Locker.area)).all()
+    locker_list = Locker.query.filter(and_(Locker.status == Status.FREE)).all()
     if not locker_list:
         return []
     return [l.toJSON() for l in locker_list]
