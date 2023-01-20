@@ -7,7 +7,9 @@ from controllers import (
     add_new_locker,
     get_area_choices,
     get_lockers_available,
+    get_lockers_by_offset,
     get_locker_id,
+    get_num_locker_page,
     get_all_lockers,
     delete_locker,
     update_key,
@@ -19,10 +21,33 @@ locker_views = Blueprint('locker_views', __name__, template_folder='../templates
 
 @locker_views.route("/locker", methods=['GET'])
 def manage_locker():
-    lockerData = get_all_lockers()
+    num_pages = get_num_locker_page(15)
+    lockerData = get_lockers_by_offset(15,1)
+    previous = 1
+    next = previous + 1
     form = LockerAdd()
     form.area.choices = get_area_choices()
-    return render_template('manage_locker.html', lockerData=lockerData,form = form ,delete=ConfirmDelete(), search=SearchForm(),searchMode=False)
+    return render_template('manage_locker.html', lockerData=lockerData,form = form ,delete=ConfirmDelete(), search=SearchForm(),searchMode=False, num_pages= num_pages,current_page=1, next= next, previous= previous)
+
+@locker_views.route("/locker/page/<offset>", methods=['GET'])
+def manage_locker_mulpages(offset):
+    offset = int(offset)
+    num_pages = get_num_locker_page(15)
+    lockerData = get_lockers_by_offset(15,offset)
+
+    if offset - 1 <= 0:
+        previous = 1
+        offset = 1
+    else:
+        previous = offset - 1
+    if offset + 1 >= num_pages:
+        next = num_pages
+    else:
+        next = offset + 1
+    form = LockerAdd()
+    form.area.choices = get_area_choices()
+    return render_template('manage_locker.html', lockerData=lockerData,form = form ,delete=ConfirmDelete(), search=SearchForm(),searchMode=False, num_pages= num_pages,current_page=offset,next= next, previous= previous)
+
 
 @locker_views.route('/locker/<id>/delete', methods=['GET'])
 def render_confirm_delete(id):

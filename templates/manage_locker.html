@@ -14,12 +14,20 @@
           </div>
           
           {% else %}
-          <div class="col s12 m8 offset-m8" style="padding-top: 0.5rem;">
-             <a class="waves-effect waves-light btn modal-trigger" href="#new_locker" id="m_button">New Locker</a>
-             <a class="waves-effect waves-light btn modal-trigger" href="#search" id="s_button">Search</a>
+            <div class="col s12">
+              <form method="POST" action="/locker/search">
+                <div class="input-field col s12 m4 offset-m1">
+                  {{search.search_query(placeholder="Enter search query")}}
+                </div>
+                <div class="input-field col s2 m2" style="display:inline;">
+                  <label for="search_submit"><i class="material-icons" style="color:white; text-align: center;">search</i></label>
+                 {{search.submit(id="search_submit", class="waves-light btn",value="")}}
+                </div>
+              </form>
+            </div>
           </div>
           {% endif %}  
-        <table class="col s12 m8 offset-m2">
+        <table class="col s12 m10 offset-m1">
         <tr>
             <th>Locker Code</th>
             <th>Locker Type </th>
@@ -36,15 +44,45 @@
             <td>{{l.status}}</td>
             <td>{{l.key}} </td>
             <td>{{l.area}}</td>
-            <td></td>
-            <td><a href="#edit" onclick="editMode({{l}})">Edit</a></td>
-            <td><a href="#delete" onclick="removeMode({{l}})">Remove</a></td>
+            <td><a href="/locker/{{l.locker_code}}/rent">Rent</a></td>
+            <td><a href="#edit" onclick="editMode({{l}})"><i class="material-icons">edit</i></a></td>
+            <td><a href="#delete" onclick="removeMode({{l}})"><i class="material-icons">delete</i></a></td>
         </tr>
             
         {% endfor %}
         {% endif %}
       </table>
+      <div class="col m5 offset-m5">
+        <ul class="pagination">
 
+        {% if current_page == 1  %}
+        <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+        {% else %}
+        <li><a href="/locker/page/{{previous}}"><i class="material-icons">chevron_left</i></a></li>
+        {% endif %}
+
+        {% for n in range(1,num_pages + 1) %}
+
+        {% if n == current_page %}
+        <li class="active"><a href="/locker/page/{{n}}">{{n}}</a></li>
+        {% else %}
+        <li class="waves-effect"><a href="/locker/page/{{n}}">{{n}}</a></li>
+        {% endif %}
+
+        {% endfor %}
+
+        {% if current_page == num_pages %}
+        <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+        {% else %}
+        <li><a href="/locker/page/{{next}}"><i class="material-icons">chevron_right</i></a></li>
+        {% endif %}
+      </ul>
+      </div>
+      <div class="col s1 m1 offset-m11" style="padding: 0.75rem">
+        <div class="floating-action-btn">
+         <a class="btn-floating btn-large waves-effect waves-light purple modal-trigger" href="#new_locker"><i class="material-icons">add </i></a>
+       </div>
+     </div>
       </div>
 
       <div class="row">
@@ -102,7 +140,7 @@
                 </div>  
               </div>
                  <div class="input-field col s8 m8 offset-m4" style="display:inline;">
-                   {{form.submit}}
+                   {{form.submit(class="waves-light btn")}}
                    <a class="modal-close waves-effect waves-green btn-flat">Cancel</a>
                  </div>       
              </form>
@@ -111,12 +149,22 @@
 
         <div class="modal" id="delete_locker" style="max-height: 100%;">
           <div class="modal-content">
-            <form id="deleteLocker" class="col s12 m8 offset-m2" method="POST">
+            <form id="deleteLocker" class="col s12 m12" method="POST">
             {{ delete.csrf_token }}
-            <div class="input-field col s12 m8 offset-m2" style="display:inline;">
-              <h5 id="deleteTitle"></h6>
-              <a class="modal-close waves-effect waves-green btn-flat" style="padding: 2rem;">Cancel</a> 
-              {{delete.submit}}
+            <div class="input-field col s12 m12" style="display:inline;">
+              <div class="col m12">
+                <h5 id="deleteTitle"></h6>
+              </div>
+              
+              <div class="col m2 offset-m2">
+                {{delete.submit(class="waves-light red btn")}}
+              </div>
+              
+              <div class="col m2 offset-m2">
+                <a class="modal-close waves-effect waves-green btn-flat">Close</a> 
+              </div>
+              
+              
           </div>
           </form>
         </div>
@@ -176,40 +224,13 @@
               </div>  
             </div>
                <div class="input-field col s8 m8 offset-m4" style="display:inline;">
-                 {{form.submit(id="u_submit")}}
+                 {{form.submit(id="u_submit",class="waves-light btn")}}
                  <a class="modal-close waves-effect waves-green btn-flat">Cancel</a>
                </div>       
            </form>
         </div>     
       </div>
 
-      <div class="modal" id="delete_locker" style="max-height: 100%;">
-        <div class="modal-content">
-          <form id="deleteLocker" class="col s12 m8 offset-m2" method="POST">
-          {{ delete.csrf_token }}
-          <div class="input-field col s12 m8 offset-m2" style="display:inline;">
-            <h5 id="deleteTitle"></h6>
-            <a class="modal-close waves-effect waves-green btn-flat" style="padding: 2rem;">Cancel</a> 
-            {{delete.submit}}
-        </div>
-        </form>
-      </div>
-    </div>
-
-    <div class="modal" id="search">
-      <div class="modal-content">
-        <h6> Search Lockers</h6>
-        <form method="POST" action="/locker/search">
-          <div class="input-field col s12 m8 offset-m2">
-            {{search.search_query}}
-          </div>
-          <div class="input-field col s8 m8 offset-m4" style="display:inline;">
-            {{search.submit}}
-            <a class="modal-close waves-effect waves-green btn-flat">Cancel</a>
-          </div>
-        </form>
-      </div>
-    </div>
   </div>
   </div>
 

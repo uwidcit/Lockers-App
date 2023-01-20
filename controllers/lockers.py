@@ -36,6 +36,25 @@ def get_all_lockers():
         return []
     return [l.toJSON() for l in locker_list]
 
+def get_num_lockers():
+    return Locker.query.count()
+
+def get_num_locker_page(size):
+    count = get_num_lockers()
+
+    if count%size != 0:
+        return int(count/size + 1)
+
+    return int(count/size)
+
+def get_lockers_by_offset(size,offset):
+     l_offset = (offset * size) - size
+     lockers = Locker.query.limit(size).offset(l_offset)
+
+     if not lockers:
+        return None
+     return [l.toJSON() for l in lockers]
+
 def rent_locker(id):
     locker = get_locker_id(id)
     if not locker or locker.status == Status.RENTED:
