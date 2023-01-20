@@ -5,18 +5,24 @@
 {{ super() }}
 
 {% block content %}
-<div class="row" style="background-color: blueviolet; margin:20px;height: 25vh;">
+<div class="row" >
 
     
-    <table>
-      
-    </table>
+  <form method="POST" action="/rentpage/search">
+    <div class="input-field col s12 m4 offset-m1">
+      {{search.search_query(placeholder="Enter search query")}}
+    </div>
+    <div class="input-field col s2 m2" style="display:inline;">
+      <label for="search_submit"><i class="material-icons" style="color:white; text-align: center;">search</i></label>
+     {{search.submit(id="search_submit", class="waves-light btn",value="")}}
+    </div>
+  </form>
   
 </div>
-<div class="row" style="background-color: coral; margin:20px;height: 53vh; padding-left: 11px;padding-right: 11px;">
+<div class="row" >
     <div class="row">
-        <table style="overflow-y: scroll; height: inherit;background-color: chocolate;">
-          <thead style="background-color: deepskyblue;">
+        <table style="overflow-y: scroll; height: inherit;margin-left: 20px;">
+          <thead >
             <tr>
               <th>Locker Code</th>
               <th>Locker Type </th>
