@@ -45,6 +45,7 @@ def get_num_lockers():
         return count
     except:
         db.session.close()
+        db.session.begin()
 
 def get_num_locker_page(size):
     count = get_num_lockers()
