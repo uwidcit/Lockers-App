@@ -109,6 +109,7 @@ def get_num_areas():
     count = Area.query.count()
 
     if not count:
+        db.session.rollback()
         return 0
     return count
 
