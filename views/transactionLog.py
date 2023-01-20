@@ -1,20 +1,36 @@
 from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify,flash,url_for
-from views.forms import TransactionAdd
+from views.forms import TransactionAdd,SearchForm
+from datetime import datetime
 from controllers import (
   add_new_transaction,
+  get_student_by_id,
+  get_student_current_rental,
   get_all_transactions,
+  get_num_transactions_page,
+  get_transactions_by_offset,
   get_transaction_id
 )
 
 transactionLog_views = Blueprint('transactionLog_views', __name__, template_folder='../templates')
 
-@transactionLog_views.route('/transactionLog', methods=['GET'])
-def render_transaction_page():
-    return render_template('release_transaction.html', form = TransactionAdd())
+@transactionLog_views.route('/transactionLog/sID=<id>', methods=['GET'])
+def render_transaction_page_student(id):
+    student = get_student_by_id(id)
+    if not student:
+        flash("Student doesn't exist")
+        return redirect(url_for('student_views.render_manage_student'))
+    rent = get_student_current_rental(id)
 
-@transactionLog_views.route('/transactionLog/view', methods=['GET'])
-def transactionLog_page():
-    return render_template('transactionLog.html', transaction = get_all_transactions())
+    if not rent:
+        flash("Rental doesn't exist")
+        return redirect(url_for('student_views.render_manage_student'))
+
+    form = TransactionAdd()
+
+    form.rent_id.data = rent.id
+    form.amount.data = rent.amount_owed
+
+    return render_template('transactionLog.html', form = form)
 
 @transactionLog_views.route('/transactionLog', methods=['POST'])
 def create_new_transaction():
@@ -23,12 +39,14 @@ def create_new_transaction():
         
         rent_id = request.form.get('rent_id')
         currency = request.form.get('currency')
-        transaction_date = request.form.get('transaction_date')
+        transaction_date = datetime.strptime(request.form.get('transaction_date'),'%Y-%m-%dT%H:%M')
+        
         amount = request.form.get('amount')
         description = request.form.get('description')
         t_type =request.form.get('t_type')
+        receipt_number = request.form.get('receipt_number')
         
-        newTransaction = add_new_transaction (rent_id,currency,transaction_date,amount,description, t_type)
+        newTransaction = add_new_transaction (rent_id,currency,transaction_date,amount,description, t_type, receipt_number)
         
         if not newTransaction:
             flash('Error adding transaction')
@@ -47,3 +65,33 @@ def get_transaction(id):
     if not transaction:
         return jsonify({"Message": "Transaction not found"}),404
     return jsonify(transaction.toJSON()),200
+
+@transactionLog_views.route('/transactionLog', methods=['GET'])
+def manage_transaction():
+    num_pages = get_num_transactions_page(15)
+    transaction_data = get_transactions_by_offset(15, 1)
+    previous = 1
+    next = previous + 1
+    form = TransactionAdd()
+
+    return render_template('transactionLog.html', transaction_data = transaction_data, form = TransactionAdd(), search=SearchForm(),searchMode=False, num_pages= num_pages,current_page=1, next=next, previous= previous)
+
+@transactionLog_views.route('/transactionLog/page/<offset>', methods=['GET'])
+def manage_transaction_pages(offset):
+    offset = int(offset)
+    num_pages = get_num_transactions_page(15)
+    transaction_data = get_transactions_by_offset(15, offset)
+
+    if offset - 1 <=0:
+        previous = 1
+        offset = 1
+    else:
+        previous = offset - 1
+    if offset + 1 >= num_pages:
+        next = num_pages
+    else:
+        next = offset + 1
+        form = TransactionAdd()
+        form.area.choices = get_area_choices()
+
+        return render_template('transactionLog.html', transaction_data = transaction_data, form = TransactionAdd(), search=SearchForm(),searchMode=False, num_pages= num_pages,current_page=1, next=next, previous= previous)

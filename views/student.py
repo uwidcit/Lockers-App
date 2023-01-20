@@ -4,6 +4,8 @@ from controllers import (
     add_new_student,
     get_all_students,
     get_student_by_id,
+    get_student_by_id_json,
+    get_student_current_rental_toJSON,
     update_student_id,
     update_student_first_name,
     update_student_last_name,
@@ -12,14 +14,9 @@ from controllers import (
     update_student_faculty,
 
     )
-from views.forms import StudentAdd 
+from views.forms import StudentAdd, SearchForm
 
 student_views = Blueprint('student_views', __name__, template_folder='../templates')
-
-@student_views.route('/student',methods=['GET'])
-def render_student():
-    form = StudentAdd()
-    return render_template("student.html",form=form)
 
 @student_views.route('/student', methods=['POST'])
 def add_student():
@@ -29,33 +26,25 @@ def add_student():
         student = add_new_student(s_id = data['student_id'], f_name=data['f_name'], l_name=data['l_name'], faculty=data['faculty'],p_no=data['p_no'],email=data['email'])
         if not student:
             flash("Student not created")
-            return redirect(url_for('rent_views.rent_page'))
+            return redirect(url_for(".render_manage_student"))
         flash("Success")
-        return redirect(url_for('rent_views.rent_page'))
-
-@student_views.route('/student/manage',methods=['GET'])
-def render_manage_student():
-    studentData = get_all_students()
-    return render_template("manage_student.html",studentData=studentData)
-
-@student_views.route("/student/<id>/edit", methods=['GET'])
-def render_edit_student(id):
-    student = get_student_by_id(id)
-
-    if not student:
-        flash('Student does not exist')
         return redirect(url_for('.render_manage_student'))
 
-    form = StudentAdd()
-    form.student_id.data = student.student_id
-    #form.student_id.render_kw= {'disabled':''}
-    form.f_name.data = student.first_name
-    form.l_name.data = student.last_name
-    form.faculty.data = student.faculty
-    form.p_no.data = student.phone_number
-    form.email.data = student.email
-    form.submit.label.text = "Update Student"
-    return render_template('student.html', form=form, updateMode=True)
+@student_views.route('/student',methods=['GET'])
+def render_manage_student():
+    studentData = get_all_students()
+    search = SearchForm()
+    search.submit.label.text = "Search Student"
+    return render_template("manage_student.html",studentData=studentData,form=StudentAdd(),search=search)
+
+@student_views.route("/student/search",methods=['POST'])
+def search_student():
+    form = SearchForm()
+    if form.validate_on_submit:
+        id = request.form.get('search_query')
+        student = get_student_by_id(id)
+        rent = get_student_current_rental_toJSON(id)
+    return render_template('student_search.html',form=form,student = student,rent= rent)
 
 @student_views.route("/student/<id>/update", methods=['POST'])
 def update_student_info(id):
@@ -101,3 +90,12 @@ def update_student_info(id):
                 flash("Error updating Faculty")
                 return redirect(url_for('.render_manage_student')) 
         return redirect(url_for('.render_manage_student'))
+
+@student_views.route('/api/student/<id>', methods=['GET'])
+def get_student_json(id):
+    result = get_student_by_id_json(id)
+
+    if not result:
+        return jsonify({"Message":"Student doesn't exist"}),404
+    return jsonify(result),200
+

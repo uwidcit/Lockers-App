@@ -23,7 +23,7 @@ from views import (
     student_views,
     locker_views,
     area_views,
-    index_views
+    index_views,
 )
 
 # New views must be imported and added to this list
@@ -35,7 +35,7 @@ views = [
     student_views,
     locker_views,
     area_views,
-    index_views
+    index_views,
 ]
 
 def add_views(app, views):
@@ -47,7 +47,7 @@ def loadConfig(app, config):
     app.config['ENV'] = os.environ.get('ENV', 'DEVELOPMENT')
     if app.config['ENV'] == "DEVELOPMENT":
         app.config.from_object('config')
-        app.config['GIT_ENV'] = "GITPOD"
+        app.config['GIT_ENV'] = ""
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.root_path,'test_database.db')
     else:
         app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')

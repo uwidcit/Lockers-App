@@ -1,4 +1,5 @@
 from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify, url_for,flash
+from datetime import datetime
 
 from controllers import (
     get_All_rentType,
@@ -10,27 +11,26 @@ from controllers import (
     update_rentType_type
 )
 
-from views.forms import RentTypeAdd,ConfirmDelete
+from views.forms import RentTypeAdd,ConfirmDelete,SearchForm
 rentType_views = Blueprint('rentType_views', __name__, template_folder='../templates')
 
-@rentType_views.route('/rentType',methods=['GET'])
-def render_rentType_new():
-    return render_template('rentType.html',form = RentTypeAdd())
 
-@rentType_views.route('/rentType/manage',methods=['GET'])
+@rentType_views.route('/rentType',methods=['GET'])
 def render_rentType_all():
-    return render_template('rentType_manage.html', results=get_All_rentType())
+    return render_template('rentType_manage.html', results=get_All_rentType(),form = RentTypeAdd(),search=SearchForm(),delete= ConfirmDelete())
 
 @rentType_views.route('/rentType',methods=['POST'])
 def create_new_rentType():
     form = RentTypeAdd()
 
     if form.validate_on_submit:
-        period = request.form.get('period')
+        period_from = datetime.strptime(request.form.get('period_from'), '%Y-%m-%d')
+        period_to = datetime.strptime(request.form.get('period_to'), '%Y-%m-%d')
         type =  request.form.get('type')
         price = request.form.get('price')
 
-        rentType = new_rentType(period,type,price)
+        print(period_from)
+        rentType = new_rentType(period_from, period_to,type,price)
 
         if not rentType:
             flash('Error in creation')
@@ -70,7 +70,8 @@ def render_edit_pade(id):
         return redirect(url_for('.render_rentType_all'))
     form = RentTypeAdd()
     
-    form.period.data = rentType.period
+    form.period_from.data = rentType.period_from
+    form.period_to.data = rentType.period_to
     form.price.data = rentType.price
     form.type.data = rentType.type
     return render_template('rentType.html',updateMode = True, id= id, form = form)
@@ -81,7 +82,8 @@ def update_rentType(id):
     if form.validate_on_submit:
         rentType = get_rentType_by_id(id)
 
-        period = request.form.get('period')
+        period_from = request.form.get('period_from')
+        period_to = request.form.get('period_to')
         type = request.form.get('type')
         price = request.form.get('price')
 
@@ -90,8 +92,8 @@ def update_rentType(id):
             flash("Model doesn't exist or a Rental exists with this model that cannot be altered")
             return redirect(url_for('.render_rentType_all'))
         
-        if rentType.period != period:
-            if not update_rentType_period(id,period):
+        if rentType.period_from != period_from or rentType.period_to != period_to:
+            if not update_rentType_period(id,period_from,period_to):
                 flash("Error updating rentType")
             return redirect(url_for('.render_rentType_all'))
         

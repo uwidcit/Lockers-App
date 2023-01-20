@@ -5,6 +5,20 @@
 {{ super() }}
 
 {% block content %}
+
+<div class = "row">
+  <div class="col s12>
+    <h6> Search Transactions</h6>
+    <form method="POST" action="/transactionLog/search">
+      <div class="input-field col s12 m4 offset-m1" style ="display:inline;">
+        {{search.search_query}}
+      </div>
+      <div class="input-field col s2 m2" style="display:inline;">
+        {{search.submit(class="waves-light btn")}}
+      </div>
+    </form>
+</div>
+
    <table>
     <tr>
         <th>ID</th>
@@ -13,6 +27,7 @@
         <th>Transaction Date </th>
         <th> Amount </th>
         <th> Type </th>
+        <th>Invoice No</th>
     </tr>
     {% if transaction %}
     {% for t in transaction %}
@@ -23,10 +38,112 @@
             <td>{{t.transaction_date}}</td>
             <td>{{t.amount}}</td>
             <td>{{t.type}}</td>
+            <td>{{t.receipt_number}}</td>
         </tr>
     {% endfor %}
     {% else %}
         <td> No Transactions </td>
     {% endif %}
    </table>
+
+   <div class ="col m5 offset-m5">
+    <ul class = "pagination">
+
+      {% if current_page == 1 %}
+      <li class = "disabled"><a href="#!"><i class = "material-icons">chevron_left</i></a></li>
+      {% else %}
+      <li><a href = "/transactionLog/page/{{previous}}"><i class = "material-icons">chevron_left</i></a></li>
+      {% endif %}
+
+      {% for n in range(1, num_pages + 1) %}
+
+      {% if n == current_page %}
+      <li class="active"><a href="/transactionLog/page/{{n}}">{{n}}</a></li>
+      {% else %}
+      <li class="waves-effect"><a href="/transactionLog/page/{{n}}">{{n}}</a></li>
+      {% endif %}
+
+      {% endfor %}
+
+      {% if current_page == num_pages %}
+      <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+      {% else %}
+      <li><a href="/transactionLog/page/{{next}}"><i class="material-icons">chevron_right</i></a></li>
+      {% endif %}
+    </ul>
+   </div>
+   
+   
+
+   <div class ="modal" id="new_transaction" style="max-height: 100%;">
+    <div class ="modal-content" id="content">
+      <h6> New Transaction </h6>
+      <form id="newTransaction" class="col s12 m12" method="POST" action="/transactionLog">
+
+        {{ form.csrf_token }}
+    
+        <div class="input-field col s12 m4">
+        <p> RentID </p>
+        {{form.rent_id(size=18, class="validate")}}
+        </div>
+        
+        <div class="input-field col s12 m2 offset-m1">
+        <p> Currency </p>
+        {{form.currency(size=18, class="validate")}}
+        </div> 
+        
+        <div class="input-field col s12 m4 offset-m1">
+        <p> Amount </p>
+        {{form.amount(size=18, class="validate")}}
+        </div>
+    
+        <div class="input-field col s12 m4">
+        <p> Transaction Date </p>
+        {{form.transaction_date(size=18, class="validate")}}
+        </div>
+    
+    
+        <div class="input-field col s12 m8"> 
+        <p> Description </p>
+        {{form.description(size=18, class="validate")}}
+        </div>
+    
+        <div class="input-field col s12 m4" style="display:inline;">
+        <p> Transaction Type </p>
+        <select name="t_type" style="display:inline;">
+            <option value=”” disabled selected>Select Transaction Type</option>
+            {% for subfield in form.t_type %}
+             {{subfield}}
+            {% endfor %}
+          </select>
+        </div>
+    
+        <div class="input-field col s12 m4">
+          <p> Receipt Number </p>
+          {{form.receipt_number(size=18, class="validate")}}
+          </div>
+    
+        <div class="input-field col s8 m8 offset-m4">
+         {{form.submit}}
+         <a class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+        </div>
+        </form> 
+  </div>
+  </div>
+
+  <div class="col s1 m1 offset-m11" style="padding: 0.75rem">
+    <div class="floating-action-btn">
+  <div class="col s12 m8 offset-m8" style="padding-top: 0.5rem;">
+      <a class="btn-floating btn-large waves-effect waves-light modal-trigger" href="#new_transaction" id="m_button"><i class="material-icons"> add </i></a>
+  </div>
+    </div>
+  </div>
+</div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('.modal');
+    var instances = M.Modal.init(elems);
+    });
+</script>
 {% endblock %}

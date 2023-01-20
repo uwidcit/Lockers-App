@@ -7,3 +7,4 @@ from .rent import *
 from .rentType import *
 from .student import *
 from .transactionLog import *
+from .log import *

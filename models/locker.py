@@ -5,6 +5,7 @@ class Status(Enum):
     RENTED = "Rented"
     REPAIR = "Repair"
     FREE = "Free"
+    NVERIFIED = "Not Verified"
 
 class LockerTypes(Enum):
     SMALL = "Small"
@@ -21,9 +22,10 @@ class Locker (db.Model):
     locker_type = db.Column(db.Enum(LockerTypes),nullable = False)
     status = db.Column(db.Enum(Status), nullable=False)
     key = db.Column(db.Enum(Key) ,nullable = False)
-    area = db.relationship('Area', backref='locker', lazy=True, cascade="all, delete-orphan")
+    area = db.Column(db.Integer, db.ForeignKey("area.id"), nullable=False)
+    
 
-    def __init__(self,locker_code,locker_type,status,key):
+    def __init__(self,locker_code,locker_type,status,key,area):
         self.locker_code = locker_code
         if status.upper() in Status.__members__:
             self.status = Status[status.upper()]
@@ -31,18 +33,15 @@ class Locker (db.Model):
             self.locker_type = LockerTypes[locker_type.upper()]
         if key.upper() in Key.__members__:
             self.key = Key[key.upper()]
+        self.area = area
             
     def toJSON(self):
         return {
             'locker_code': self.locker_code,
-            'locker_type':self.locker_type.name,
-            'status': self.status.name,
-            'key':self.key.name,
-            'area': self.check_area()
+            'locker_type':self.locker_type.value,
+            'status': self.status.value,
+            'key':self.key.value,
+            'area': self.area
         }
-    def check_area(self):
-        if not self.area:
-            return ''
-        return [a.toJSON() for a in self.area]
 
     

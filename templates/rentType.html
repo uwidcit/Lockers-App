@@ -14,14 +14,25 @@
   {% endif %}
     {{ form.csrf_token }}
     <div class="input-field col s12 m8 offset-m2">
-    <p> Period</p>
-    {{form.period(size=20,class="validate")}}
+    <p> Period From</p>
+    {{form.period_from(size=20,class="validate")}}
     </div>
+
+    <div class="input-field col s12 m8 offset-m2">
+      <p> Period To</p>
+      {{form.period_to(size=20,class="validate")}}
+      </div>
+  
 
     <div class="input-field col s12 m8 offset-m2">
     <p> Type </p>
     
-      {{form.type (size=20,class="validate")}}
+    <select name="type" style="display:inline;">
+      <option value=”” disabled selected>Select a Rent Type</option>
+      {% for subfield in form.type %}
+        {{subfield}}
+      {% endfor %}
+    </select>
     </div>
 
     <div class="input-field col s12 m8 offset-m2">

@@ -7,6 +7,19 @@
 {% block content %}
 <div class="row">
       <div class="row">
+          <div class="col s12 m8 offset-m8">
+            <div class="col s12">
+              <form method="POST" action="/rentTypes/search">
+                <div class="input-field col s12 m4 offset-m1">
+                  {{search.search_query(placeholder="Enter search query")}}
+                </div>
+                <div class="input-field col s2 m2" style="display:inline;">
+                  <label for="search_submit"><i class="material-icons" style="color:white; text-align: center;">search</i></label>
+                 {{search.submit(id="search_submit", class="waves-light btn",value="")}}
+                </div>
+              </form>
+            </div>
+       </div>
         <table class="col s12 m8 offset-m2">
         <tr>
             <th>ID</th>
@@ -31,7 +44,57 @@
         <tr><td> No Price Models </td></tr>
         {% endif %}
       </table>
-
+      <div class="col s1 m1 offset-m11" style="padding: 0.75rem">
+        <div class="floating-action-btn">
+         <a class="btn-floating btn-large waves-effect waves-light purple modal-trigger" href="#new_rType"><i class="material-icons">add </i></a>
+       </div>
+     </div>
+     
+      <div class="modal" id="new_rType" style="max-height: 100%;">
+        <div class="modal-content">
+          <h6> Add Price Model</h6>
+            <form id="new_rentType" class="col s12 m12" method="POST" action="/rentType">
+            {{ form.csrf_token }}
+            <div class="input-field col s12 m6">
+            <p> Period From</p>
+            {{form.period_from(size=20,class="validate")}}
+            </div>
+        
+            <div class="input-field col s12 m6">
+              <p> Period To</p>
+              {{form.period_to(size=20,class="validate")}}
+              </div>
+          
+        
+            <div class="input-field col s12 m7">
+            <p> Type </p>
+            
+            <select name="type" style="display:inline;">
+              <option value=”” disabled selected>Select a Rent Type</option>
+              {% for subfield in form.type %}
+                {{subfield}}
+              {% endfor %}
+            </select>
+            </div>
+        
+            <div class="input-field col s12 m5">
+            <p> Price </p>
+            {{form.price (size=20,class="validate")}}
+            </div>
+            <div class="input-field col s12 m8 offset-m2">
+                {{form.submit(class="waves-light btn")}}
+              </div>
+            </form>   
+        </div>
+        </div>
       </div>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        var elems = document.querySelectorAll('.modal');
+        var instances = M.Modal.init(elems);
+        });
+      </script>
+     
 
 {% endblock %}
