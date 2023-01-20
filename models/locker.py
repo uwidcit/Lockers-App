@@ -5,6 +5,7 @@ class Status(Enum):
     RENTED = "Rented"
     REPAIR = "Repair"
     FREE = "Free"
+    NVERIFIED = "Not Verified"
 
 class LockerTypes(Enum):
     SMALL = "Small"

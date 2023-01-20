@@ -71,6 +71,25 @@ def rent_locker(id):
         db.session.rollback()
         return None
 
+def not_verified(id):
+    locker = get_locker_id(id)
+    
+    if not locker :
+        return None
+    
+    locker.status = Status.NVERIFIED
+    
+    try:
+        db.session.add(locker)
+        db.session.commit()
+        
+        return locker
+    except SQLAlchemyError as e:
+        create_log(id, type(e), datetime.now())
+        flash("Unable to release Locker. Check Error Log for more Details")
+        db.session.rollback()
+        return None
+
 def release_locker(id):
     locker = get_locker_id(id)
     

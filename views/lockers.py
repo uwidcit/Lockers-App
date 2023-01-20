@@ -1,11 +1,12 @@
 
 from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify,url_for,flash
 
-from views.forms import AreaAdd, ConfirmDelete,SearchForm,LockerAdd
+from views.forms import  ConfirmDelete,SearchForm,LockerAdd,RentAdd
 
 from controllers import (
     add_new_locker,
     get_area_choices,
+    get_All_rentType,
     get_lockers_available,
     get_lockers_by_offset,
     get_locker_id,
@@ -154,3 +155,9 @@ def return_all_lockers():
     if not locker_list:
         return jsonify({"error":"No lockers available"}),404
     return jsonify({"data":locker_list}),200
+
+@locker_views.route("/locker/<id>/rent", methods=["GET"])
+def render_lockers_rent(id):
+    form = RentAdd()
+    form.rent_type.choices = get_All_rentType()
+    return render_template("addrent.html", form=form,id=id)

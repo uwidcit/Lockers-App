@@ -44,7 +44,13 @@
             <td>{{l.status}}</td>
             <td>{{l.key}} </td>
             <td>{{l.area}}</td>
+            {% if l.status == "Free"%}
             <td><a href="/locker/{{l.locker_code}}/rent">Rent</a></td>
+            {% elif l.status == "Rented"%}
+            <td><a href="/rent/{{l.locker_code}}/release">Release</a></td>
+            {% elif l.status == "Not Verified" %}
+            <td><a href="/rent/{{l.locker_code}}/verify">Verify</a></td>
+            {% endif %}
             <td><a href="#edit" onclick="editMode({{l}})"><i class="material-icons">edit</i></a></td>
             <td><a href="#delete" onclick="removeMode({{l}})"><i class="material-icons">delete</i></a></td>
         </tr>
