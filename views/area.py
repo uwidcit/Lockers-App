@@ -3,6 +3,8 @@ from flask import Blueprint, redirect, render_template, request, send_from_direc
 from controllers import (
     get_area_all,
     get_area_by_id,
+    get_area_by_offset,
+    get_num_area_page,
     add_new_area,
     delete_area,
     set_description,
@@ -32,8 +34,31 @@ def create_new_area():
 
 @area_views.route('/area',methods=['GET'])
 def render_area_page():
+    num_pages = get_num_area_page(15)
+    areaData = get_area_by_offset(15,1)
+    previous = 1
+    next = previous + 1
     search = SearchForm()
-    return render_template('area.html', areaData = get_area_all(),form=AreaAdd(),search=search)
+    return render_template('area.html', areaData = areaData,form=AreaAdd(),search=search,num_pages= num_pages,current_page=1, next= next, previous= previous)
+
+@area_views.route('/area/page/<offset>',methods=['GET'])
+def render_area_page_offset(offset):
+    offset = int(offset)
+    num_pages = get_num_area_page(15)
+    areaData = get_area_by_offset(15,offset)
+    
+    if offset - 1 <= 0:
+        previous = 1
+        offset = 1
+    else:
+        previous = offset - 1
+    if offset + 1 >= num_pages:
+        next = num_pages
+    else:
+        next = offset + 1
+
+    search = SearchForm()
+    return render_template('area.html', areaData = areaData,form=AreaAdd(),search=search,num_pages= num_pages,current_page=offset, next= next, previous= previous)
 
 
 @area_views.route('/area/<id>/update', methods=['POST'])

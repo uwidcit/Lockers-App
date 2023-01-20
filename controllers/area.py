@@ -105,3 +105,21 @@ def get_area_all():
         return []
     return [a.toJSON() for a in areas]
 
+def get_num_areas():
+    return Area.query.count()
+
+def get_num_area_page(size):
+    count = get_num_areas()
+
+    if count%size != 0:
+        return int(count/size + 1)
+
+    return int(count/size)
+
+def get_area_by_offset(size,offset):
+     a_offset = (offset * size) - size
+     areas = Area.query.limit(size).offset(a_offset)
+
+     if not areas:
+        return None
+     return [a.toJSON() for a in areas]
