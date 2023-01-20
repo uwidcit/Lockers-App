@@ -10,14 +10,14 @@ def index_page():
 def render_not_found(e):
     flash('Page not found')
     print(e)
-    return redirect(url_for("locker_views.manage_lockers"))
+    return redirect(url_for("locker_views.manage_locker"))
 
 
 @index_views.app_errorhandler(500)
 def render_not_found(e):
     flash('You did something wrong :(')
     print(e)
-    return redirect(url_for("locker_views.manage_lockers"))
+    return redirect(url_for("locker_views.manage_locker"))
 
 @index_views.route('/flaskwebgui-dumb-request-for-middleware-keeping-the-server-online', methods=['GET'])
 def empty_function():

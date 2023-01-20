@@ -1,6 +1,7 @@
 from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify,url_for,flash
 from datetime import datetime
 from models.rent import Status
+from views.forms import SearchForm
 from controllers import (
     create_rent,
     get_rent_by_id,
@@ -18,7 +19,7 @@ rent_views = Blueprint('rent_views', __name__, template_folder='../templates')
 
 @rent_views.route('/rentpage',methods=['GET'])
 def rent_page():
-  return render_template('rent.html', results = get_all_rentals(),lockers= get_lockers_available())
+  return render_template('rent.html', results = get_all_rentals(),lockers= get_lockers_available(),search=SearchForm())
 
 @rent_views.route('/rent/add', methods=['POST'])
 def create_new_rent():
