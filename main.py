@@ -80,7 +80,7 @@ migrate = get_migrate(app)
 ui = FlaskUI(app, width=1366, height=768, start_server='flask')
 
 if __name__ == "__main__":
-    if app.config['GIT_ENV'] == "GITPOD":
+    if app.config['GIT_ENV'] == "GITPOD" or app.config['ENV'].upper() == "PRODUCTION":
         app.run()
     else:
         ui.run()
