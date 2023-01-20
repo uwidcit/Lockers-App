@@ -23,17 +23,22 @@
     </nav>
     <div class="row">
 
-      <div class="grey col s2" style="height: 100vh; width: 15vw;" > 
-        <ul class="side-nav" >
-          <li><a href="/locker">Lockers</a></li>
-          <li><a href="/area">Area</a></li>
-          <li><a href="/rentType">Pricing</a></li>
-          <li>Rent</li>
-            <li class="indentMenu"><a href="/rentpage">Rent Locker</a></li>
-            <li class="indentMenu"><a href="/releasepage">Release Locker</a></li>
-            <li><a href="/student">Student</a></li>
-          <li><a href="/transactionLog"> Transaction Log</a></li>
-        </ul>
+      <div class="black col s2" style="height: 88vh; width: 15vw;border:2px solid #000000;"> 
+        <ul id="slide-out" class="side-nav " >
+          
+          <li><a class="waves-effect" href="/locker"><i class="material-icons">code</i>Lockers</a></li>
+          <li><a class="waves-effect" href="/area"><i class="material-icons">flare</i>Area</a></li>
+          <li><a class="waves-effect" href="/rentType"><i class="material-icons">desktop_mac</i>Pricing</a></li>
+          <li><a class="waves-effect" href="/student"><i class="material-icons">laptop_mac</i>Student</a></li>
+          <li><div class="divider"></div></li>
+          <li><a class="subheader">Rent</a></li>
+          <li><a class="waves-effect" href="/rentpage"><i class="material-icons">input</i>Rent Lockers</a></li>
+          <li><a class="waves-effect" href="/releasepage"><i class="material-icons">show_chart</i>Release Locker</a></li>
+          <li><div class="divider"></div></li>
+    
+          <li><a class="waves-effect" href="/transactionLog"><i class="material-icons">local_grocery_store</i>Transaction Log</a></li>
+           </ul>
+             
       </div>
       
 
@@ -52,7 +57,7 @@
     {% endwith %}
 
    
-      <div class="white col s10" style="height: 85vh; width: 75vw; margin-left:30px; margin-top:10px; border-radius: 25px;overflow-y: scroll;" > 
+      <div class="white col s10" style="height: 85vh; width: 75vw; margin-left:30px; margin-top:10px; border-radius: 25px;overflow-y: scroll;overflow-x: hidden;" > 
         {% block content %}{% endblock %}
       </div>
 
@@ -62,6 +67,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="/static/util.js"></script>
     <script src = "/static/keep_alive.js"></script>
+    <script type="text/javascript">
+      $(".button-collapse").sideNav();
+    </script>
     <style>
       .indentMenu {
         text-indent: 35px;
