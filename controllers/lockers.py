@@ -37,7 +37,11 @@ def get_all_lockers():
     return [l.toJSON() for l in locker_list]
 
 def get_num_lockers():
-    return Locker.query.count()
+    count = Locker.query.count()
+
+    if not count:
+        return 0
+    return count
 
 def get_num_locker_page(size):
     count = get_num_lockers()

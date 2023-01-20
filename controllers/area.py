@@ -106,7 +106,11 @@ def get_area_all():
     return [a.toJSON() for a in areas]
 
 def get_num_areas():
-    return Area.query.count()
+    count = Area.query.count()
+
+    if not count:
+        return 0
+    return count
 
 def get_num_area_page(size):
     count = get_num_areas()
