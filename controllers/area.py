@@ -108,9 +108,9 @@ def get_area_all():
 def get_num_areas():
     count = Area.query.count()
 
-    if not count:
+    if not count or count == 0:
         db.session.rollback()
-        return 0
+        return 1
     return count
 
 def get_num_area_page(size):

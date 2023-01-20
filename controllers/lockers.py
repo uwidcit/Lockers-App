@@ -39,9 +39,8 @@ def get_all_lockers():
 def get_num_lockers():
     count = Locker.query.count()
 
-    if not count:
-        db.session.rollback()
-        return 0
+    if not count or count == 0:
+        return 1
     return count
 
 def get_num_locker_page(size):
