@@ -79,6 +79,26 @@ def get_all_transactions():
 
     return [t.toJSON() for t in transactions]
 
+def get_num_transactions():
+    return TransactionLog.query.count()
+
+def get_num_transactions_page(size):
+    count = get_num_transactions()
+    if count == 0:
+        return 1
+
+    if count%size != 0:
+        return int(count/size + 1)
+    return int(count/size)
+
+def get_transactions_by_offset(size, offset):
+    t_offset = (offset * size) - size
+    transactions = TransactionLog.query.limit(size).offset(t_offset)
+        
+    if not transactions:
+        return None
+    return [t.toJSONt() for t in transactions]
+
 def getT_Type():
     return [ e.value for e in TransactionType ]
 

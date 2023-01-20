@@ -46,6 +46,35 @@
     {% endif %}
    </table>
 
+   <div class ="col m5 offset-m5">
+    <ul class = "pagination">
+
+      {% if current_page == 1 %}
+      <li class = "disabled"><a href="#!"><i class = "material-icons">chevron_left</i></a></li>
+      {% else %}
+      <li><a href = "/transactionLog/page/{{previous}}"><i class = "material-icons">chevron_left</i></a></li>
+      {% endif %}
+
+      {% for n in range(1, num_pages + 1) %}
+
+      {% if n == current_page %}
+      <li class="active"><a href="/transactionLog/page/{{n}}">{{n}}</a></li>
+      {% else %}
+      <li class="waves-effect"><a href="/transactionLog/page/{{n}}">{{n}}</a></li>
+      {% endif %}
+
+      {% endfor %}
+
+      {% if current_page == num_pages %}
+      <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+      {% else %}
+      <li><a href="/transactionLog/page/{{next}}"><i class="material-icons">chevron_right</i></a></li>
+      {% endif %}
+    </ul>
+   </div>
+   
+   
+
    <div class ="modal" id="new_transaction" style="max-height: 100%;">
     <div class ="modal-content" id="content">
       <h6> New Transaction </h6>
@@ -73,7 +102,6 @@
         {{form.transaction_date(size=18, class="validate")}}
         </div>
     
-       
     
         <div class="input-field col s12 m8"> 
         <p> Description </p>

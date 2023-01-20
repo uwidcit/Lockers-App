@@ -6,6 +6,8 @@ from controllers import (
   get_student_by_id,
   get_student_current_rental,
   get_all_transactions,
+  get_num_transactions_page,
+  get_transactions_by_offset,
   get_transaction_id
 )
 
@@ -29,10 +31,6 @@ def render_transaction_page_student(id):
     form.amount.data = rent.amount_owed
 
     return render_template('transactionLog.html', form = form)
-
-@transactionLog_views.route('/transactionLog', methods=['GET'])
-def transactionLog_page():
-    return render_template('transactionLog.html', transaction = get_all_transactions(),form = TransactionAdd(),search = SearchForm())
 
 @transactionLog_views.route('/transactionLog', methods=['POST'])
 def create_new_transaction():
@@ -67,3 +65,33 @@ def get_transaction(id):
     if not transaction:
         return jsonify({"Message": "Transaction not found"}),404
     return jsonify(transaction.toJSON()),200
+
+@transactionLog_views.route('/transactionLog', methods=['GET'])
+def manage_transaction():
+    num_pages = get_num_transactions_page(15)
+    transaction_data = get_transactions_by_offset(15, 1)
+    previous = 1
+    next = previous + 1
+    form = TransactionAdd()
+
+    return render_template('transactionLog.html', transaction_data = transaction_data, form = TransactionAdd(), search=SearchForm(),searchMode=False, num_pages= num_pages,current_page=1, next=next, previous= previous)
+
+@transactionLog_views.route('/transactionLog/page/<offset>', methods=['GET'])
+def manage_transaction_pages(offset):
+    offset = int(offset)
+    num_pages = get_num_transactions_page(15)
+    transaction_data = get_transactions_by_offset(15, offset)
+
+    if offset - 1 <=0:
+        previous = 1
+        offset = 1
+    else:
+        previous = offset - 1
+    if offset + 1 >= num_pages:
+        next = num_pages
+    else:
+        next = offset + 1
+        form = TransactionAdd()
+        form.area.choices = get_area_choices()
+
+        return render_template('transactionLog.html', transaction_data = transaction_data, form = TransactionAdd(), search=SearchForm(),searchMode=False, num_pages= num_pages,current_page=1, next=next, previous= previous)
