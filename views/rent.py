@@ -19,8 +19,20 @@ rent_views = Blueprint('rent_views', __name__, template_folder='../templates')
 
 @rent_views.route('/rentpage',methods=['GET'])
 def rent_page():
-  return render_template('rent.html', results = get_all_rentals(),lockers= get_lockers_available(),search=SearchForm())
+  return render_template('rent.html', lockers= get_lockers_available(),search=SearchForm())
 
+
+@rent_views.route('/rentpage/search',methods=['POST'])
+def rent_search():
+    form = SearchForm()
+    if form.validate_on_submit:
+        query = request.form.get("search_query")
+        result = get_locker_id(query)
+        if result:
+           return render_template('rent.html', lockers=[result], search=SearchForm()) 
+        else:
+            flash('Record doesn''t exist')
+            return redirect(url_for('.rent_page'))
 @rent_views.route('/rent/add', methods=['POST'])
 def create_new_rent():
     s_id = request.json.get('student_id')
