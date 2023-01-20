@@ -80,7 +80,16 @@ def get_all_transactions():
     return [t.toJSON() for t in transactions]
 
 def get_num_transactions():
-    return TransactionLog.query.count()
+    trans = TransactionLog.query.all()
+    count = 0
+
+    for t in trans:
+        count += 1
+
+    if not count or count == 0:
+        return 1
+    return count
+   
 
 def get_num_transactions_page(size):
     count = get_num_transactions()

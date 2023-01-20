@@ -106,7 +106,12 @@ def get_area_all():
     return [a.toJSON() for a in areas]
 
 def get_num_areas():
-    count = Area.query.count()
+    areas = Area.query.all()
+
+    count = 0
+    
+    for a in areas:
+        count += 1
 
     if not count or count == 0:
         db.session.rollback()

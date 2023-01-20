@@ -38,9 +38,11 @@ def get_all_lockers():
 
 def get_num_lockers():
     try:
-        db.session.close()
-        db.session.begin()
-        count = Locker.query.count()
+        lockers = Locker.query.all()
+        count = 0
+
+        for l in lockers:
+            count += 1
 
         if not count or count == 0:
             return 1
