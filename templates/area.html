@@ -13,7 +13,7 @@
       </div>
       <div class="input-field col s2 m2" style="display:inline;">
         <label for="search_submit"><i class="material-icons">search</i></label>
-       {{search.submit(id="search_submit")}}
+       {{search.submit(id="search_submit", class="purple darken-4 waves-light btn")}}
       </div>
     </form>
   </div>
@@ -55,7 +55,7 @@
         {% if n == current_page %}
         <li class="active"><a href="/area/page/{{n}}">{{n}}</a></li>
         {% else %}
-        <li class="waves-effect"><a href="/area/page/{{n}}">{{n}}</a></li>
+        <li class="purple darken-4 waves-effect"><a href="/area/page/{{n}}">{{n}}</a></li>
         {% endif %}
 
         {% endfor %}
@@ -69,7 +69,7 @@
       </div>
       <div class="col s1 m1 offset-m11" style="padding: 0.75rem">
          <div class="floating-action-btn">
-          <a class="btn-floating btn-large waves-effect waves-light purple modal-trigger" href="#new_area"><i class="material-icons">add </i></a>
+          <a class="btn-floating btn-large waves-effect waves-light purple darken-4 modal-trigger" href="#new_area"><i class="material-icons">add </i></a>
         </div>
       </div>
 
@@ -94,7 +94,7 @@
              </div> 
              
              <div class="input-field col s4 m2 offset-m4" style="display:inline;">
-              {{form.submit(class="waves-light btn")}}
+              {{form.submit(class="waves-light btn", class="purple darken-4 waves-light btn")}}
             </div>
             <div class="input-field col s4 m4" style="display:inline;">
              <a class="waves-effect waves-light btn modal-close">Cancel</a>
@@ -124,7 +124,7 @@
                </div> 
                
                <div class="input-field col s4 m3 offset-m4" style="display:inline;">
-                {{form.submit(id="u_submit", class="waves-light btn")}}
+                {{form.submit(id="u_submit", class="purple darken-4 waves-light btn")}}
               </div>
               <div class="input-field col s4 m2" style="display:inline;">
                <a class="waves-effect waves-light btn modal-close">Cancel</a>
@@ -143,7 +143,7 @@
                 </div>
                 
                 <div class="col m2 offset-m3">
-                  {{delete.submit(class="waves-light red btn")}}
+                  {{delete.submit(class="purple darken-4 waves-light btn")}}
                 </div>
                 
                 <div class="col m2 offset-m2">
