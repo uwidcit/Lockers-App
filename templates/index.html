@@ -1,27 +1,61 @@
 {% extends "layout_no_nav.html" %}
 {% block title %}Login{% endblock %}
-{% block page %}Login{% endblock %}
+{% block page %}SAC Locker System{% endblock %}
 
 
 
 {% block content %}
 
-    <div class="center">
-        <h1>Login</h1>
-        <form action="/locker" method="get">
-            <div class="txt_fld">
-                <input type="text" id="username" name="username" required class="white-text center-align" value="username">
-                <span></span>
-                <label>Enter Username</label>
-            </div>
-            <div class="txt_fld">
-                <input type="password" id="password" name="password" required class="white-text center-align" value="password">
-                <span></span>
-                <label>Enter Password</label>
-            </div>
-            <input type="Submit" value="Login" class="btn orange darken-4">
-            
+    
+    <div class="container" >
+        <div class="row">
+        <div class="section"></div>
+       <main>
+        <center>
+         <div class="container" >
+            <div  class="z-depth-3 y-depth-3 x-depth-3 grey green-text lighten-4 row" style="display: inline-block; padding: 32px 48px 0px 48px; border: 1px; margin-top: 100px;">
+    
+    
+        
+         
+          <div class="center" style="padding-bottom: 10px;">
+            <h1 class = "yellow-text black" style="height:100px; padding-top:20px;">SAC</h1>
+        </div>      
+          <form action="/locker" method="get" style="width: 300px;">
+            <div class='row'>
+                <div class='input-field col s12 black-text'>
+                  <input type="text" id="username" name="username" required class="black-text center-align" value="username">
+                  <span></span>
+                  <label>Enter Username</label>
+                </div>
+              </div>
+              <div class='row'>
+                <div class='input-field col m12 black-text'>
+                  <input type="password" id="password" name="password" required class="black-text center-align" value="password">
+                  <span></span>
+                  <label>Enter Password</label>
+                </div>
+                <label style='float: right;'>
+                
+                </label>
+              </div>
+              <br/>
+              <center>
+                <div class='row'>
+                  <input type="Submit" value="Login" class="btn blue darken-4">
+              </div>
+              </center>
         </form>
+                
+         
+            </div>
+           </div>
+          </center>
+          </main>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+    
+        </div>
     </div>
 {% endblock %}
 
