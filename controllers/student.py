@@ -1,4 +1,5 @@
 from models import Student
+from models.student import RentStanding 
 from database import db
 from sqlalchemy.exc import SQLAlchemyError
 from flask import flash
@@ -136,9 +137,68 @@ def update_student_faculty(s_id, new_faculty):
         db.session.rollback()
         return None
 
+def update_student_status(id,status):
+    student = get_student_by_id(id)
+
+    if not student:
+        return None
+    
+    try:
+        if status.upper() in RentStanding.__members__:
+            student.rentStanding = RentStanding[status.upper()]
+        db.session.add(student)
+        db.session.commit()
+
+    except SQLAlchemyError as e:
+        flash("Unable to Update Student Faculty.Check Error Log for more Details")
+        db.session.rollback()
+        return None
+
+def get_available_student():
+    students = Student.query.filter_by(rentStanding = RentStanding.GOOD)
+
+    if not students:
+        return None
+    return [s.toJSON() for s in students]
+
 def get_all_students():
     students = Student.query.all()
 
     if not students:
         return None
     return [s.toJSON() for s in students]
+
+def search_student(query):
+    data = []
+    id = get_student_by_id_json(query)
+    first_name = get_student_by_first_name(query)
+    last_name = get_student_by_last_name(query)
+    faculty = get_student_by_faculty(query)
+
+    if id:
+        data = data + [id]
+    if first_name:
+        data = data + first_name
+    if last_name:
+        data = data + last_name
+    if faculty:
+        data = data + faculty
+    return data
+
+def get_student_by_first_name(query):
+    student = Student.query.filter_by(first_name = query).all()
+    if not student:
+        return None
+    return [s.toJSON() for s in student]
+
+def get_student_by_last_name(query):
+    student = Student.query.filter_by(last_name = query).all()
+    if not student:
+        return None
+    return [s.toJSON() for s in student]
+
+def get_student_by_faculty(query):
+    student = Student.query.filter_by(faculty = query).all()
+    if not student:
+        return None
+    return [s.toJSON() for s in student]

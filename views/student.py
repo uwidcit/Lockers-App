@@ -6,6 +6,7 @@ from controllers import (
     get_student_by_id,
     get_student_by_id_json,
     get_student_current_rental_toJSON,
+    search_student,
     update_student_id,
     update_student_first_name,
     update_student_last_name,
@@ -38,12 +39,12 @@ def render_manage_student():
     return render_template("manage_student.html",studentData=studentData,form=StudentAdd(),search=search)
 
 @student_views.route("/student/search",methods=['POST'])
-def search_student():
+def search_student_page():
     form = SearchForm()
     if form.validate_on_submit:
-        id = request.form.get('search_query')
-        student = get_student_by_id(id)
-        rent = get_student_current_rental_toJSON(id)
+        query = request.form.get('search_query')
+        student = search_student(query)
+        rent = get_student_current_rental_toJSON(query)
     return render_template('student_search.html',form=form,student = student,rent= rent)
 
 @student_views.route("/student/<id>/update", methods=['POST'])

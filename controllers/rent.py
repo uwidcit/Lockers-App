@@ -13,6 +13,8 @@ from controllers.lockers import(
     not_verified
 )
 
+from controllers.student import update_student_status
+
 from controllers.transactionLog import cal_transaction_amount
 from controllers.log import create_log
 from flask import flash
@@ -107,6 +109,7 @@ def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to):
             db.session.add(rent)
             db.session.commit()
             rent_locker(locker_id)
+            update_student_status(student_id,"RENTING")
             return rent
         except SQLAlchemyError as e:
             create_log(student_id, type(e), datetime.now())
@@ -134,6 +137,12 @@ def update_rent(id):
     if amt is not None:
         rent.amount_owed = amt - cal_transaction_amount(id)
     rent.status = rent.check_status()
+
+    if rent.status.value == "Overdue":
+        update_student_status(rent.student_id,"Overdue")
+
+    if rent.date_returned and rent.amount_owed > 0:
+        update_student_status(rent.student_id,"OWED")
 
     try:
         db.session.add(rent)
