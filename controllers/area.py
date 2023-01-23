@@ -30,6 +30,25 @@ def get_lockers_in_area(id):
         return None
     return area.getLockersInArea()
 
+def get_area_by_coordinates(long,lat):
+    areas =Area.query.filter_by(longitude = long,latitude = lat)
+    if not areas:
+        return None
+    return [a.toJSON() for a in areas]
+
+def get_area_by_description(description):
+    areas = Area.query.filter(Area.description.like(description)).all()
+    if not areas:
+        return None
+    return areas
+
+def get_area_by_description_toJSON(description):
+    areas = get_area_by_description(description)
+    if not areas:
+        return None
+    return [a.toJSON() for a in areas]
+
+
 def set_description(id,new_description):
     area = get_area_by_id(id)
     if not area: 

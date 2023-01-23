@@ -1,12 +1,14 @@
 
 from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify,url_for,flash
 
-from views.forms import  ConfirmDelete,SearchForm,LockerAdd,RentAdd
+from views.forms import  ConfirmDelete,SearchForm,LockerAdd,RentAdd,StudentAdd
+
 
 from controllers import (
     add_new_locker,
     get_area_choices,
     get_All_rentType,
+    get_available_student,
     get_lockers_available,
     get_lockers_by_offset,
     get_locker_id,
@@ -14,6 +16,7 @@ from controllers import (
     get_all_lockers,
     delete_locker,
     update_key,
+    search_lockers,
     update_locker_type,
     update_locker_status,
 )
@@ -58,7 +61,14 @@ def render_confirm_delete(id):
         flash('Locker does not exist')
         return redirect(url_for('.manage_locker'))
     
-    return render_template('delete_locker.html',locker = locker, form = ConfirmDelete() )
+    return render_template('delete_locker.html',locker = locker, form = ConfirmDelete())
+
+@locker_views.route("/locker/rent/<id>/student", methods=["GET"])
+def select_student_page():
+    studentData = get_available_student()
+    search = SearchForm()
+    search.submit.label.text = "Search Student"
+    return render_template("manage_student.html",studentData=studentData,form=StudentAdd(),search=search)
 
 @locker_views.route("/locker", methods=['POST'])
 def add_locker():
@@ -75,12 +85,17 @@ def add_locker():
 
 @locker_views.route('/locker/search',methods=['POST'])
 def locker_search():
+    previous = 1
+    next = previous + 1
+
     form = SearchForm()
     if form.validate_on_submit:
         query = request.form.get("search_query")
-        result = get_locker_id(query)
+        result = search_lockers(query)
         if result:
-           return render_template('manage_locker.html', lockerData=[result], form = LockerAdd(),delete=ConfirmDelete(), search=SearchForm(),searchMode=True) 
+           num_pages = 1
+           return render_template('manage_locker.html', lockerData=result, form = LockerAdd(),delete=ConfirmDelete(), search=SearchForm(),searchMode=True, num_pages= num_pages,current_page=1, next= next, previous= previous)
+         
         else:
             flash('Record doesn''t exist')
             return redirect(url_for('.manage_locker'))

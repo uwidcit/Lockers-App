@@ -2,9 +2,9 @@ from models import Locker
 from models.locker import Status, LockerTypes,Key
 from database import db
 from controllers.log import create_log
+from controllers.area import get_area_by_id,get_area_by_description
 from datetime import datetime
 from flask import flash
-from sqlalchemy import or_,and_
 from sqlalchemy.exc import SQLAlchemyError
 
 def add_new_locker(locker_code,locker_type,status,key,area,):
@@ -19,16 +19,84 @@ def add_new_locker(locker_code,locker_type,status,key,area,):
         return None
 
 def get_lockers_available():
-    locker_list = Locker.query.filter(and_(Locker.status == Status.FREE)).all()
+    locker_list = Locker.query.filter(Locker.status == Status.FREE).all()
     if not locker_list:
         return []
     return [l.toJSON() for l in locker_list]
+
+def get_lockers_by_Status(status):
+    if status.upper() in Status.__members__:
+        locker_list = Locker.query.filter(Locker.status == Status[status.upper()]).all()
+        if not locker_list:
+            return None
+        return [l.toJSON() for l in locker_list]
+    return None
+
+def get_locker_by_type(l_type):
+    if l_type.upper() in LockerTypes.__members__:
+        locker_list = Locker.query.filter(Locker.locker_type == LockerTypes[l_type.upper()]).all()
+        if not locker_list:
+            return None
+        return [l.toJSON() for l in locker_list]
+    return None
+
+def get_locker_by_area_id(id):
+    area = get_area_by_id(id)
+
+    if not area:
+        return None
+
+    lockers = Locker.query.filter_by(area = id).all()
+
+    if not lockers:
+        return None
+    return lockers
+
+def get_locker_by_area_id_toJSON(id):
+    lockers = get_locker_by_area_id(id)
+
+    if not lockers:
+        return None
+    return [l.toJSON() for l in lockers]
+
+
+def get_lockers_by_area_description(description):
+    area = get_area_by_description(description)
+    
+    lockers = []
+
+    if not area:
+        return None
+    for a in area:
+        lockers = lockers + get_locker_by_area_id_toJSON(a.id)
+    return lockers
+
 
 def get_locker_id(id):
     locker = Locker.query.filter_by(locker_code = id).first()
     if not locker:
         return None
     return locker
+
+def search_lockers(query):
+    data = []
+
+    id = get_locker_id(query)
+    type = get_locker_by_type(query)
+    description = get_lockers_by_area_description(query)
+    status = get_lockers_by_Status(query)
+
+    if id:
+        data = data + [id.toJSON()]
+    if type:
+        data = data + type
+    if description:
+        data = data + description
+    if status:
+        data = data + status
+
+    return data
+    
 
 def get_all_lockers():
     locker_list = Locker.query.all()
