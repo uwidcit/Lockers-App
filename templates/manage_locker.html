@@ -45,15 +45,18 @@
                 <td>{{l.status}}</td>
                 <td>{{l.key}} </td>
                 <td>{{l.area}}</td>
-                {% if l.status == "Free"%}
-                <td><a href="/locker/{{l.locker_code}}/rent">Rent</a></td>
-                {% elif l.status == "Rented"%}
-                <td><a href="/rent/{{l.locker_code}}/release">Release</a></td>
-                {% elif l.status == "Not Verified" %}
-                <td><a href="/rent/{{l.locker_code}}/verify">Verify</a></td>
-                {% endif %}
-                <td><a href="#edit" onclick="editMode({{l}})"><i class="material-icons">edit</i></a></td>
-                <td><a href="#delete" onclick="removeMode({{l}})"><i class="material-icons">delete</i></a></td>
+                <div style=" position: relative;display: inline-flex;">
+                  {% if l.status == "Free"%}
+                  <td style="width:120px;"><a href="/locker/{{l.locker_code}}/rent" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">check</i>Rent</a></td>
+                  {% elif l.status == "Rented"%}
+                  <td style="width:120px;"><a href="/rent/{{l.locker_code}}/release" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">close</i>Release</a></td>
+                  {% elif l.status == "Not Verified" %}
+                  <td style="width:120px;"><a href="/rent/{{l.locker_code}}/verify" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">verified_user</i>Verify</a></td>
+                  {% endif %}
+                  <a ><i >cloud</i>button</a>
+                  <td style="width:120px;"><a href="#edit" onclick="editMode({{l}})" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">edit</i>Edit</a></td>
+                  <td style="width:120px;"><a href="#delete" onclick="removeMode({{l}})" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">delete</i>Delete</a></td>
+                </div>
             </tr>
                 
             {% endfor %}
@@ -95,10 +98,10 @@
 
       <div class="row">
 
-        <div class ="modal" id="new_locker" style="max-height: 100%;">
+        <div class ="modal" id="new_locker" style="max-height: 100%;border-radius: 25px; height: 50vh;">
           <div class ="modal-content" id="content">
-            <h6> Add Locker </h6>
-            <form id="newLocker" class="col s12 m12" method="POST" action="/locker">
+            <h6 style="font-weight: bold;"> Add Locker </h6>
+            <form id="newLocker" class="col s12 m12" method="POST" action="/locker" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
                  {{ form.csrf_token }}
                  <div class="input-field col s12 m12">  
                   <div class="col s6">
@@ -148,8 +151,8 @@
                 </div>  
               </div>
                  <div class="input-field col s8 m8 offset-m4" style="display:inline;">
-                   {{form.submit(class="purple darken-4 waves-light btn")}}
-                   <a class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+                   {{form.submit(class=" right purple darken-4 waves-light btn")}}
+                   <a class="right modal-close waves-effect waves-green btn-flat">Cancel</a>
                  </div>       
              </form>
           </div>     

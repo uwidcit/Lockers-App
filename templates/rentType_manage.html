@@ -20,30 +20,32 @@
               </form>
             </div>
        </div>
-        <table class="col s12 m8 offset-m2">
-        <tr>
-            <th>ID</th>
-            <th>Period</th>
-            <th>Locker Type</th>
-            <th>Price</th>
-        </tr>
-
-        {% if results %}
-        {% for r in results %}
-        <tr>
-            <td>{{r.id}}</td>
-            <td>{{r.period}}</td>
-            <td>{{r.type}}</td>
-            <td>{{r.price}} </td>
-            <td><a href="/rentType/{{r.id}}/edit">Edit</a></td>
-            <td><a href="/rentType/{{r.id}}/delete">Remove</a></td>
-        </tr>
-            
-        {% endfor %}
-        {% else %}
-        <tr><td> No Price Models </td></tr>
-        {% endif %}
-      </table>
+        <div style="height:70vh;">
+          <table class="col s12 m8 offset-m2" >
+            <tr>
+                <th>ID</th>
+                <th>Period</th>
+                <th>Locker Type</th>
+                <th>Price</th>
+            </tr>
+    
+            {% if results %}
+            {% for r in results %}
+            <tr>
+                <td>{{r.id}}</td>
+                <td>{{r.period}}</td>
+                <td>{{r.type}}</td>
+                <td>{{r.price}} </td>
+                <td><a href="/rentType/{{r.id}}/edit">Edit</a></td>
+                <td><a href="/rentType/{{r.id}}/delete">Remove</a></td>
+            </tr>
+                
+            {% endfor %}
+            {% else %}
+            <tr><td> No Price Models </td></tr>
+            {% endif %}
+          </table>
+        </div>
       <div class="col s1 m1 offset-m11" style="padding: 0.75rem">
         <div class="floating-action-btn">
          <a class="btn-floating btn-large waves-effect waves-light purple modal-trigger" href="#new_rType"><i class="material-icons">add </i></a>

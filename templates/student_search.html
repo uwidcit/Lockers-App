@@ -12,7 +12,8 @@
         <a href="/student/{{student.student_id}}/edit">Edit</a>
         <a href="/transactionLog/sID={{student.student_id}}">Make Payment</a>
     </div>
-    
+    <div style="height:70vh;">
+           
     <table>
         {% for s in student %}
         <tr>
@@ -41,6 +42,7 @@
         </tr>
         {% endfor %}
     </table>
+    </div>
 
     {% if rent %}
     <h6> Rental Details</h6>
