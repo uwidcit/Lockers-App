@@ -1,4 +1,5 @@
 from models import Locker
+from models import Area
 from models.locker import Status, LockerTypes,Key
 from database import db
 from controllers.log import create_log
@@ -80,17 +81,17 @@ def get_locker_id(id):
     return locker
 
 def search_lockers(query):
-    data = Locker.query.filter(or_(Locker.locker_code.like(query), Locker.locker_type.like(query), Locker.status.like(query), Locker.status.like(query))).all()
-  
-    description = get_lockers_by_area_description(query)
-
-    if description:
-        data = data + description
+    data = db.session.query(Locker,Area).join(Area).filter(or_(Locker.locker_code.like(query), Locker.locker_type.like(query), Locker.status.like(query), Locker.status.like(query), Area.description.like(query))).all()
 
     if not data:
         return None
 
-    return [d.toJSON() for d in data]
+    data_list = []
+
+    for locker,area in data:
+        data_list.append(locker.toJSON())
+
+    return data_list
     
 
 def get_all_lockers():
