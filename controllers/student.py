@@ -3,6 +3,7 @@ from models.student import RentStanding
 from database import db
 from sqlalchemy.exc import SQLAlchemyError
 from flask import flash
+from sqlalchemy import or_
 from controllers.log import create_log
 from datetime import datetime
 
@@ -169,21 +170,12 @@ def get_all_students():
     return [s.toJSON() for s in students]
 
 def search_student(query):
-    data = []
-    id = get_student_by_id_json(query)
-    first_name = get_student_by_first_name(query)
-    last_name = get_student_by_last_name(query)
-    faculty = get_student_by_faculty(query)
+    data = Student.query.filter(or_(Student.student_id.like(query), Student.first_name.like(query), Student.last_name.like(query), Student.faculty.like(query), Student.rentStanding.like(query))).all()
+    
+    if not data:
+        return None
 
-    if id:
-        data = data + [id]
-    if first_name:
-        data = data + first_name
-    if last_name:
-        data = data + last_name
-    if faculty:
-        data = data + faculty
-    return data
+    return [d.toJSON() for d in data]
 
 def get_student_by_first_name(query):
     student = Student.query.filter_by(first_name = query).all()
