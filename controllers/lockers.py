@@ -136,6 +136,7 @@ def get_lockers_by_offset(size,offset):
 
      if not lockers:
         return None
+
      return [l.toJSON() for l in lockers]
 
 def rent_locker(id):
@@ -196,6 +197,10 @@ def delete_locker(id):
     locker = get_locker_id(id)
     if not locker:
         return None
+
+    if locker.current_rental:
+        flash('Can not delete a locker currently being rented')
+        return None
     try:
         db.session.delete(locker)
         db.session.commit()
@@ -210,6 +215,11 @@ def update_key(id, new_key):
     locker = get_locker_id(id)
     if not locker:
         return None
+
+    if locker.current_rental:
+        flash('Can not delete a locker currently being rented')
+        return None
+
     try:
          if new_key.upper() in Key.__members__:
             locker.key = Key[new_key.upper()]
@@ -226,6 +236,11 @@ def update_locker_status(id, new_status):
     locker = get_locker_id(id)
     if not locker:
         return None
+    
+    if locker.current_rental:
+        flash('Can not delete a locker currently being rented')
+        return None
+
     try:
         if new_status.upper() in Status.__members__:
             locker.status = Status[new_status.upper()]
@@ -239,6 +254,10 @@ def update_locker_status(id, new_status):
 def update_locker_type(id, new_type):
     locker = get_locker_id(id)
     if not locker:
+        return None
+        
+    if locker.current_rental:
+        flash('Can not delete a locker currently being rented')
         return None
     try:
         if new_type.upper() in LockerTypes.__members__:

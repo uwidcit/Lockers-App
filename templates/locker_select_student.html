@@ -1,0 +1,234 @@
+{% extends "layout.html" %}
+{% block title %}Student Select{% endblock %}
+{% block page %} Student Select {% endblock %}
+
+{{ super() }}
+
+{% block content %}
+<div class="row">
+  <div class="row">
+    <div class="col s12 m8 offset-m8">
+      <div class="col s12">
+        <form method="POST" action="/student/search">
+          <div class="input-field col s12 m4 offset-m1">
+            {{search.search_query(placeholder="Enter search query")}}
+          </div>
+          <div class="input-field col s2 m2" style="display:inline;">
+            <label for="search_submit"><i class="material-icons" style="color:white; text-align: center;">search</i></label>
+           {{search.submit(id="search_submit", class="purple darken-4 waves-light btn",value="")}}
+          </div>
+        </form>
+      </div>
+   </div>
+  </div>
+  <div class="row">
+        <div class="col s12 m10 offset-m1">
+          <table>
+          <tr>
+              <th>StudentID</th>
+              <th>First Name </th>
+              <th>Last Name </th>
+              <th>Faculty</th>
+              <th>Phone no.</th>
+              <th>Email </th>
+              <th>Standing</th>
+          </tr>
+  
+          {% if studentData %}
+          {% for s in studentData %}
+          <tr>
+              <td>{{s.student_id}}</td>
+              <td>{{s.first_name}}</td>
+              <td>{{s.last_name}}</td>
+              <td>{{s.faculty}} </td>
+              <td>{{s.phone_number}} </td>
+              <td>{{s.email}}</td>
+              <td>{{s.rentStanding}}</td>
+              <td><a href="#" onclick="createRent({{s.student_id}})"><i class="material-icons">add</i></a></td>
+              <td><a href="#" onclick="editMode({{s}})"><i class="material-icons">edit</i></a></td>
+          </tr>
+              
+          {% endfor %}
+          {% endif %}
+        </table>
+  
+        <div class="col s1 m1 offset-m11" style="padding: 0.75rem">
+          <div class="floating-action-btn">
+           <a class="btn-floating btn-large waves-effect waves-light purple darken-4 modal-trigger" href="#new_student"><i class="material-icons">add </i></a>
+         </div>
+       </div>
+  
+  
+        <div class="modal" id="new_student" style="max-height: 100%;">
+          <div class="modal-content">
+            <h6>Add Student </h6>
+           <form id="newStudent" class="col s12 m12" method="POST" action="/student">
+              {{ form.csrf_token }}
+              <div class="input-field col s12 m12"> 
+               <p>Student ID</p>           
+                {{ form.student_id(size=20, class="validate") }}
+              </div>  
+              <div class="input-field col s12 m4"> 
+                <p>First Name</p>
+                 {{ form.f_name(size=20, class="validate") }}
+               </div> 
+    
+               <div class="input-field col s12 m4"> 
+                <p>Last Name</p>
+                 {{ form.l_name(size=20, class="validate") }}
+               </div>
+    
+               <div class="input-field col s12 m3"> 
+                <p>Faculty</p>
+                 {{ form.faculty(size=20, class="validate") }}
+               </div> 
+    
+               <div class="input-field col s12 m6"> 
+                <p>Phone Number</p>
+                 {{ form.p_no(size=20, class="validate") }}
+               </div> 
+    
+               <div class="input-field col s12 m6"> 
+                <p>Email</p>
+                 {{ form.email(size=20, class="validate") }}
+               </div> 
+               <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+                {{form.submit(class="purple darken-4 waves-light btn")}}
+                <a class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+              </div>  
+          </form>
+      </div>
+    </div>
+  
+    <div class="modal" id="edit_student" style="max-height: 100%;">
+      <div class="modal-content">
+        <h6>Update Student </h6>
+       <form id="updateStudent" class="col s12 m12" method="POST" >
+          {{ form.csrf_token }}
+          <div class="input-field col s12 m12"> 
+           <p>Student ID</p>           
+            {{ form.student_id(size=20, class="validate", id="u_sid") }}
+          </div>  
+          <div class="input-field col s12 m4"> 
+            <p>First Name</p>
+             {{ form.f_name(size=20, class="validate", id="u_fname") }}
+           </div> 
+  
+           <div class="input-field col s12 m4"> 
+            <p>Last Name</p>
+             {{ form.l_name(size=20, class="validate", id="u_lname") }}
+           </div>
+  
+           <div class="input-field col s12 m3"> 
+            <p>Faculty</p>
+             {{ form.faculty(size=20, class="validate", id="u_fac") }}
+           </div> 
+  
+           <div class="input-field col s12 m6"> 
+            <p>Phone Number</p>
+             {{ form.p_no(size=20, class="validate", id="u_phno") }}
+           </div> 
+  
+           <div class="input-field col s12 m6"> 
+            <p>Email</p>
+             {{ form.email(size=20, class="validate", id="u_email") }}
+           </div> 
+           <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+            {{form.submit (id="u_submit", class="purple darken-4 waves-light btn")}}
+            <a class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+          </div>  
+      </form>
+  </div>
+  </div>
+
+  <div class="modal" id="new_Rent" style="max-height: 100%;">
+    <div class="modal-content">
+      <h6>New Rent</h6>
+      <form id="newRent" class="col s12 m12" method="POST" action="/makerent/{{id}}">
+        {{ form.csrf_token }}
+
+        <div class="input-field col s12 m12"> 
+          <div class="col s6">
+             <p>Student ID</p>
+            {{ rent.student_id(size=20, class="validate", id="rent_student_id") }}
+          </div>
+
+          <div class="col s6">
+            <p>Rent Type</p>
+            <select name="rent_type" style="display:inline;">
+              <option value=”” disabled selected>Select Transaction Type</option>
+              {% for subfield in rent.rent_type %}
+               {{subfield}}
+              {% endfor %}
+            </select>
+          </div>
+        </div>  
+        
+        <div class="input-field col s12 m12">
+          <div class="col s6">  
+            <p>Rent From</p>
+          {{rent.rent_date_from(class='datepicker')}}
+          </div> 
+
+          <div class="col s6">
+          <p>Rent To</p>
+          {{rent.rent_date_to(class='datepicker')}} 
+          </div>
+         </div> 
+
+         <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+          {{rent.submit(class="purple darken-4 waves-light btn")}}
+          <a class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+        </div>       
+      </form>
+    </div>
+  </div>
+  </div>
+</div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('.modal');
+    var instances = M.Modal.init(elems);
+    });
+  
+    function editMode(student){
+     form = document.getElementById('updateStudent')
+     form.action = "/student/"+student.student_id+"/update"
+  
+     student_id =  document.getElementById('u_sid')
+     student_id.value = student.student_id
+    
+     fname = document.getElementById('u_fname')
+     fname.value = student.first_name
+  
+     lname = document.getElementById('u_lname')
+     lname.value = student.last_name
+    
+     faculty = document.getElementById('u_fac')
+     faculty.value = student.faculty
+  
+    phone_number = document.getElementById('u_phno')
+    phone_number.value = student.phone_number
+  
+     email = document.getElementById('u_email')
+     email.value = student.email
+  
+     button = document.getElementById('u_submit')
+     button.value = "Update Student"
+  
+     elem = document.getElementById('edit_student');
+     instance = M.Modal.getInstance(elem)
+     instance.open()
+    }
+
+    function createRent(studentID){
+      studentIDBox = document.getElementById("rent_student_id")
+      studentIDBox.value = studentID
+
+     elem = document.getElementById('new_Rent');
+     instance = M.Modal.getInstance(elem)
+     instance.open()
+    }
+  </script>      
+{% endblock %}
+ 
