@@ -86,12 +86,7 @@ def search_lockers(query):
     if not data:
         return None
 
-    data_list = []
-
-    for locker,area in data:
-        data_list.append(locker.toJSON())
-
-    return data_list
+    return [locker.toJSON() for locker,area in data]
     
 
 def get_all_lockers():
