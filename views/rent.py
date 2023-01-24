@@ -5,6 +5,7 @@ from views.forms import SearchForm
 from controllers import (
     create_rent,
     get_rent_by_id,
+    get_all_rentType_tuple,
     get_all_rentals,
     release_rental,
     get_lockers_available,
@@ -75,7 +76,7 @@ def release_locker(id):
         return redirect(url_for('locker_views.manage_locker'))
     else:
         flash('Need to pay off balance first')
-        return redirect(url_for('transactionLog_views.transactionLog_page'))
+        return redirect(url_for('locker_views.manage_locker'))
     flash('Success')
     return redirect(url_for('locker_views.manage_locker'))
 
@@ -88,18 +89,18 @@ def return_locker_to_pool(id):
 
     if rental.status == Status.VERIFIED:
         flash('Cannot verify locker it has already been verified')
-        return redirect(url_for('.rent_page'))
+        return redirect(url_for('locker_views.manage_locker'))
     elif rental.status != Status.RETURNED:
         flash('Cannot verify locker it has already fees attached')
-        return redirect(url_for('.rent_page'))
+        return redirect(url_for('locker_views.manage_locker'))
     else:
         result = verify_rental(id)
         if result:
             flash('Success')
-            return redirect(url_for('.rent_page'))
+            return redirect(url_for('locker_views.manage_locker'))
         else:
             flash("An error has occured checked the logs")
-            return redirect(url_for('.rent_page'))
+            return redirect(url_for('locker_views.manage_locker'))
 
 @rent_views.route('/releasepage',methods=['GET'])
 def release_page():
@@ -111,7 +112,7 @@ def render(id):
     form = RentAdd()
     rentType_list = get_All_rentType()
     if rentType_list:
-        rentType_list = [(r["id"], r["type"]+" $"+str(r["price"]) +" Yr: "+ str(r["period_from"].year) +'/'+str(r["period_from"].month) + "to" + str(r["period_to"].year) +'/'+ str(r["period_to"].month)) for r in rentType_list]
+        rentType_list = get_all_rentType_tuple()
     form.rent_type.choices =  rentType_list
     return render_template('addrent.html', form=form, id = id)
 
@@ -128,7 +129,7 @@ def rent_locker(id):
             rental = create_rent(student_id=data['student_id'], locker_id=id,rentType=data['rent_type'],rent_date_from = rent_date_from,rent_date_to = rent_date_to)
             if rental:
                 flash("Success")
-            return redirect(url_for('locker_view.manage_lockers'))
+            return redirect(url_for('locker_views.manage_locker'))
        else:
         flash('Student doesn''t exist add them')
         return redirect(url_for('student_views.student_add')) 
