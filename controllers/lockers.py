@@ -5,6 +5,7 @@ from controllers.log import create_log
 from controllers.area import get_area_by_id,get_area_by_description
 from datetime import datetime
 from flask import flash
+from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
 
 def add_new_locker(locker_code,locker_type,status,key,area,):
@@ -79,23 +80,17 @@ def get_locker_id(id):
     return locker
 
 def search_lockers(query):
-    data = []
-
-    id = get_locker_id(query)
-    type = get_locker_by_type(query)
+    data = Locker.query.filter(or_(Locker.locker_code.like(query), Locker.locker_type.like(query), Locker.status.like(query), Locker.status.like(query))).all()
+  
     description = get_lockers_by_area_description(query)
-    status = get_lockers_by_Status(query)
 
-    if id:
-        data = data + [id.toJSON()]
-    if type:
-        data = data + type
     if description:
         data = data + description
-    if status:
-        data = data + status
 
-    return data
+    if not data:
+        return None
+
+    return [d.toJSON() for d in data]
     
 
 def get_all_lockers():

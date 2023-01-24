@@ -102,7 +102,7 @@ def locker_search():
         result = search_lockers(query)
         if result:
            num_pages = 1
-           return render_template('manage_locker.html', lockerData=result, form = LockerAdd(),delete=ConfirmDelete(), search=SearchForm(),searchMode=True, num_pages= num_pages,current_page=1, next= next, previous= previous)
+           return render_template('manage_locker.html', lockerData=result, form = LockerAdd(),delete=ConfirmDelete(), search=SearchForm(),searchMode=True, num_pages= num_pages,current_page=1, next= next, previous= previous,trans=TransactionAdd())
          
         else:
             flash('Record doesn''t exist')
