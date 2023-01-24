@@ -29,8 +29,8 @@
         <th> Type </th>
         <th>Invoice No</th>
     </tr>
-    {% if transaction %}
-    {% for t in transaction %}
+    {% if transaction_data %}
+    {% for t in transaction_data %}
         <tr>
             <td>{{t.id}}</td>
             <td>{{t.rent_id}}</td>
