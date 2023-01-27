@@ -53,7 +53,7 @@
                   {% elif l.status == "Not Verified" %}
                   <td style="width:120px;"><a href="/rent/{{l.locker_code}}/verify" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">verified_user</i>Verify</a></td>
                   {% endif %}
-                  <a ><i >cloud</i>button</a>
+                  
                   <td style="width:120px;"><a href="#edit" onclick="editMode({{l}})" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">edit</i>Edit</a></td>
                   <td style="width:120px;"><a href="#delete" onclick="removeMode({{l}})" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">delete</i>Delete</a></td>
                 </div>
@@ -152,7 +152,7 @@
               </div>
                  <div class="input-field col s8 m8 offset-m4" style="display:inline;">
                    {{form.submit(class=" right purple darken-4 waves-light btn")}}
-                   <a class="right modal-close waves-effect waves-green btn-flat">Cancel</a>
+                   <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
                  </div>       
              </form>
           </div>     
