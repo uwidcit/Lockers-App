@@ -4,6 +4,7 @@ from datetime import datetime
 from controllers import (
   add_new_transaction,
   get_student_by_id,
+  get_area_choices,
   get_student_current_rental,
   get_all_transactions,
   get_num_transactions_page,
@@ -50,9 +51,9 @@ def create_new_transaction():
         
         if not newTransaction:
             flash('Error adding transaction')
-            return redirect(url_for('.transactionLog_page'))
+            return redirect(url_for('.manage_transaction'))
         flash('Success')
-        return redirect(url_for('.transactionLog_page'))
+        return redirect(url_for('.manage_transaction'))
 
 @transactionLog_views.route('/transactionLog/all',methods=['GET'])
 def return_all_transactions():
