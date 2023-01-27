@@ -16,35 +16,35 @@ def add_new_transaction(rent_id, currency, transaction_date, amount, description
         create_log(rent_id, type(e), datetime.now())
         flash("Unable to Add new Transaction.Check Error Log for more Details")
         db.session.rollback()
-        return []
+        return None
 
 def get_transaction_id(id):
     transaction = TransactionLog.query.filter_by(id = id).first()
 
     if not transaction:
         flash("Transaction does not exist")
-        return []
+        return None
     return transaction
 
 def get_transaction_json(id):
     transaction = get_transaction_id(id)
 
     if not transaction:
-        return []
+        return None
     return transaction.toJSON()
 
 def get_transaction_by_receipt_number(receipt_no):
     transaction = TransactionLog.query.filter_by(receipt_no = receipt_no).first()
 
     if not transaction:
-        return []
+        return None
     return transaction
 
 def get_transaction_by_receipt_number_json(id):
     transaction = get_transaction_by_receipt_number(id)
 
     if not transaction:
-        return []
+        return None
     return transaction.toJSON()
     
 def get_all_transactions_by_rent(rent_id):
@@ -106,7 +106,7 @@ def get_transactions_by_offset(size, offset):
         
     if not transactions:
         return None
-    return [t.toJSONt() for t in transactions]
+    return [t.toJSON() for t in transactions]
 
 def getT_Type():
     return [ e.value for e in TransactionType ]

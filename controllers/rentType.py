@@ -150,5 +150,16 @@ def get_All_rentType():
         
     return [r.toJSON() for r in rentType]
 
+def get_all_rentType_tuple():
+    rentType = get_All_rentType()
+    rentTuple = []
+    if not rentType:
+        return None
+    
+    for r in rentType:
+        rentTuple =  rentTuple + [(r["id"], r["type"]+" $"+str(r["price"]) +" Period: "+ str(r["period_from"].year) +'/'+str(r["period_from"].month) + " to " + str(r["period_to"].year) +'/'+ str(r["period_to"].month))]
+
+    return rentTuple
+
 def get_rt_Type():
     return [rt.value for rt in Types]

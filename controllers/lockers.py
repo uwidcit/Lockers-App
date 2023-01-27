@@ -1,10 +1,12 @@
 from models import Locker
+from models import Area
 from models.locker import Status, LockerTypes,Key
 from database import db
 from controllers.log import create_log
 from controllers.area import get_area_by_id,get_area_by_description
 from datetime import datetime
 from flask import flash
+from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
 
 def add_new_locker(locker_code,locker_type,status,key,area,):
@@ -79,23 +81,12 @@ def get_locker_id(id):
     return locker
 
 def search_lockers(query):
-    data = []
+    data = db.session.query(Locker,Area).join(Area).filter(or_(Locker.locker_code.like(query), Locker.locker_type.like(query), Locker.status.like(query), Locker.status.like(query), Area.description.like(query))).all()
 
-    id = get_locker_id(query)
-    type = get_locker_by_type(query)
-    description = get_lockers_by_area_description(query)
-    status = get_lockers_by_Status(query)
+    if not data:
+        return None
 
-    if id:
-        data = data + [id.toJSON()]
-    if type:
-        data = data + type
-    if description:
-        data = data + description
-    if status:
-        data = data + status
-
-    return data
+    return [locker.toJSON() for locker,area in data]
     
 
 def get_all_lockers():
@@ -136,6 +127,7 @@ def get_lockers_by_offset(size,offset):
 
      if not lockers:
         return None
+
      return [l.toJSON() for l in lockers]
 
 def rent_locker(id):
@@ -196,6 +188,10 @@ def delete_locker(id):
     locker = get_locker_id(id)
     if not locker:
         return None
+
+    if locker.current_rental:
+        flash('Can not delete a locker currently being rented')
+        return None
     try:
         db.session.delete(locker)
         db.session.commit()
@@ -210,6 +206,11 @@ def update_key(id, new_key):
     locker = get_locker_id(id)
     if not locker:
         return None
+
+    if locker.current_rental:
+        flash('Can not delete a locker currently being rented')
+        return None
+
     try:
          if new_key.upper() in Key.__members__:
             locker.key = Key[new_key.upper()]
@@ -226,6 +227,11 @@ def update_locker_status(id, new_status):
     locker = get_locker_id(id)
     if not locker:
         return None
+    
+    if locker.current_rental:
+        flash('Can not delete a locker currently being rented')
+        return None
+
     try:
         if new_status.upper() in Status.__members__:
             locker.status = Status[new_status.upper()]
@@ -239,6 +245,10 @@ def update_locker_status(id, new_status):
 def update_locker_type(id, new_type):
     locker = get_locker_id(id)
     if not locker:
+        return None
+        
+    if locker.current_rental:
+        flash('Can not delete a locker currently being rented')
         return None
     try:
         if new_type.upper() in LockerTypes.__members__:

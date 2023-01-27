@@ -139,10 +139,13 @@ def update_rent(id):
     rent.status = rent.check_status()
 
     if rent.status.value == "Overdue":
-        update_student_status(rent.student_id,"Overdue")
+        update_student_status(rent.student_id,"OVERDUE")
 
     if rent.date_returned and rent.amount_owed > 0:
         update_student_status(rent.student_id,"OWED")
+    
+    if rent.date_returned and rent.amount_owed == 0:
+        update_student_status(rent.student_id,"GOOD")
 
     try:
         db.session.add(rent)
@@ -224,6 +227,7 @@ def verify_rental(id):
         db.session.add(rent)
         db.session.commit()
         release_locker(rent.locker_id)
+        update_student_status(rent.student_id,"GOOD")
         return rent
     except SQLAlchemyError as e:
         create_log(id, type(e), datetime.now())
@@ -241,5 +245,8 @@ def get_all_rentals():
         update_rent(r.id)
 
     return[r.toJSON() for r in rents]
+    
+    
+
 
     

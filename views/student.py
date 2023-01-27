@@ -40,12 +40,12 @@ def render_manage_student():
 
 @student_views.route("/student/search",methods=['POST'])
 def search_student_page():
-    form = SearchForm()
-    if form.validate_on_submit:
+    search = SearchForm()
+    if search.validate_on_submit:
         query = request.form.get('search_query')
         student = search_student(query)
         rent = get_student_current_rental_toJSON(query)
-    return render_template('student_search.html',form=form,student = student,rent= rent)
+    return render_template('student_search.html',student = student,rent= rent,form=StudentAdd())
 
 @student_views.route("/student/<id>/update", methods=['POST'])
 def update_student_info(id):
