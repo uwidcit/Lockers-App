@@ -90,10 +90,16 @@ def search_lockers(query):
     
 
 def get_all_lockers():
-    locker_list = Locker.query.all()
+    locker_list = db.session.query(Locker,Area).join(Area).all()
     if not locker_list:
         return []
-    return [l.toJSON() for l in locker_list]
+    
+    data = []
+    for locker,area in locker_list:
+        l = locker.toJSON()
+        l['area_description'] = area.longitude
+        data.append(l)
+    return data
 
 def get_num_lockers():
     try:
@@ -123,12 +129,16 @@ def get_num_locker_page(size):
 
 def get_lockers_by_offset(size,offset):
      l_offset = (offset * size) - size
-     lockers = Locker.query.limit(size).offset(l_offset)
+     lockers = db.session.query(Locker,Area).join(Area).limit(size).offset(l_offset)
 
      if not lockers:
         return None
-
-     return [l.toJSON() for l in lockers]
+     data = []
+     for locker,area in lockers:
+        l = locker.toJSON()
+        l['area_description'] = area.description
+        data.append(l)
+     return data
 
 def rent_locker(id):
     locker = get_locker_id(id)

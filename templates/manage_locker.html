@@ -44,7 +44,7 @@
                 <td>{{l.locker_type}}</td>
                 <td>{{l.status}}</td>
                 <td>{{l.key}} </td>
-                <td>{{l.area}}</td>
+                <td><a href="/area/{{l.area}}">{{l.area_description}}</a></td>
                 <div style=" position: relative;display: inline-flex;">
                   {% if l.status == "Free"%}
                   <td style="width:120px;"><a href="/locker/rent/{{l.locker_code}}/student" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">check</i>Rent</a></td>
