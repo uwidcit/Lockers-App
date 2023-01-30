@@ -30,4 +30,9 @@ def update_user(id, username):
         db.session.add(user)
         return db.session.commit()
     return None
-    
+
+def get_current_user(id):
+    user = get_user(id)
+    if user:
+        return user.username
+    return None  

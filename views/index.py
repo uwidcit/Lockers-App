@@ -1,5 +1,5 @@
 from flask import Blueprint, redirect, render_template, request, send_from_directory,flash,url_for
-
+from controllers import get_current_user
 index_views = Blueprint('index_views', __name__, template_folder='../templates')
 
 @index_views.route('/', methods=['GET'])
