@@ -77,10 +77,10 @@
    
    
 
-   <div class ="modal" id="new_transaction" style="max-height: 100%;">
+   <div class ="modal" id="new_transaction" style="max-height: 100%;border-radius: 25px; height: 68vh;">
     <div class ="modal-content" id="content">
-      <h6> New Transaction </h6>
-      <form id="newTransaction" class="col s12 m12" method="POST" action="/transactionLog">
+      <h6 style="font-weight: bold;"> New Transaction </h6>
+      <form id="newTransaction" class="col s12 m12" method="POST" action="/transactionLog" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
 
         {{ form.csrf_token }}
     
@@ -125,10 +125,10 @@
           {{form.receipt_number(size=18, class="validate")}}
           </div>
     
-        <div class="input-field col s8 m8 offset-m4">
-         {{form.submit}}
-         <a class="modal-close waves-effect waves-green btn-flat">Cancel</a>
-        </div>
+          <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+            {{form.submit(class=" right purple darken-4 waves-light btn")}}
+            <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+          </div> 
         </form> 
   </div>
   </div>
