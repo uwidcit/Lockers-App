@@ -34,9 +34,11 @@
             <td>{{a.description}}</td>
             <td>{{a.longitude}} </td>
             <td>{{a.latitude}} </td>
-            <td><a href="#edit" onclick="editMode({{a}})"><i class="material-icons">edit</i></a></td>
-            <td><a href="#delete" onclick="removeMode({{a}})"><i class="material-icons">delete</i></a></td>
-        </tr>
+            <div style=" position: relative;display: inline-flex;">
+              <td style="width:120px;"><a href="#edit" onclick="editMode({{a}})" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">edit</i>Edit</a></td>
+              <td style="width:120px;"><a href="#delete" onclick="removeMode({{a}})" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">delete</i>Delete</a></td>
+            </div>
+            </tr>
             
         {% endfor %}
         {% endif %}

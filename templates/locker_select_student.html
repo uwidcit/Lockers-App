@@ -44,8 +44,8 @@
               <td>{{s.phone_number}} </td>
               <td>{{s.email}}</td>
               <td>{{s.rentStanding}}</td>
-              <td><a href="#" onclick="createRent({{s.student_id}})"><i class="material-icons">add</i></a></td>
-              <td><a href="#" onclick="editMode({{s}})"><i class="material-icons">edit</i></a></td>
+              <td  style="width:120px;"><a href="#" onclick="createRent({{s.student_id}})"><i class="material-icons left">add</i>Add</a></td>
+              <td  style="width:120px;"><a href="#" onclick="editMode({{s}})"><i class="material-icons left">edit</i>Edit</a></td>
           </tr>
               
           {% endfor %}
