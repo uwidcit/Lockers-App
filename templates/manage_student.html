@@ -43,17 +43,21 @@
             <td>{{s.phone_number}} </td>
             <td>{{s.email}}</td>
             <td>{{s.rentStanding}}</td>
-            <td><a href="#" onclick="editMode({{s}})">Edit</a></td>
+            <div style=" position: relative;display: inline-flex;">
+              <td style="width:120px;"><a href="#" onclick="editMode({{s}})" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">edit</i>Edit</a></td>
+            </div>
+            
         </tr>
             
         {% endfor %}
         {% endif %}
       </table>
 
-      <div class="col s1 m1 offset-m11" style="padding: 0.75rem">
-        <div class="floating-action-btn">
-         <a class="btn-floating btn-large waves-effect waves-light purple darken-4 modal-trigger" href="#new_student"><i class="material-icons">add </i></a>
-       </div>
+      
+     </div>
+     <div class="col s1 m1 offset-m11" style="padding: 0.75rem">
+      <div class="floating-action-btn">
+       <a class="btn-floating btn-large waves-effect waves-light purple darken-4 modal-trigger" href="#new_student"><i class="material-icons">add </i></a>
      </div>
 
 
