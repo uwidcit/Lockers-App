@@ -12,7 +12,7 @@
     <title>{% block title %}{% endblock %}</title>
 
   </head>
-  <body  class ="indigo lighten-2" style ="overflow: hidden; height:80vh; display: flexbox;">
+  <body class ="indigo lighten-2" style ="height:80vh; display: flexbox; overflow: hidden !important;">
     <div>
       <nav class=" purple darken-4 " >
         <div class=" nav-wrapper" style="display:inline;position: relative;">
@@ -28,10 +28,10 @@
         
       </nav>
     </div>
-    <div class="row">
+    <div class="row" style="overflow: hidden; max-height: 90vh;">
 
-      <div class="indigo lighten-2 col s2 " style="height: 100vh; width: 15vw; margin-top: 40px;"> 
-        <ul id="slide-out" class="side-nav  " >
+      <div class="indigo lighten-2 col s2" style="height: 100vh; width: 15vw; margin-top: 40px;"> 
+        <ul id="slide-out" class="side-nav " >
           
           <li style="padding: 5px; padding-left: 20px;"><a class="waves-effect black-text text-lighten-4" href="/locker" ><i class="material-icons">assignment</i><h7 style="padding-left:10px;" >Lockers</h7></a></li>
           <li style="padding: 5px; padding-left: 20px;"><a class="waves-effect black-text text-lighten-4" href="/area"><i class="material-icons">add_location</i><h7 style="padding-left:10px;" >Area</h7></a></li>
