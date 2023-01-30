@@ -7,44 +7,47 @@
 {% block content %}
 
 <div class = "row">
-  <div class="col s12>
-    <h6> Search Transactions</h6>
+  <div class="col s12 m8 offset-m8">
     <form method="POST" action="/transactionLog/search">
-      <div class="input-field col s12 m4 offset-m1" style ="display:inline;">
-        {{search.search_query}}
+      <div class="input-field col s12 m4 offset-m1" >
+        <div class = "row">
+          <input type="search" placeholder="Enter search query" style = "padding-right: 80px"/>
+        </div>
       </div>
-      <div class="input-field col s2 m2" style="display:inline;">
-        {{search.submit(class="waves-light btn")}}
+      <div class="input-field col s2 m2" style="display:inline; padding-left: 50px;" >
+        <button type="submit" style="padding: 8.8px 21.5px 37px 21.5px" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons" style="padding: 5px; font-size: 2rem; color:white; ">search</i></button>
       </div>
     </form>
-</div>
-
-   <table>
-    <tr>
-        <th>ID</th>
-        <th>Rent ID</th>
-        <th>Currency </th>
-        <th>Transaction Date </th>
-        <th> Amount </th>
-        <th> Type </th>
-        <th>Invoice No</th>
-    </tr>
-    {% if transaction_data %}
-    {% for t in transaction_data %}
-        <tr>
-            <td>{{t.id}}</td>
-            <td>{{t.rent_id}}</td>
-            <td>{{t.currency}}</td>
-            <td>{{t.transaction_date}}</td>
-            <td>{{t.amount}}</td>
-            <td>{{t.type}}</td>
-            <td>{{t.receipt_number}}</td>
-        </tr>
-    {% endfor %}
-    {% else %}
-        <td> No Transactions </td>
-    {% endif %}
-   </table>
+</div >
+  <div class="col s12 m10 offset-m1" style="height:60vh;">
+    <table>
+      <tr>
+          <th>ID</th>
+          <th>Rent ID</th>
+          <th>Currency </th>
+          <th>Transaction Date </th>
+          <th> Amount </th>
+          <th> Type </th>
+          <th>Invoice No</th>
+      </tr>
+      {% if transaction_data %}
+      {% for t in transaction_data %}
+          <tr>
+              <td>{{t.id}}</td>
+              <td>{{t.rent_id}}</td>
+              <td>{{t.currency}}</td>
+              <td>{{t.transaction_date}}</td>
+              <td>{{t.amount}}</td>
+              <td>{{t.type}}</td>
+              <td>{{t.receipt_number}}</td>
+          </tr>
+      {% endfor %}
+      {% else %}
+          <td> No Transactions </td>
+      {% endif %}
+     </table>
+  </div>
+   
 
    <div class ="col m5 offset-m5">
     <ul class = "pagination">
@@ -75,10 +78,10 @@
    
    
 
-   <div class ="modal" id="new_transaction" style="max-height: 100%;">
+   <div class ="modal" id="new_transaction" style="max-height: 100%;border-radius: 25px; height: 68vh;">
     <div class ="modal-content" id="content">
-      <h6> New Transaction </h6>
-      <form id="newTransaction" class="col s12 m12" method="POST" action="/transactionLog">
+      <h6 style="font-weight: bold;"> New Transaction </h6>
+      <form id="newTransaction" class="col s12 m12" method="POST" action="/transactionLog" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
 
         {{ form.csrf_token }}
     
@@ -123,10 +126,10 @@
           {{form.receipt_number(size=18, class="validate")}}
           </div>
     
-        <div class="input-field col s8 m8 offset-m4">
-         {{form.submit}}
-         <a class="modal-close waves-effect waves-green btn-flat">Cancel</a>
-        </div>
+          <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+            {{form.submit(class=" right purple darken-4 waves-light btn")}}
+            <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+          </div> 
         </form> 
   </div>
   </div>

@@ -6,22 +6,25 @@
 
 {% block content %}
 <div class="row">
-  <div class="col s12 m8 offset-m8">
-    <div class="col s12">
+    <div class="col s12 m8 offset-m8">
+  <div class="col s12">
+
       <form method="POST" action="/student/search">
         <div class="input-field col s12 m4 offset-m1">
-          {{search.search_query(placeholder="Enter search query")}}
+          <div class = "row">
+            <input type="search" placeholder="Enter search query"/>
+           </div>
         </div>
-        <div class="input-field col s2 m2" style="display:inline;">
-          <label for="search_submit"><i class="material-icons" style="color:white; text-align: center;">search</i></label>
-         {{search.submit(id="search_submit", class="purple darken-4 waves-light btn",value="")}}
+
+        <div class="input-field col s2 m2" style="display:inline; padding-left: 0px;" >
+          <button type="submit" style="padding: 9px 21.5px 37px 21.5px" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons" style="padding: 5px; font-size: 2rem; color:white; ">search</i></button>
         </div>
       </form>
     </div>
- </div>
+ 
 </div>
 <div class="row" >
-      <div class="col s12 m10 offset-m1" style="height:70vh;">
+      <div class="col s12 m10 offset-m1" style="height:60vh;">
         <table>
         <tr>
             <th>StudentID</th>
@@ -43,24 +46,28 @@
             <td>{{s.phone_number}} </td>
             <td>{{s.email}}</td>
             <td>{{s.rentStanding}}</td>
-            <td><a href="#" onclick="editMode({{s}})">Edit</a></td>
+            <div style=" position: relative;display: inline-flex;">
+              <td style="width:120px;"><a href="#" onclick="editMode({{s}})" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">edit</i>Edit</a></td>
+            </div>
+            
         </tr>
             
         {% endfor %}
         {% endif %}
       </table>
 
-      <div class="col s1 m1 offset-m11" style="padding: 0.75rem">
-        <div class="floating-action-btn">
-         <a class="btn-floating btn-large waves-effect waves-light purple darken-4 modal-trigger" href="#new_student"><i class="material-icons">add </i></a>
-       </div>
+      
+     </div>
+     <div class="col s1 m1 offset-m11" style="padding: 0.75rem">
+      <div class="floating-action-btn">
+       <a class="btn-floating btn-large waves-effect waves-light purple darken-4 modal-trigger" href="#new_student"><i class="material-icons">add </i></a>
      </div>
 
 
-      <div class="modal" id="new_student" style="max-height: 100%;border-radius: 25px; height: 50vh;">
+      <div class="modal" id="new_student" style="max-height: 100%;border-radius: 25px; height: 67vh;">
         <div class="modal-content">
-          <h6>Add Student </h6>
-         <form id="newStudent" class="col s12 m12" method="POST" action="/student">
+          <h6 style="font-weight: bold;">Add Student </h6>
+         <form id="newStudent" class="col s12 m12" method="POST" action="/student" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
             {{ form.csrf_token }}
             <div class="input-field col s12 m12"> 
              <p>Student ID</p>           
@@ -91,16 +98,16 @@
                {{ form.email(size=20, class="validate") }}
              </div> 
              <div class="input-field col s8 m8 offset-m4" style="display:inline;">
-              {{form.submit(class="purple darken-4 waves-light btn")}}
-              <a class="red darken-4 modal-close waves-effect waves-light btn">Cancel</a>
-            </div>  
+              {{form.submit(class=" right purple darken-4 waves-light btn")}}
+              <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+            </div> 
         </form>
     </div>
   </div>
 
-  <div class="modal" id="edit_student" style="max-height: 100%;border-radius: 25px;">
+  <div class="modal" id="edit_student" style="max-height: 100%;border-radius: 25px; height: 67vh;">
     <div class="modal-content">
-      <h6>Update Student </h6>
+      <h6 style="font-weight: bold;">Update Student </h6>
      <form id="updateStudent" class="col s12 m12" method="POST" style="padding: 10px; border-color: black;border: 2px; border-style: solid;" >
         {{ form.csrf_token }}
         <div class="input-field col s12 m12"> 
@@ -132,9 +139,9 @@
            {{ form.email(size=20, class="validate", id="u_email") }}
          </div> 
          <div class="input-field col s8 m8 offset-m4" style="display:inline;">
-          {{form.submit (id="u_submit", class="purple darken-4 waves-light btn")}}
-          <a class="red darken-4 modal-close waves-effect waves-light btn">Cancel</a>
-        </div>  
+          {{form.submit(id="u_submit",class=" right purple darken-4 waves-light btn")}}
+          <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+        </div> 
     </form>
 </div>
 </div>

@@ -14,21 +14,23 @@
           </div>
           
           {% else %}
-            <div class="col s12">
-              <form method="GET" action="/locker/search/">
+            <div class="col s12 m8 offset-m8">
+              <form method="POST" action="/locker/search">
                 <div class="input-field col s12 m4 offset-m1">
-                  {{search.search_query(placeholder="Enter search query")}}
+                 <div class = "row">
+                  <input type="search" placeholder="Enter search query"/>
+                 </div>
                 </div>
-                <div class="input-field col s2 m2" style="display:inline;">
-                  <label for="search_submit"><i class="material-icons" style=" text-align: center;">search</i></label>
-                 {{search.submit(id="search_submit", class="purple darken-4 waves-light btn",value="")}}
+
+                <div class="input-field col s2 m2" style="display:inline; padding-left: 0px;" >
+                  <button type="submit" style="padding: 9px 21.5px 37px 21.5px" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons" style="padding: 5px; font-size: 2rem; color:white; ">search</i></button>
                 </div>
               </form>
             </div>
           </div>
           {% endif %}  
-        <div class="row" style="height:64vh;">
-          <table class="col s12 m10 offset-m1" >
+        <div class="col s12 m10 offset-m1" style="height:60vh;">
+          <table  >
             <tr>
                 <th>Locker Code</th>
                 <th>Locker Type </th>
@@ -44,7 +46,7 @@
                 <td>{{l.locker_type}}</td>
                 <td>{{l.status}}</td>
                 <td>{{l.key}} </td>
-                <td><a href="/area/{{l.area}}">{{l.area_description}}</a></td>
+                <td><a href="/area">{{l.area_description}}</a></td>
                 <div style=" position: relative;display: inline-flex;">
                   {% if l.status == "Free"%}
                   <td style="width:120px;"><a href="/locker/rent/{{l.locker_code}}/student" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">check</i>Rent</a></td>
@@ -106,7 +108,7 @@
 
       <div class="row">
 
-        <div class ="modal" id="new_locker" style="max-height: 100%;border-radius: 25px; height: 50vh;">
+        <div class ="modal" id="new_locker" style="max-height: 100%;border-radius: 25px; height: 65vh;">
           <div class ="modal-content" id="content">
             <h6 style="font-weight: bold;"> Add Locker </h6>
             <form id="newLocker" class="col s12 m12" method="POST" action="/locker" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
@@ -166,35 +168,28 @@
           </div>     
         </div>
 
-        <div class="modal" id="delete_locker" style="max-height: 100%;">
+        <div class="modal" id="delete_locker" style="max-height: 100%;border-radius: 25px; height: 35vh;">
           <div class="modal-content">
-            <form id="deleteLocker" class="col s12 m12" method="POST">
+            <h6 style="font-weight: bold;">Delete Locker </h6>
+            <form id="deleteLocker" class="col s12 m12" method="POST" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
             {{ delete.csrf_token }}
-            <div class="input-field col s12 m12" style="display:inline;">
-              <div class="col m12">
-                <h5 id="deleteTitle"></h5>
-              </div>
-              
-              <div class="col m2 offset-m2">
-                {{delete.submit(class="purple darken-4 waves-light btn")}}
-              </div>
-              
-              <div class="col m2 offset-m2">
-                <a class="modal-close waves-effect waves-green btn-flat">Close</a> 
-              </div>
-              
-              
-          </div>
+            <div class="input-field col s12 m12"> 
+              <h5 id="deleteTitle"></h5>
+            </div>
+          
+          <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+            {{delete.submit(class="right purple darken-4 waves-light btn")}}
+            <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>          </div>
           </form>
         </div>
       </div>
 
       
-      <div class ="modal" id="edit_locker" style="max-height: 100%;">
-        <div class ="modal-content" id="content">
-          <h6> Edit Locker </h6>
-          <form id="editLocker" class="col s12 m12" method="POST" action="/locker">
-               {{ form.csrf_token }}
+      <div class="modal" id="edit_locker" style="max-height: 100%;border-radius: 25px; height: 65vh;">
+        <div class="modal-content" id="content">
+          <h6 style="font-weight: bold;"> Edit Locker </h6>
+          <form id="editLocker" class="col s12 m12" method="POST" action="/locker" style="padding: 10px; border-color: black;border: 2px; border-style: solid;" >
+            {{ form.csrf_token }}
                <div class="input-field col s12 m12">  
                 <div class="col s6">
                   <p>Locker Code</p>
@@ -242,18 +237,19 @@
                 </select>
               </div>  
             </div>
-               <div class="input-field col s8 m8 offset-m4" style="display:inline;">
-                 {{form.submit(id="u_submit",class="purple darken-4 waves-light btn")}}
-                 <a class="modal-close waves-effect waves-green btn-flat">Cancel</a>
-               </div>       
+            <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+              {{form.submit(id="u_submit",class="right purple darken-4 waves-light btn")}}
+              <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+            </div> 
+                     
            </form>
         </div>     
       </div>
 
-      <div class ="modal" id="new_transaction" style="max-height: 100%;">
-        <div class ="modal-content" id="content">
-          <h6> New Transaction </h6>
-          <form id="newTransaction" class="col s12 m12" method="POST" action="">
+      <div class ="modal" id="new_transaction" style="max-height: 100%;border-radius: 25px; height: 65vh;">
+        <div class="modal-content">
+          <h6 style="font-weight: bold;">New Transaction </h6>
+          <form id="newTransaction" class="col s12 m12" method="POST" action="" style="padding: 10px; border-color: black;border: 2px; border-style: solid;" >
     
             {{ form.csrf_token }}
         
@@ -300,8 +296,9 @@
         
               <div class="input-field col s8 m8 offset-m4" style="display:inline;">
                 {{trans.submit(id="t_submit",class="purple darken-4 waves-light btn")}}
-                <a class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+              <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
               </div> 
+                
             </form> 
       </div>
       </div>

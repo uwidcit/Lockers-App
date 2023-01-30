@@ -13,21 +13,22 @@
     </div>
     
     {% else %}
-      <div class="col s12">
+      <div class="col s12 m8 offset-m8">
         <form method="POST" action="/locker/search">
           <div class="input-field col s12 m4 offset-m1">
             {{search.search_query(placeholder="Enter search query")}}
           </div>
           <div class="input-field col s2 m2" style="display:inline;">
-            <label for="search_submit"><i class="material-icons" style=" text-align: center;">search</i></label>
-          {{search.submit(id="search_submit", class="purple darken-4 waves-light btn",value="")}}
+            <label for="search_submit"><i class="material-icons" style=" text-align: center;margin-left: 3px;color: white;">search</i></label>
+           {{search.submit(id="search_submit", class="purple darken-4 waves-light btn",value="")}}
           </div>
         </form>
       </div>
-    </div>
+    </div >
     {% endif %} 
-        <table style="overflow-y: scroll; height: inherit;background-color: chocolate;">
-          <thead style="background-color: deepskyblue;">
+      <div class="col s12 m10 offset-m1" style="height:60vh;">
+        <table >
+          <thead >
             <tr>
               <th>ID</th>
               <th>Locker Code</th>
@@ -55,9 +56,9 @@
                   <td>{{result.status.value}}</td>
                   <td>$ {{result.amount_owed}}</td>
                   {% if result.status.value != "Returned" and result.status.value != "Verified"%}
-                  <td><a href="/rent/{{result.id}}/release">Release</a></td>
+                  <td><a href="/rent/{{result.id}}/release" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">delete</i>Release</a></td>
                   {% elif result.status.value == "Returned"%}
-                  <td><a href="/rent/{{result.id}}/release/verify">Verify Release</a></td>
+                  <td><a href="/rent/{{result.id}}/release/verify" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">delete</i>Verify Release</a></td>
                   {% elif result.status.value != "Verified"%}
 
                   {% endif %}
@@ -70,6 +71,7 @@
             {% endif %}
           <tbody>
         </table>
+      </div>  
       </div>
 </div>
 {% endblock %}

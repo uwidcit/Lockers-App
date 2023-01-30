@@ -105,7 +105,7 @@ def return_locker_to_pool(id):
 @rent_views.route('/releasepage',methods=['GET'])
 def release_page():
     rentals = get_all_rentals()
-    return render_template('release.html', results = rentals)
+    return render_template('release.html', results = rentals,search=SearchForm())
 
 @rent_views.route('/makerent/<id>', methods=['GET'])
 def render(id):

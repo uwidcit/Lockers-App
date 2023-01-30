@@ -44,8 +44,8 @@
               <td>{{s.phone_number}} </td>
               <td>{{s.email}}</td>
               <td>{{s.rentStanding}}</td>
-              <td><a href="#" onclick="createRent({{s.student_id}})"><i class="material-icons">add</i></a></td>
-              <td><a href="#" onclick="editMode({{s}})"><i class="material-icons">edit</i></a></td>
+              <td  style="width:120px;"><a href="#" onclick="createRent({{s.student_id}})"><i class="material-icons left">add</i>Add</a></td>
+              <td  style="width:120px;"><a href="#" onclick="editMode({{s}})"><i class="material-icons left">edit</i>Edit</a></td>
           </tr>
               
           {% endfor %}
@@ -59,92 +59,92 @@
        </div>
   
   
-        <div class="modal" id="new_student" style="max-height: 100%;">
-          <div class="modal-content">
-            <h6>Add Student </h6>
-           <form id="newStudent" class="col s12 m12" method="POST" action="/student">
-              {{ form.csrf_token }}
-              <div class="input-field col s12 m12"> 
-               <p>Student ID</p>           
-                {{ form.student_id(size=20, class="validate") }}
-              </div>  
-              <div class="input-field col s12 m4"> 
-                <p>First Name</p>
-                 {{ form.f_name(size=20, class="validate") }}
-               </div> 
-    
-               <div class="input-field col s12 m4"> 
-                <p>Last Name</p>
-                 {{ form.l_name(size=20, class="validate") }}
-               </div>
-    
-               <div class="input-field col s12 m3"> 
-                <p>Faculty</p>
-                 {{ form.faculty(size=20, class="validate") }}
-               </div> 
-    
-               <div class="input-field col s12 m6"> 
-                <p>Phone Number</p>
-                 {{ form.p_no(size=20, class="validate") }}
-               </div> 
-    
-               <div class="input-field col s12 m6"> 
-                <p>Email</p>
-                 {{ form.email(size=20, class="validate") }}
-               </div> 
-               <div class="input-field col s8 m8 offset-m4" style="display:inline;">
-                {{form.submit(class="purple darken-4 waves-light btn")}}
-                <a class="modal-close waves-effect waves-green btn-flat">Cancel</a>
-              </div>  
-          </form>
-      </div>
+       <div class="modal" id="new_student" style="max-height: 100%;border-radius: 25px; height: 67vh;">
+        <div class="modal-content">
+          <h6 style="font-weight: bold;">Add Student </h6>
+         <form id="newStudent" class="col s12 m12" method="POST" action="/student" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
+            {{ form.csrf_token }}
+            <div class="input-field col s12 m12"> 
+             <p>Student ID</p>           
+              {{ form.student_id(size=20, class="validate") }}
+            </div>  
+            <div class="input-field col s12 m4"> 
+              <p>First Name</p>
+               {{ form.f_name(size=20, class="validate") }}
+             </div> 
+  
+             <div class="input-field col s12 m4"> 
+              <p>Last Name</p>
+               {{ form.l_name(size=20, class="validate") }}
+             </div>
+  
+             <div class="input-field col s12 m3"> 
+              <p>Faculty</p>
+               {{ form.faculty(size=20, class="validate") }}
+             </div> 
+  
+             <div class="input-field col s12 m6"> 
+              <p>Phone Number</p>
+               {{ form.p_no(size=20, class="validate") }}
+             </div> 
+  
+             <div class="input-field col s12 m6"> 
+              <p>Email</p>
+               {{ form.email(size=20, class="validate") }}
+             </div> 
+             <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+              {{form.submit(class=" right purple darken-4 waves-light btn")}}
+              <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+            </div> 
+        </form>
     </div>
-  
-    <div class="modal" id="edit_student" style="max-height: 100%;">
-      <div class="modal-content">
-        <h6>Update Student </h6>
-       <form id="updateStudent" class="col s12 m12" method="POST" >
-          {{ form.csrf_token }}
-          <div class="input-field col s12 m12"> 
-           <p>Student ID</p>           
-            {{ form.student_id(size=20, class="validate", id="u_sid") }}
-          </div>  
-          <div class="input-field col s12 m4"> 
-            <p>First Name</p>
-             {{ form.f_name(size=20, class="validate", id="u_fname") }}
-           </div> 
-  
-           <div class="input-field col s12 m4"> 
-            <p>Last Name</p>
-             {{ form.l_name(size=20, class="validate", id="u_lname") }}
-           </div>
-  
-           <div class="input-field col s12 m3"> 
-            <p>Faculty</p>
-             {{ form.faculty(size=20, class="validate", id="u_fac") }}
-           </div> 
-  
-           <div class="input-field col s12 m6"> 
-            <p>Phone Number</p>
-             {{ form.p_no(size=20, class="validate", id="u_phno") }}
-           </div> 
-  
-           <div class="input-field col s12 m6"> 
-            <p>Email</p>
-             {{ form.email(size=20, class="validate", id="u_email") }}
-           </div> 
-           <div class="input-field col s8 m8 offset-m4" style="display:inline;">
-            {{form.submit (id="u_submit", class="purple darken-4 waves-light btn")}}
-            <a class="modal-close waves-effect waves-green btn-flat">Cancel</a>
-          </div>  
-      </form>
-  </div>
   </div>
 
-  <div class="modal" id="new_Rent" style="max-height: 100%;">
+  <div class="modal" id="edit_student" style="max-height: 100%;border-radius: 25px; height: 67vh;">
     <div class="modal-content">
-      <h6>New Rent</h6>
-      <form id="newRent" class="col s12 m12" method="POST" action="/makerent/{{id}}">
+      <h6 style="font-weight: bold;">Update Student </h6>
+     <form id="updateStudent" class="col s12 m12" method="POST" style="padding: 10px; border-color: black;border: 2px; border-style: solid;" >
+        {{ form.csrf_token }}
+        <div class="input-field col s12 m12"> 
+         <p>Student ID</p>           
+          {{ form.student_id(size=20, class="validate", id="u_sid") }}
+        </div>  
+        <div class="input-field col s12 m4"> 
+          <p>First Name</p>
+           {{ form.f_name(size=20, class="validate", id="u_fname") }}
+         </div> 
+
+         <div class="input-field col s12 m4"> 
+          <p>Last Name</p>
+           {{ form.l_name(size=20, class="validate", id="u_lname") }}
+         </div>
+
+         <div class="input-field col s12 m3"> 
+          <p>Faculty</p>
+           {{ form.faculty(size=20, class="validate", id="u_fac") }}
+         </div> 
+
+         <div class="input-field col s12 m6"> 
+          <p>Phone Number</p>
+           {{ form.p_no(size=20, class="validate", id="u_phno") }}
+         </div> 
+
+         <div class="input-field col s12 m6"> 
+          <p>Email</p>
+           {{ form.email(size=20, class="validate", id="u_email") }}
+         </div> 
+         <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+          {{form.submit(id="u_submit",class=" right purple darken-4 waves-light btn")}}
+          <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+        </div> 
+    </form>
+</div>
+</div>
+
+  <div class="modal" id="new_Rent" style="max-height: 100%;border-radius: 25px; height: 67vh;">
+    <div class="modal-content">
+      <h6 style="font-weight: bold;">New Rent</h6>
+      <form id="newRent" class="col s12 m12" method="POST" action="/makerent/{{id}}" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
         {{ form.csrf_token }}
 
         <div class="input-field col s12 m12"> 
@@ -177,9 +177,9 @@
          </div> 
 
          <div class="input-field col s8 m8 offset-m4" style="display:inline;">
-          {{rent.submit(class="purple darken-4 waves-light btn")}}
-          <a class="modal-close waves-effect waves-green btn-flat">Cancel</a>
-        </div>       
+          {{rent.submit(class=" right purple darken-4 waves-light btn")}}
+          <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+        </div>      
       </form>
     </div>
   </div>
