@@ -9,11 +9,13 @@
   <div class="col s12 m8 offset-m8">
     <form method="POST" action="/area/search">
       <div class="input-field col s12 m4 offset-m1">
-        {{search.search_query(placeholder="Enter search query")}}
+        <div class = "row">
+          <input type="search" placeholder="Enter search query"/>
+         </div>
       </div>
-      <div class="input-field col s2 m2" style="display:inline;">
-        <label for="search_submit"><i class="material-icons" style=" text-align: center;margin-left: 3px;color: white;">search</i></label>
-       {{search.submit(id="search_submit", class="purple darken-4 waves-light btn",value="")}}
+
+      <div class="input-field col s2 m2" style="display:inline; padding-left: 0px;">
+        <button type="submit" style="padding: 9px 21.5px 37px 21.5px" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons" style="padding: 5px; font-size: 2rem; color:white; ">search</i></button>
       </div>
     </form>
   </div>
@@ -33,9 +35,11 @@
             <td>{{a.description}}</td>
             <td>{{a.longitude}} </td>
             <td>{{a.latitude}} </td>
-            <td><a href="#edit" onclick="editMode({{a}})"><i class="material-icons">edit</i></a></td>
-            <td><a href="#delete" onclick="removeMode({{a}})"><i class="material-icons">delete</i></a></td>
-        </tr>
+            <div style=" position: relative;display: inline-flex;">
+              <td style="width:120px;"><a href="#edit" onclick="editMode({{a}})" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">edit</i>Edit</a></td>
+              <td style="width:120px;"><a href="#delete" onclick="removeMode({{a}})" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">delete</i>Delete</a></td>
+            </div>
+            </tr>
             
         {% endfor %}
         {% endif %}

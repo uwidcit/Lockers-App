@@ -56,9 +56,9 @@
                   <td>{{result.status.value}}</td>
                   <td>$ {{result.amount_owed}}</td>
                   {% if result.status.value != "Returned" and result.status.value != "Verified"%}
-                  <td><a href="/rent/{{result.id}}/release">Release</a></td>
+                  <td><a href="/rent/{{result.id}}/release" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">delete</i>Release</a></td>
                   {% elif result.status.value == "Returned"%}
-                  <td><a href="/rent/{{result.id}}/release/verify">Verify Release</a></td>
+                  <td><a href="/rent/{{result.id}}/release/verify" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">delete</i>Verify Release</a></td>
                   {% elif result.status.value != "Verified"%}
 
                   {% endif %}

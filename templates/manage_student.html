@@ -7,13 +7,17 @@
 {% block content %}
 <div class="row">
     <div class="col s12 m8 offset-m8">
+  <div class="col s12">
+
       <form method="POST" action="/student/search">
         <div class="input-field col s12 m4 offset-m1">
-          {{search.search_query(placeholder="Enter search query")}}
+          <div class = "row">
+            <input type="search" placeholder="Enter search query"/>
+           </div>
         </div>
-        <div class="input-field col s2 m2" style="display:inline;">
-          <label for="search_submit"><i class="material-icons" style="color:white;margin-left: 3px;">search</i></label>
-         {{search.submit(id="search_submit", class="purple darken-4 waves-light btn",value="")}}
+
+        <div class="input-field col s2 m2" style="display:inline; padding-left: 0px;" >
+          <button type="submit" style="padding: 9px 21.5px 37px 21.5px" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons" style="padding: 5px; font-size: 2rem; color:white; ">search</i></button>
         </div>
       </form>
     </div>
@@ -42,17 +46,21 @@
             <td>{{s.phone_number}} </td>
             <td>{{s.email}}</td>
             <td>{{s.rentStanding}}</td>
-            <td><a href="#" onclick="editMode({{s}})">Edit</a></td>
+            <div style=" position: relative;display: inline-flex;">
+              <td style="width:120px;"><a href="#" onclick="editMode({{s}})" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">edit</i>Edit</a></td>
+            </div>
+            
         </tr>
             
         {% endfor %}
         {% endif %}
       </table>
 
-      <div class="col s1 m1 offset-m11" style="padding: 0.75rem">
-        <div class="floating-action-btn">
-         <a class="btn-floating btn-large waves-effect waves-light purple darken-4 modal-trigger" href="#new_student"><i class="material-icons">add </i></a>
-       </div>
+      
+     </div>
+     <div class="col s1 m1 offset-m11" style="padding: 0.75rem">
+      <div class="floating-action-btn">
+       <a class="btn-floating btn-large waves-effect waves-light purple darken-4 modal-trigger" href="#new_student"><i class="material-icons">add </i></a>
      </div>
 
 
