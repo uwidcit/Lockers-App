@@ -14,12 +14,16 @@
           <input type="search" placeholder="Enter search query" style = "padding-right: 80px"/>
         </div>
       </div>
-      <div class="input-field col s2 m2" style="display:inline; padding-left: 50px;" >
+      <div class="input-field col s2 m2" style="display:inline; " >
         <button type="submit" style="padding: 8.8px 21.5px 37px 21.5px" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons" style="padding: 5px; font-size: 2rem; color:white; ">search</i></button>
       </div>
     </form>
 </div >
+  </div>
   <div class="col s12 m10 offset-m1" style="height:60vh;">
+    <div class="floating-action-btn" style="position: fixed; padding-top: 50vh;padding-left: 69vw;">
+      <a class="btn-floating btn-large waves-effect waves-light purple darken-4 modal-trigger"  href="#new_transaction" id="m_button"><i class="material-icons"> add </i></a>
+</div>
     <table>
       <tr>
           <th>ID</th>
@@ -63,7 +67,7 @@
       {% if n == current_page %}
       <li class="active purple darken-4"><a href="/transactionLog/page/{{n}}">{{n}}</a></li>
       {% else %}
-      <li class="waves-effect"><a href="/transactionLog/page/{{n}}">{{n}}</a></li>
+      <li class="purple darken-4 waves-effect"><a href="/transactionLog/page/{{n}}">{{n}}</a></li>
       {% endif %}
 
       {% endfor %}
