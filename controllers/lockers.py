@@ -80,20 +80,45 @@ def get_locker_id(id):
         return None
     return locker
 
-def search_lockers(query):
+def search_lockers(query,offset,size):
     data = db.session.query(Locker,Area).join(Area).filter(or_(Locker.locker_code.like(query), Locker.locker_type.like(query), Locker.status.like(query), Locker.status.like(query), Area.description.like(query))).all()
 
     if not data:
         return None
+    length_lockers = len(data)
+    if length_lockers == 0:
+         num_pages = 1
+    
+    if length_lockers%size != 0:
+        num_pages = int((length_lockers/size) + 1)
+    else:
+        num_pages = int(length_lockers/size)
+    
+    index = (offset * size) - size
+    stop = (offset * size)
 
-    return [locker.toJSON() for locker,area in data]
+    if(stop > length_lockers):
+        stop = length_lockers
+    
+    l_list = []
+    for locker,area in data[index:stop]:
+        l = locker.toJSON()
+        l['area_description'] = area.description
+        l_list.append(l)
+    return {"num_pages": num_pages,"data":l_list}
     
 
 def get_all_lockers():
-    locker_list = Locker.query.all()
+    locker_list = db.session.query(Locker,Area).join(Area).all()
     if not locker_list:
         return []
-    return [l.toJSON() for l in locker_list]
+    
+    data = []
+    for locker,area in locker_list:
+        l = locker.toJSON()
+        l['area_description'] = area.longitude
+        data.append(l)
+    return data
 
 def get_num_lockers():
     try:
@@ -123,12 +148,16 @@ def get_num_locker_page(size):
 
 def get_lockers_by_offset(size,offset):
      l_offset = (offset * size) - size
-     lockers = Locker.query.limit(size).offset(l_offset)
+     lockers = db.session.query(Locker,Area).join(Area).limit(size).offset(l_offset)
 
      if not lockers:
         return None
-
-     return [l.toJSON() for l in lockers]
+     data = []
+     for locker,area in lockers:
+        l = locker.toJSON()
+        l['area_description'] = area.description
+        data.append(l)
+     return data
 
 def rent_locker(id):
     locker = get_locker_id(id)

@@ -91,23 +91,45 @@ def add_locker():
     return redirect(url_for('.manage_locker'))
     #jsonify({"data":new_locker.toJSON()}),201
 
-@locker_views.route('/locker/search',methods=['POST'])
+@locker_views.route('/locker/search/',methods=['GET'])
 def locker_search():
     previous = 1
     next = previous + 1
 
     form = SearchForm()
     if form.validate_on_submit:
-        query = request.form.get("search_query")
-        result = search_lockers(query)
+        query = request.args.get("search_query")
+        result = search_lockers(query,1,15)
         if result:
-           num_pages = 1
-           return render_template('manage_locker.html', lockerData=result, form = LockerAdd(),delete=ConfirmDelete(), search=SearchForm(),searchMode=True, num_pages= num_pages,current_page=1, next= next, previous= previous,trans=TransactionAdd())
+           num_pages = result['num_pages']
+           return render_template('manage_locker.html', lockerData=result['data'], form = LockerAdd(),delete=ConfirmDelete(), search=SearchForm(),searchMode=False,query=query ,num_pages= num_pages,current_page=1, next= next, previous= previous,trans=TransactionAdd())
          
         else:
             flash('Record doesn''t exist')
             return redirect(url_for('.manage_locker'))
-        
+
+@locker_views.route('/locker/search/page/<offset>/',methods=['GET'])
+def locker_search_multi(offset):
+    offset = int(offset)
+    form = SearchForm()
+    if form.validate_on_submit:
+        query = request.args.get("search_query")
+        result = search_lockers(query,offset,15)
+        if result:
+           num_pages = result['num_pages']
+           if offset - 1 <= 0:
+                previous = 1
+                offset = 1
+           else:
+            previous = offset - 1
+        if offset + 1 >= num_pages:
+            next = num_pages
+        else:
+            next = offset + 1
+        return render_template('manage_locker.html', lockerData=result['data'], form = LockerAdd(),delete=ConfirmDelete(), search=SearchForm(),searchMode=False,query= query, num_pages= num_pages,current_page=1, next= next, previous= previous,trans=TransactionAdd())
+    else:
+        flash('Record doesn''t exist')
+        return redirect(url_for('.manage_locker'))
 
 @locker_views.route('/locker/<id>/confirmed', methods=['POST'])
 def remove_area(id):
