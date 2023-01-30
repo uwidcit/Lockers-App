@@ -80,13 +80,32 @@ def get_locker_id(id):
         return None
     return locker
 
-def search_lockers(query):
+def search_lockers(query,offset,size):
     data = db.session.query(Locker,Area).join(Area).filter(or_(Locker.locker_code.like(query), Locker.locker_type.like(query), Locker.status.like(query), Locker.status.like(query), Area.description.like(query))).all()
 
     if not data:
         return None
+    length_lockers = len(data)
+    if length_lockers == 0:
+         num_pages = 1
+    
+    if length_lockers%size != 0:
+        num_pages = int((length_lockers/size) + 1)
+    else:
+        num_pages = int(length_lockers/size)
+    
+    index = (offset * size) - size
+    stop = (offset * size)
 
-    return [locker.toJSON() for locker,area in data]
+    if(stop > length_lockers):
+        stop = length_lockers
+    
+    l_list = []
+    for locker,area in data[index:stop]:
+        l = locker.toJSON()
+        l['area_description'] = area.description
+        l_list.append(l)
+    return {"num_pages": num_pages,"data":l_list}
     
 
 def get_all_lockers():
