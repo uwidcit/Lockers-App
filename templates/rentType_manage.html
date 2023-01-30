@@ -52,10 +52,10 @@
        </div>
      </div>
      
-      <div class="modal" id="new_rType" style="max-height: 100%;">
+      <div class="modal" id="new_rType" style="max-height: 100%;border-radius: 25px; height: 53vh;">
         <div class="modal-content">
-          <h6> Add Price Model</h6>
-            <form id="new_rentType" class="col s12 m12" method="POST" action="/rentType">
+          <h6 style="font-weight: bold;"> Add Price Model</h6>
+            <form id="new_rentType" class="col s12 m12" method="POST" action="/rentType" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
             {{ form.csrf_token }}
             <div class="input-field col s12 m6">
             <p> Period From</p>
@@ -83,9 +83,10 @@
             <p> Price </p>
             {{form.price (size=20,class="validate")}}
             </div>
-            <div class="input-field col s12 m8 offset-m2">
-                {{form.submit(class="waves-light btn")}}
-              </div>
+            <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+              {{form.submit(class=" right purple darken-4 waves-light btn")}}
+              <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+            </div> 
             </form>   
         </div>
         </div>

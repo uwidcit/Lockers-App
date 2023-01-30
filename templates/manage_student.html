@@ -64,10 +64,10 @@
      </div>
 
 
-      <div class="modal" id="new_student" style="max-height: 100%;border-radius: 25px; height: 50vh;">
+      <div class="modal" id="new_student" style="max-height: 100%;border-radius: 25px; height: 67vh;">
         <div class="modal-content">
-          <h6>Add Student </h6>
-         <form id="newStudent" class="col s12 m12" method="POST" action="/student">
+          <h6 style="font-weight: bold;">Add Student </h6>
+         <form id="newStudent" class="col s12 m12" method="POST" action="/student" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
             {{ form.csrf_token }}
             <div class="input-field col s12 m12"> 
              <p>Student ID</p>           
@@ -98,16 +98,16 @@
                {{ form.email(size=20, class="validate") }}
              </div> 
              <div class="input-field col s8 m8 offset-m4" style="display:inline;">
-              {{form.submit(class="purple darken-4 waves-light btn")}}
-              <a class="red darken-4 modal-close waves-effect waves-light btn">Cancel</a>
-            </div>  
+              {{form.submit(class=" right purple darken-4 waves-light btn")}}
+              <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+            </div> 
         </form>
     </div>
   </div>
 
-  <div class="modal" id="edit_student" style="max-height: 100%;border-radius: 25px;">
+  <div class="modal" id="edit_student" style="max-height: 100%;border-radius: 25px; height: 67vh;">
     <div class="modal-content">
-      <h6>Update Student </h6>
+      <h6 style="font-weight: bold;">Update Student </h6>
      <form id="updateStudent" class="col s12 m12" method="POST" style="padding: 10px; border-color: black;border: 2px; border-style: solid;" >
         {{ form.csrf_token }}
         <div class="input-field col s12 m12"> 
@@ -139,9 +139,9 @@
            {{ form.email(size=20, class="validate", id="u_email") }}
          </div> 
          <div class="input-field col s8 m8 offset-m4" style="display:inline;">
-          {{form.submit (id="u_submit", class="purple darken-4 waves-light btn")}}
-          <a class="red darken-4 modal-close waves-effect waves-light btn">Cancel</a>
-        </div>  
+          {{form.submit(id="u_submit",class=" right purple darken-4 waves-light btn")}}
+          <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+        </div> 
     </form>
 </div>
 </div>
