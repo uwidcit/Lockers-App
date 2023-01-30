@@ -3,6 +3,7 @@ from flask import Blueprint, redirect, render_template, request, send_from_direc
 from controllers import (
     add_new_student,
     get_all_students,
+    get_students_by_offset,
     get_student_by_id,
     get_student_by_id_json,
     get_student_current_rental_toJSON,
@@ -33,19 +34,39 @@ def add_student():
 
 @student_views.route('/student',methods=['GET'])
 def render_manage_student():
-    studentData = get_all_students()
+    studentData = get_students_by_offset(15,1)
+    previous = 1
+    next = previous + 1
     search = SearchForm()
     search.submit.label.text = "Search Student"
-    return render_template("manage_student.html",studentData=studentData,form=StudentAdd(),search=search)
+    return render_template("manage_student.html",studentData=studentData["data"],num_pages= studentData["num_pages"], current_page =1 ,previous = previous, next = next , form=StudentAdd(),search=search)
 
-@student_views.route("/student/search",methods=['POST'])
+@student_views.route('/student/page/<offset>',methods=['GET'])
+def render_manage_student_multi():
+    offset = int(offset)
+    query = request.args.get('search_query')
+    studentData = get_students_by_offset(15,offset)
+    if offset - 1 <= 0:
+        previous = 1
+        offset = 1
+    else:
+        previous = offset - 1
+    if offset + 1 >= studentData['num_pages']:
+        next = studentData['num_pages']
+    else:
+        next = offset + 1
+    search = SearchForm()
+    search.submit.label.text = "Search Student"
+    return render_template("manage_student.html",studentData=studentData["data"],num_pages= studentData["num_pages"], current_page =offset ,previous = previous, next = next , form=StudentAdd(),search=search,query=query)
+
+@student_views.route("/student/search/",methods=['GET'])
 def search_student_page():
     search = SearchForm()
     if search.validate_on_submit:
-        query = request.form.get('search_query')
+        query = request.args.get('search_query')
         student = search_student(query)
         rent = get_student_current_rental_toJSON(query)
-    return render_template('student_search.html',student = student,rent= rent,form=StudentAdd())
+    return render_template('student_search.html',student = student,rent= rent,form=StudentAdd(),query=query)
 
 @student_views.route("/student/<id>/update", methods=['POST'])
 def update_student_info(id):
