@@ -10,6 +10,7 @@ from controllers import (
     set_description,
     set_latitude,
     set_longitude,
+    search_area
 )
 
 from views.forms import AreaAdd,ConfirmDelete,SearchForm
@@ -62,6 +63,44 @@ def render_area_page_offset(offset):
     delete = ConfirmDelete()
     return render_template('area.html', areaData = areaData,form=AreaAdd(),delete=delete,search=search,num_pages= num_pages,current_page=offset, next= next, previous= previous)
 
+@area_views.route('/area/search/',methods=['GET'])
+def render_search_area_page():
+    previous = 1
+    next = previous + 1
+
+    form = SearchForm()
+    if form.validate_on_submit:
+        query = request.args.get('search_query')
+        result = search_area(query,1,15)
+
+        if result:
+            num_pages = result['num_pages']
+            return render_template('area.html', areaData = result['data'],form=AreaAdd(),delete= ConfirmDelete(),search= SearchForm(),num_pages= num_pages,current_page=1, next= next, previous= previous)
+        return redirect(url_for('.render_area_page'))
+
+@area_views.route('/area/search/page/<offset>',methods=['GET'])
+def render_search_area_page_multi(offset):
+    offset = int(offset)
+
+    form = SearchForm()
+    if form.validate_on_submit:
+        query = request.args.get('search_query')
+        result = search_area(query,offset,15)
+
+        if result:
+            num_pages = result['num_pages']
+            if offset - 1 <= 0:
+                previous = 1
+                offset = 1
+            else:
+                previous = offset - 1
+        if offset + 1 >= num_pages:
+            next = num_pages
+        else:
+            next = offset + 1
+            return render_template('area.html', areaData = result['data'],form=AreaAdd(),delete= ConfirmDelete(),search= SearchForm(),num_pages= num_pages,current_page=offset, next= next, previous= previous)
+        flash('Not found')
+        return redirect(url_for('.render_area_page'))
 
 @area_views.route('/area/<id>/update', methods=['POST'])
 def update_area(id):

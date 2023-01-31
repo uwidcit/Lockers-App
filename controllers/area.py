@@ -3,6 +3,7 @@ from database import db
 from flask import flash
 from controllers.log import create_log
 from datetime import datetime
+from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
 
 def add_new_area(description, longitude, latitude):
@@ -155,3 +156,29 @@ def get_area_by_offset(size,offset):
      if not areas:
         return None
      return [a.toJSON() for a in areas]
+
+def search_area(query, offset,size):
+    data = Area.query.filter(or_(Area.id.like(query), Area.description.like(query), Area.longitude.like(query), Area.latitude.like(query))).all()
+
+    if not data:
+        return None
+
+    length_area = len(data)
+    if length_area == 0:
+         num_pages = 1
+    
+    if length_area%size != 0:
+        num_pages = int((length_area/size) + 1)
+    else:
+        num_pages = int(length_area/size)
+    
+    index = (offset * size) - size
+    stop = (offset * size)
+
+    if(stop > length_area):
+        stop = length_area
+
+    a_list = []
+    for area in data[index:stop]:
+        a_list.append(area.toJSON())
+    return {"num_pages":num_pages,"data":a_list}
