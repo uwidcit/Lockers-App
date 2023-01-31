@@ -1,7 +1,7 @@
 from models import RentTypes,Rent
 from models.rentTypes import Types
 from database import db
-from sqlalchemy import and_
+from sqlalchemy import and_,or_
 from sqlalchemy.exc import SQLAlchemyError
 from flask import flash
 from controllers.log import create_log
@@ -163,3 +163,58 @@ def get_all_rentType_tuple():
 
 def get_rt_Type():
     return [rt.value for rt in Types]
+
+def get_rentType_by_offset(size,offset):
+    l_offset = (offset * size) - size
+
+    count = len(get_All_rentType())
+    
+    if count == 0:
+        count = 1
+
+    if count%size != 0:
+        count = int(count/size + 1)
+
+    rentTypes = RentTypes.query.limit(size).offset(l_offset)
+
+    if not rentTypes:
+        return None
+    
+    r_list = []
+
+    for r in rentTypes:
+        r_list.append(r.toJSON())
+    
+    return {"num_pages":count, "data":r_list}
+
+def search_rentType(query,size,offset):
+    data = RentTypes.query.filter(or_(RentTypes.id.like(query), RentTypes.price.like(query))).all()
+
+    if not data:
+        return None
+
+    length_area = len(data)
+    if length_area == 0:
+         num_pages = 1
+    
+    if length_area%size != 0:
+        num_pages = int((length_area/size) + 1)
+    else:
+        num_pages = int(length_area/size)
+    
+    index = (offset * size) - size
+    stop = (offset * size)
+
+    if(stop > length_area):
+        stop = length_area
+
+    rt_list = []
+
+    for price in data[index:stop]:
+        rt_list.append(price.toJSON())
+    return {"num_pages":num_pages,"data":rt_list}
+
+
+
+    
+
