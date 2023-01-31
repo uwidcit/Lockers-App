@@ -1,5 +1,6 @@
 from database import db
 from enum import Enum
+from datetime import datetime
 
 class Types (Enum):
     HOURLY = "Hourly"
@@ -26,8 +27,8 @@ class RentTypes(db.Model):
     def toJSON(self):
         return {
             "id":self.id,
-            "period_from": self.period_from,
-            "period_to": self.period_to,
+            "period_from": datetime.strftime(self.period_from,'%Y-%m-%d'),
+            "period_to": datetime.strftime(self.period_to,'%Y-%m-%d'),
             "type":  self.type.value,
             "price": self.price,
         }

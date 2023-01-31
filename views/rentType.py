@@ -5,7 +5,9 @@ from controllers import (
     get_All_rentType,
     get_rentType_by_id,
     delete_rent_type,
+    get_rentType_by_offset,
     new_rentType,
+    search_rentType,
     update_rentType_period,
     update_rentType_price,
     update_rentType_type
@@ -17,7 +19,28 @@ rentType_views = Blueprint('rentType_views', __name__, template_folder='../templ
 
 @rentType_views.route('/rentType',methods=['GET'])
 def render_rentType_all():
-    return render_template('rentType_manage.html', results=get_All_rentType(),form = RentTypeAdd(),search=SearchForm(),delete= ConfirmDelete())
+    data = get_rentType_by_offset(15,1)
+    num_pages = data['num_pages']
+    previous = 1
+    next = previous + 1
+    return render_template('rentType_manage.html', results=data['data'],form = RentTypeAdd(),search=SearchForm(),delete= ConfirmDelete(), previous= previous, next= next, current_page=1,num_pages=num_pages)
+
+@rentType_views.route('/rentType/page/<offset>',methods=['GET'])
+def render_rentType_all_multi(offset):
+    int(offset)
+    data = get_rentType_by_offset(15,offset)
+    num_pages = data['num_pages']
+    if offset - 1 <= 0:
+        previous = 1
+        offset = 1
+    else:
+        previous = offset - 1
+    if offset + 1 >= num_pages:
+        next = num_pages
+    else:
+        next = offset + 1
+
+    return render_template('rentType_manage.html', results=data['data'],form = RentTypeAdd(),search=SearchForm(),delete= ConfirmDelete(), previous= previous, next= next, current_page=offset)
 
 @rentType_views.route('/rentType',methods=['POST'])
 def create_new_rentType():
@@ -82,29 +105,70 @@ def update_rentType(id):
     if form.validate_on_submit:
         rentType = get_rentType_by_id(id)
 
-        period_from = request.form.get('period_from')
-        period_to = request.form.get('period_to')
+        period_from = datetime.strptime(request.form.get('period_from'),'%Y-%m-%d') 
+        period_to = datetime.strptime(request.form.get('period_to'),'%Y-%m-%d') 
+
         type = request.form.get('type')
         price = request.form.get('price')
 
-
+        
         if rentType is None:
             flash("Model doesn't exist or a Rental exists with this model that cannot be altered")
             return redirect(url_for('.render_rentType_all'))
         
+        
         if rentType.period_from != period_from or rentType.period_to != period_to:
             if not update_rentType_period(id,period_from,period_to):
                 flash("Error updating rentType")
-            return redirect(url_for('.render_rentType_all'))
+                return redirect(url_for('.render_rentType_all'))
         
         if rentType.price != price:
+            print("yes")
             if not update_rentType_price(id,price):
                 flash("Error updating rentType")
-            return redirect(url_for('.render_rentType_all'))
+                return redirect(url_for('.render_rentType_all'))
 
-        if rentType.period != type:
+        if rentType.type != type:
             if not update_rentType_type(id,type):
                 flash("Error updating rentType")
-            return redirect(url_for('.render_rentType_all'))
+                return redirect(url_for('.render_rentType_all'))
         flash('Model changed !')
+    return redirect(url_for('.render_rentType_all'))
+
+@rentType_views.route('/rentType/search',methods=['GET'])
+def search_rentTypes():
+    previous = 1
+    next = previous + 1
+
+    form = SearchForm()
+    if form.validate_on_submit:
+        query = request.args.get("search_query")
+        data = search_rentType(query,15,1)
+
+        if data:
+             num_pages = data['num_pages']
+             return render_template('rentType_manage.html', results=data['data'],form = RentTypeAdd(),search=SearchForm(),delete= ConfirmDelete(), previous= previous, next= next, current_page=1,num_pages=num_pages)
+    return redirect(url_for('.render_rentType_all'))
+
+@rentType_views.route('/rentType/search/page/<offset>/',methods=['GET'])
+def search_rentTypes_multi(offset):
+    offset = int(offset)
+
+    form = SearchForm()
+    if form.validate_on_submit:
+        query = request.args.get("search_query")
+        data = search_rentType(query,15,offset)
+
+        if data:
+             num_pages = data['num_pages']
+             if offset - 1 <= 0:
+                previous = 1
+                offset = 1
+             else:
+                previous = offset - 1
+        if offset + 1 >= num_pages:
+            next = num_pages
+        else:
+            next = offset + 1
+        return render_template('rentType_manage.html', results=data['data'],form = RentTypeAdd(),search=SearchForm(),delete= ConfirmDelete(), previous= previous, next= next, current_page=offset,num_pages=num_pages)
     return redirect(url_for('.render_rentType_all'))

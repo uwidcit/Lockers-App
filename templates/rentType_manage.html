@@ -8,7 +8,7 @@
 <div class = "row">
   <div class="col s12 ">
             <div class="col s12 m8 offset-m7">
-              <form method="POST" action="/rentTypes/search">
+              <form method="get" action="/rentType/search">
                 <div class="input-field col s12 m4 offset-m1">
                   <div class = "row">
                     <input type="search" name="search_query" placeholder="Enter search query"/>
@@ -38,8 +38,8 @@
                 <td>{{r.period_to}}</td>
                 <td>{{r.type}}</td>
                 <td>${{r.price}} </td>
-                <td style="width:120px;"><a href="/rentType/{{r.id}}/edit" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">edit</i>Edit</a></td>
-                <td style="width:120px;"><a href="/rentType/{{r.id}}/delete"class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">delete</i>Delete</a></td>
+                <td style="width:120px;"><a href="#"  onclick="editMode({{r}})"class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">edit</i>Edit</a></td>
+                <td style="width:120px;"><a href="#"  onclick="removeMode({{r}})"class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">delete</i>Delete</a></td>
             </tr>
                 
             {% endfor %}
@@ -54,6 +54,41 @@
        </div>
      </div>
      
+     <div class="col m5 offset-m5">
+      <ul class="pagination">
+
+      {% if current_page == 1  %}
+      <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+      {% else %}
+      <li><a href="#/page{{previous}}"><i class="material-icons">chevron_left</i></a></li>
+      {% endif %}
+
+      {% for n in range(1,num_pages + 1) %}
+      
+      
+      {% if n == current_page %}
+      {% if query %}
+      <li class="active purple darken-4"><a href="/rentType/search/page/{{n}}/?search_query={{query}}" style="color:white;">{{n}}</a></li>
+      {% else %}
+      <li class="waves effect purple darken-4"><a href="/rentType/page/{{n}}" style="color:white;">{{n}}</a></li>
+      {% endif %}
+      {% else %}
+      {% if query %}
+      <li class="waves-effect purple darken-4"><a href="/rentType/search/page/{{n}}/?search_query={{query}}" style="color:white;">{{n}}</a></li>
+      {% else %}
+      <li class="waves-effect purple darken-4"><a href="/rentType/page/{{n}}" style="color:white;">{{n}}</a></li>
+      {% endif %}
+      {% endif %}
+      {% endfor %}
+
+      {% if current_page == num_pages %}
+      <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+      {% else %}
+      <li><a href="#/page{{next}}"><i class="material-icons">chevron_right</i></a></li>
+      {% endif %}
+    </ul>
+    </div>
+
       <div class="modal" id="new_rType" style="max-height: 100%;border-radius: 25px; height: 53vh;">
         <div class="modal-content">
           <h6 style="font-weight: bold;"> Add Price Model</h6>
@@ -92,6 +127,61 @@
             </form>   
         </div>
         </div>
+
+        <div class="modal" id="edit_rType" style="max-height: 100%;border-radius: 25px; height: 53vh;">
+          <div class="modal-content">
+            <h6 style="font-weight: bold;"> Add Price Model</h6>
+              <form id="edit_rentType" class="col s12 m12" method="POST" action="/rentType" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
+              {{ form.csrf_token }}
+              <div class="input-field col s12 m6">
+              <p> Period From</p>
+              {{form.period_from(size=20,class="validate",id="u_period_f")}}
+              </div>
+          
+              <div class="input-field col s12 m6">
+                <p> Period To</p>
+                {{form.period_to(size=20,class="validate",id="u_period_t")}}
+                </div>
+            
+          
+              <div class="input-field col s12 m7">
+              <p> Type </p>
+              
+              <select name="type" id="u_type"style="display:inline;">
+                <option value=”” disabled selected>Select a Rent Type</option>
+                {% for subfield in form.type %}
+                  {{subfield}}
+                {% endfor %}
+              </select>
+              </div>
+          
+              <div class="input-field col s12 m5">
+              <p> Price </p>
+              {{form.price (size=20,class="validate", id="u_price")}}
+              </div>
+              <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+                {{form.submit(class=" right purple darken-4 waves-light btn", id="u_submit")}}
+                <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+              </div> 
+              </form>   
+          </div>
+          </div>
+
+          <div class="modal" id="delete_price" style="max-height: 100%;border-radius: 25px; height: 35vh;">
+            <div class="modal-content">
+              <h6 style="font-weight: bold;">Delete Price Modal </h6>
+              <form id="deletePrice" class="col s12 m12" method="POST" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
+              {{ delete.csrf_token }}
+              <div class="input-field col s12 m12"> 
+                <h5 id="deleteTitle"></h5>
+              </div>
+            
+            <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+              {{delete.submit(class="right purple darken-4 waves-light btn")}}
+              <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>          </div>
+            </form>
+          </div>
+        </div>
       </div>
 
       <script>
@@ -99,6 +189,47 @@
         var elems = document.querySelectorAll('.modal');
         var instances = M.Modal.init(elems);
         });
+
+        function editMode(price){
+          form = document.getElementById('edit_rentType')
+          form.action = "/rentType/"+price.id+"/update"
+          
+          period_from = document.getElementById('u_period_f')
+          period_to = document.getElementById('u_period_t')
+          
+          type = document.getElementById('u_type')
+          e_price = document.getElementById('u_price')
+          button = document.getElementById('u_submit')
+          
+          period_from.value = price.period_from
+          period_to.value = price.period_to
+          e_price.value = price.price
+
+          button.value = "Update Price Modal"
+
+          for (i = 0; i < type.options.length; i++){
+              if(type.options[i].value === price.type){
+                type.selectedIndex = i
+              }
+          
+          }
+
+          elem = document.getElementById('edit_rType');
+          instance = M.Modal.getInstance(elem)
+          instance.open()
+  }
+
+  function removeMode(price){
+    form = document.getElementById('deletePrice')
+    title = document.getElementById('deleteTitle')
+    title.innerHTML = "Are you sure you want to delete "+price.type+"- "+price.price+"! This action cannot be undone"
+    form.action = "/rentType/"+price.id+"/confirmed"
+
+    elem = document.getElementById('delete_price');
+    instance = M.Modal.getInstance(elem)
+    instance.open()
+  }
+
       </script>
      
 
