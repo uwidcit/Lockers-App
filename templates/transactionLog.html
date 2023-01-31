@@ -8,10 +8,10 @@
 
 <div class = "row">
   <div class="col s12 m8 offset-m7">
-    <form method="POST" action="/transactionLog/search">
+    <form method="GET" action="/transactionLog/search">
       <div class="input-field col s12 m4 offset-m1" >
         <div class = "row">
-          <input type="search" name="search_query" placeholder="Enter search query" style = "padding-right: 80px"/>
+          <input type="search" name="search_query" placeholder="Enter search query" style = "padding-right: 80px" required/>
         </div>
       </div>
       <div class="input-field col s2 m2" style="display:inline; " >
