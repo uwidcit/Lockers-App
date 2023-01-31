@@ -63,10 +63,35 @@ def render_manage_student_multi():
 def search_student_page():
     search = SearchForm()
     if search.validate_on_submit:
+        previous = 1
+        next = previous + 1
         query = request.args.get('search_query')
-        student = search_student(query)
-        rent = get_student_current_rental_toJSON(query)
-    return render_template('student_search.html',student = student,rent= rent,form=StudentAdd(),query=query)
+        student = search_student(query,15,1)
+        if student:
+            num_pages = student['num_pages']
+            return render_template("manage_student.html",studentData=student["data"],num_pages= student["num_pages"], current_page =1 ,previous = previous, next = next , form=StudentAdd(),search=search,query=query)
+        return redirect(url_for(".render_manage_student"))
+
+@student_views.route("/student/search/page/<offset>",methods=['GET'])
+def search_student_page_multi(offset):
+    offset = int(offset)
+    search = SearchForm()
+    if search.validate_on_submit:
+        query = request.args.get('search_query')
+        student = search_student(query,15,1)
+        if student:
+            num_pages = student['num_pages']
+            if offset - 1 <= 0:
+                previous = 1
+                offset = 1
+            else:
+                previous = offset - 1
+        if offset + 1 >= num_pages:
+            next = num_pages
+        else:
+            next = offset + 1
+            return render_template("manage_student.html",studentData=student["data"],num_pages= student["num_pages"], current_page = offset,previous = previous, next = next , form=StudentAdd(),search=search,query=query)
+        return redirect(url_for(".render_manage_student"))
 
 @student_views.route("/student/<id>/update", methods=['POST'])
 def update_student_info(id):
