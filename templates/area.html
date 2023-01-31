@@ -7,10 +7,10 @@
 {% block content %}
 <div class="row">
   <div class="col s12 m8 offset-m7">
-    <form method="POST" action="/area/search">
+    <form method="get" action="/area/search">
       <div class="input-field col s12 m4 offset-m1">
         <div class = "row">
-          <input type="search" name="search_query" placeholder="Enter search query"/>
+          <input type="search" name="search_query" placeholder="Enter search query" required/>
          </div>
       </div>
 
@@ -77,7 +77,7 @@
         </div>
       </div>
 
-      <div class="modal" id="new_area" style="max-height: 100%;border-radius: 25px; height: 57vh;">
+      <div class="modal" id="new_area" style="max-height: 100%;border-radius: 25px; height: 60vh;">
         <div class ="modal-content" id="content">
           <h6 style="font-weight: bold;">New Area </h6>
           <form id="AddArea" class="col s12 m12" method="POST" action="/area" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
@@ -105,7 +105,7 @@
         </div>
         </div>
 
-        <div class="modal" id="edit_area" style="max-height: 100%;border-radius: 25px; height: 57vh;">
+        <div class="modal" id="edit_area" style="max-height: 100%;border-radius: 25px; height: 60vh;">
           <div class ="modal-content">
             <h6 style="font-weight: bold;">  Edit Area </h6>
             <form id="editArea" class="col s12 m12" method="POST" action="/area" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
@@ -133,7 +133,7 @@
           </div>
         </div>
 
-          <div class="modal" id="delete_area" style="max-height: 100%;border-radius: 25px; height: 33vh;">
+          <div class="modal" id="delete_area" style="max-height: 100%;border-radius: 25px; height: 40vh;">
             <div class="modal-content">
               <h6 style="font-weight: bold;">Delete Area </h6>
                <form id="deleteArea" class="col s12 m12" method="POST" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
