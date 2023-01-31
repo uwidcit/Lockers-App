@@ -24,7 +24,8 @@
           <table class="col s12 m10 offset-m1" >
             <tr>
                 <th>ID</th>
-                <th>Period</th>
+                <th>Period From</th>
+                <th>Period To</th>
                 <th>Locker Type</th>
                 <th>Price</th>
             </tr>
@@ -33,9 +34,10 @@
             {% for r in results %}
             <tr>
                 <td>{{r.id}}</td>
-                <td>{{r.period}}</td>
+                <td>{{r.period_from}}</td>
+                <td>{{r.period_to}}</td>
                 <td>{{r.type}}</td>
-                <td>{{r.price}} </td>
+                <td>${{r.price}} </td>
                 <td style="width:120px;"><a href="/rentType/{{r.id}}/edit" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">edit</i>Edit</a></td>
                 <td style="width:120px;"><a href="/rentType/{{r.id}}/delete"class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">delete</i>Delete</a></td>
             </tr>
