@@ -157,6 +157,8 @@ def get_all_rentType_tuple():
         return None
     
     for r in rentType:
+        r['period_from'] = datetime.strptime(r['period_from'], '%Y-%m-%d')
+        r['period_to'] = datetime.strptime(r['period_to'], '%Y-%m-%d')
         rentTuple =  rentTuple + [(r["id"], r["type"]+" $"+str(r["price"]) +" Period: "+ str(r["period_from"].year) +'/'+str(r["period_from"].month) + " to " + str(r["period_to"].year) +'/'+ str(r["period_to"].month))]
 
     return rentTuple

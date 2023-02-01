@@ -18,7 +18,7 @@
               <form action="/locker/search">
                 <div class="input-field col s12 m4 offset-m1">
                  <div class = "row">
-                  <input type="search" name="search_query" placeholder="Enter search query"/>
+                  <input type="search" name="search_query" placeholder="Enter search query" required/>
                  </div>
                 </div>
 
@@ -379,7 +379,7 @@
 
   function releaseMode(rent){
 
-    if (rent.amount_owed > 0){
+    if (rent.amount_owed != 0){
       rent_id = document.getElementById('t_rent_id')
       amount = document.getElementById('t_amount')
       form = document.getElementById("newTransaction")
