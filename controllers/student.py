@@ -200,13 +200,33 @@ def get_students_by_offset(size,offset):
     return {"num_pages":count, "data":s_list}
 
 
-def search_student(query):
+def search_student(query,size,offset):
     data = Student.query.filter(or_(Student.student_id.like(query), Student.first_name.like(query), Student.last_name.like(query), Student.faculty.like(query), Student.rentStanding.like(query))).all()
     
     if not data:
         return None
+    
+    length_student = len(data)
+    if length_student == 0:
+         num_pages = 1
+    
+    if length_student%size != 0:
+        num_pages = int((length_student/size) + 1)
+    else:
+        num_pages = int(length_student/size)
+    
+    index = (offset * size) - size
+    stop = (offset * size)
 
-    return [d.toJSON() for d in data]
+    if(stop > length_student):
+        stop = length_student
+    
+    s_list = []
+
+    for d in data[index:stop]:
+        s_list.append(d.toJSON())
+
+    return {"num_pages":num_pages,"data":s_list}
 
 def get_student_by_first_name(query):
     student = Student.query.filter_by(first_name = query).all()
