@@ -149,7 +149,7 @@ def update_lockers(id):
 
     if not locker:
         flash('Locker does not exist')
-        return redirect(url_for('.render_area_page'))
+        return redirect(url_for('.manage_locker'))
 
     form = LockerAdd()
     if form.validate_on_submit: 
@@ -171,9 +171,7 @@ def update_lockers(id):
             if not update_key(id,key):
                 flash("Error updating key")
                 return redirect(url_for('.manage_locker'))  
-
-   
-    return render_template('locker.html', form=form, updateMode=True)
+    return redirect(url_for('.manage_locker'))
 
 
 @locker_views.route('/lockers/get/available', methods=['GET'])

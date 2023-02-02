@@ -218,79 +218,81 @@ def delete_locker(id):
     if not locker:
         return None
 
-    if locker.current_rental:
+    if locker.get_current_rent():
         flash('Can not delete a locker currently being rented')
         return None
-    try:
-        db.session.delete(locker)
-        db.session.commit()
-        return locker
-    except SQLAlchemyError as e:
-        create_log(id, type(e), datetime.now())
-        flash("Unable to delete Locker. Check Error Log for more Details")
-        db.session.rollback()
-        return None
+    else:
+        try:
+            db.session.delete(locker)
+            db.session.commit()
+            return locker
+        except SQLAlchemyError as e:
+            create_log(id, type(e), datetime.now())
+            flash("Unable to delete Locker. Check Error Log for more Details")
+            db.session.rollback()
+            return None
     
 def update_key(id, new_key):
     locker = get_locker_id(id)
     if not locker:
         return None
 
-    if locker.current_rental:
+    if locker.get_current_rent():
         flash('Can not delete a locker currently being rented')
         return None
-
-    try:
-         if new_key.upper() in Key.__members__:
-            locker.key = Key[new_key.upper()]
-            db.session.add(locker)
-            db.session.commit()
-            return locker
-    except SQLAlchemyError as e:
-        create_log(id, type(e), datetime.now())
-        flash("Unable to update key. Check Error Log for more Details")
-        db.session.rollback()
-        return None
+    else:
+        try:
+            if new_key.upper() in Key.__members__:
+                locker.key = Key[new_key.upper()]
+                db.session.add(locker)
+                db.session.commit()
+                return locker
+        except SQLAlchemyError as e:
+            create_log(id, type(e), datetime.now())
+            flash("Unable to update key. Check Error Log for more Details")
+            db.session.rollback()
+            return None
 
 def update_locker_status(id, new_status):
     locker = get_locker_id(id)
     if not locker:
         return None
     
-    if locker.current_rental:
+    if locker.get_current_rent():
         flash('Can not delete a locker currently being rented')
         return None
-
-    try:
-        if new_status.upper() in Status.__members__:
-            locker.status = Status[new_status.upper()]
-            db.session.add(locker)
-            db.session.commit()
-            return locker
-    except SQLAlchemyError:
-        db.session.rollback()
-        return None
+    else:
+        try:
+            if new_status.upper() in Status.__members__:
+                locker.status = Status[new_status.upper()]
+                db.session.add(locker)
+                db.session.commit()
+                return locker
+        except SQLAlchemyError:
+            db.session.rollback()
+            return None
 
 def update_locker_type(id, new_type):
     locker = get_locker_id(id)
     if not locker:
         return None
         
-    if locker.current_rental:
+    if locker.get_current_rent():
         flash('Can not delete a locker currently being rented')
         return None
-    try:
-        if new_type.upper() in LockerTypes.__members__:
-            locker.locker_type = LockerTypes[new_type.upper()]
-            db.session.add(locker)
-            db.session.commit()
-            return locker
-    except SQLAlchemyError as e:
-        db.session.rollback()
-        print(e.__dict__)
-        create_log(id, type(e), datetime.now())
-        flash("Unable to update locker status. Check Error Log for more Details")
-        return None
+    else:
+        try:
+            if new_type.upper() in LockerTypes.__members__:
+                locker.locker_type = LockerTypes[new_type.upper()]
+                db.session.add(locker)
+                db.session.commit()
+                return locker
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            print(e.__dict__)
+            create_log(id, type(e), datetime.now())
+            flash("Unable to update locker status. Check Error Log for more Details")
+            return None
 
 
 def getStatuses():

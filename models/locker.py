@@ -60,5 +60,6 @@ class Locker (db.Model):
                 else:
                     rent['date_returned'] = ""
                 return rent
+            return []
 
     
