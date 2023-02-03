@@ -182,3 +182,32 @@ def search_area(query, offset,size):
     for area in data[index:stop]:
         a_list.append(area.toJSON())
     return {"num_pages":num_pages,"data":a_list}
+
+def return_lockers(id,size,offset):
+    area = get_area_by_id(id)
+    
+    if not area:
+        return None
+    
+    length_area = len(area.locker )
+    if length_area == 0:
+         num_pages = 1
+    
+    if length_area%size != 0:
+        num_pages = int((length_area/size) + 1)
+    else:
+        num_pages = int(length_area/size)
+    
+    index = (offset * size) - size
+    stop = (offset * size)
+
+    if(stop > length_area):
+        stop = length_area
+    
+    a_list = []
+
+    for d in area.locker[index:stop]:
+        a_list.append(d.toJSON())
+
+    return {"num_pages":num_pages,"data":a_list}
+    
