@@ -3,6 +3,7 @@ from flask import Blueprint, redirect, render_template, request, send_from_direc
 from controllers import (
     get_area_all,
     get_area_by_id,
+    return_lockers,
     get_area_by_offset,
     get_num_area_page,
     add_new_area,
@@ -160,8 +161,11 @@ def get_all_areas():
 @area_views.route('/area/<id>', methods=['GET'])
 def get_area_id(id):
     area = get_area_by_id(id)
+    locker = return_lockers(id,3,1)
+    previous = 1
+    next = previous + 1
     if not area:
-        return jsonify({"Message": "Area not found"}),404
-    return jsonify(area),200
+        return redirect(url_for('.render_area_page'))
+    return render_template('get_area.html',area = area,locker=locker["data"], previous=previous,next=next,current_page=1,num_pages=locker['num_pages'])
 
 
