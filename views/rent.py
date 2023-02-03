@@ -6,6 +6,7 @@ from controllers import (
     create_rent,
     get_rent_by_id,
     get_all_rentType_tuple,
+    get_transactions,
     get_all_rentals,
     release_rental,
     get_lockers_available,
@@ -52,10 +53,36 @@ def create_new_rent():
 @rent_views.route('/rent/<id>', methods=['GET'])
 def get_rent_id(id):
     rental = update_rent(id)
+    transaction = get_transactions(id,5,1)
+
+    previous = 1
+    next = previous + 1
 
     if not rental:
-        return jsonify({"Message": "Rental does not exist"}),404
-    return jsonify(rental.toJSON()),200
+        return redirect(url_for('locker_views.manage_locker'))
+    return render_template('addrent.html', rent = rental,transaction=transaction['data'], current_page=1,next=next,previous=previous,num_pages=transaction['num_pages'])
+
+@rent_views.route('/rent/<id>/page/<offset>', methods=['GET'])
+def get_rent_id_multi(id,offset):
+    offset = int(offset)
+    rental = update_rent(id)
+
+    if not rental:
+        return redirect(url_for('locker_views.manage_locker'))
+
+    transaction = get_transactions(id,5,offset)
+    if transaction:
+        num_pages = transaction['num_pages']
+        if offset - 1 <= 0:
+                previous = 1
+                offset = 1
+        else:
+            previous = offset - 1
+        if offset + 1 >= num_pages:
+            next = num_pages
+        else:
+            next = offset + 1
+    return render_template('addrent.html', rent = rental,transaction=transaction['data'], current_page=offset,next=next,previous=previous,num_pages=transaction['num_pages'])
 
 @rent_views.route('/rent/all', methods=['GET'])
 def get_all_rent():
