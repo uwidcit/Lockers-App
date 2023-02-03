@@ -9,6 +9,7 @@ from datetime import datetime
 from controllers import (
     add_new_locker,
     add_new_transaction,
+    get_locker_rent_history,
     get_area_choices,
     get_All_rentType,
     get_all_rentType_tuple,
@@ -16,6 +17,7 @@ from controllers import (
     get_lockers_available,
     get_lockers_by_offset,
     get_locker_id,
+    get_locker_id_locker,
     get_num_locker_page,
     get_all_lockers,
     get_all_rentals,
@@ -145,7 +147,7 @@ def remove_area(id):
 
 @locker_views.route("/locker/<id>/update", methods=['POST'])
 def update_lockers(id):
-    locker = get_locker_id(id)
+    locker = get_locker_id_locker(id)
 
     if not locker:
         flash('Locker does not exist')
@@ -219,3 +221,31 @@ def render_lockers_rent(id):
     form = RentAdd()
     form.rent_type.choices = get_All_rentType()
     return render_template("addrent.html", form=form,id=id)
+
+@locker_views.route("/locker/<id>", methods=["GET"])
+def render_get_lockers(id):
+    previous = 1 
+    next = previous + 1
+    locker = get_locker_id(id)
+    rents = get_locker_rent_history(id,2,1)
+    return render_template('remove.html', locker = locker, rents = rents['data'], previous= previous,current_page=1,next=next,num_pages=rents['num_pages'])
+
+@locker_views.route("/locker/<id>/page/<offset>", methods=["GET"])
+def render_get_lockers_multi(id,offset):
+    offset= int(offset)
+    locker = get_locker_id(id)
+    rents = get_locker_rent_history(id,2,offset)
+
+    if rents:
+        num_pages = rents['num_pages']
+        if offset - 1 <= 0:
+                previous = 1
+                offset = 1
+        else:
+            previous = offset - 1
+        if offset + 1 >= num_pages:
+            next = num_pages
+        else:
+            next = offset + 1
+
+    return render_template('remove.html', locker = locker, rents = rents['data'], num_pages=num_pages, current_page=offset, previous=previous, next=next)

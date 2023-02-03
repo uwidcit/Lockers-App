@@ -1,5 +1,5 @@
 from models import Locker
-from models import Area
+from models import Area, Rent
 from models.locker import Status, LockerTypes,Key
 from database import db
 from controllers.log import create_log
@@ -75,7 +75,13 @@ def get_lockers_by_area_description(description):
 
 
 def get_locker_id(id):
-    locker = Locker.query.filter_by(locker_code = id).first()
+    locker = db.session.query(Locker,Area).join(Area).filter(Locker.locker_code == id).first()
+    if not locker:
+        return None
+    return locker
+
+def get_locker_id_locker(id):
+    locker = db.session.query(Locker).filter(Locker.locker_code == id).first()
     if not locker:
         return None
     return locker
@@ -160,7 +166,7 @@ def get_lockers_by_offset(size,offset):
      return data
 
 def rent_locker(id):
-    locker = get_locker_id(id)
+    locker = get_locker_id_locker(id)
     if not locker or locker.status == Status.RENTED:
         flash("locker already Rented")
         return None
@@ -176,7 +182,7 @@ def rent_locker(id):
         return None
 
 def not_verified(id):
-    locker = get_locker_id(id)
+    locker = get_locker_id_locker(id)
     
     if not locker :
         return None
@@ -214,7 +220,7 @@ def release_locker(id):
         return None
 
 def delete_locker(id):
-    locker = get_locker_id(id)
+    locker = get_locker_id_locker(id)
     if not locker:
         return None
 
@@ -233,7 +239,7 @@ def delete_locker(id):
             return None
     
 def update_key(id, new_key):
-    locker = get_locker_id(id)
+    locker = get_locker_id_locker(id)
     if not locker:
         return None
 
@@ -254,7 +260,7 @@ def update_key(id, new_key):
             return None
 
 def update_locker_status(id, new_status):
-    locker = get_locker_id(id)
+    locker = get_locker_id_locker(id)
     if not locker:
         return None
     
@@ -273,7 +279,7 @@ def update_locker_status(id, new_status):
             return None
 
 def update_locker_type(id, new_type):
-    locker = get_locker_id(id)
+    locker = get_locker_id_locker(id)
     if not locker:
         return None
         
@@ -294,7 +300,33 @@ def update_locker_type(id, new_type):
             flash("Unable to update locker status. Check Error Log for more Details")
             return None
 
+def get_locker_rent_history(id,size,offset):
+    query = db.session.query(Locker,Rent).join(Rent).filter(Locker.locker_code == id).order_by( Rent.id.desc()).all()
+    if not query:
+        return None
 
+    length_rent = len(query)
+
+    if length_rent == 0:
+        num_pages = 1
+
+    if length_rent%size != 0:
+        num_pages = int((length_rent/size) + 1)
+    else:
+        num_pages = int(length_rent/size)
+
+    index = (offset * size) - size
+    stop = (offset * size)
+
+    if(stop > length_rent):
+        stop = length_rent
+    r_list = []
+
+    for l,r in query[index:stop]:
+        r_list.append(r.toJSON())
+
+    return {"num_pages":num_pages,"data":r_list}
+    
 def getStatuses():
     return [ e.value for e in Status ]
 
