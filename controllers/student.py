@@ -1,4 +1,4 @@
-from models import Student
+from models import Student, Rent
 from models.student import RentStanding 
 from database import db
 from sqlalchemy.exc import SQLAlchemyError
@@ -245,3 +245,31 @@ def get_student_by_faculty(query):
     if not student:
         return None
     return [s.toJSON() for s in student]
+
+def get_rental_student(id,size,offset):
+    rent = db.session.query(Student,Rent).join(Rent).filter(Student.student_id==id).order_by(Rent.id.desc()).all()
+
+    if not rent:
+        return None
+    length_rent = len(rent)
+
+    if length_rent == 0:
+        num_pages = 1
+
+    if length_rent%size != 0:
+        num_pages = int((length_rent/size) + 1)
+    else:
+        num_pages = int(length_rent/size)
+
+    index = (offset * size) - size
+    stop = (offset * size)
+
+    if(stop > length_rent):
+        stop = length_rent
+    r_list = []
+
+    for l,r in rent[index:stop]:
+        r_list.append(r.toJSON())
+
+    return {"num_pages":num_pages,"data":r_list}
+    

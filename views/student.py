@@ -6,6 +6,7 @@ from controllers import (
     get_students_by_offset,
     get_student_by_id,
     get_student_by_id_json,
+    get_rental_student,
     get_student_current_rental_toJSON,
     search_student,
     update_student_id,
@@ -138,11 +139,33 @@ def update_student_info(id):
                 return redirect(url_for('.render_manage_student')) 
         return redirect(url_for('.render_manage_student'))
 
-@student_views.route('/api/student/<id>', methods=['GET'])
-def get_student_json(id):
+@student_views.route('/student/<id>', methods=['GET'])
+def get_student_render(id):
     result = get_student_by_id_json(id)
-
     if not result:
-        return jsonify({"Message":"Student doesn't exist"}),404
-    return jsonify(result),200
+        return redirect(url_for(".render_manage_student"))
+    rent = get_rental_student(id,5,1)
+    previous = 1
+    next = previous + 1
+    return render_template('release.html',student=result,rent=rent['data'],previous=previous,next=next,current_page=1,num_pages=rent['num_pages'])
+
+@student_views.route('/student/<id>/page/<offset>', methods=['GET'])
+def get_student_render_multi(id,offset):
+    offset = int(offset)
+    result = get_student_by_id_json(id)
+    if not result:
+        return redirect(url_for(".render_manage_student"))
+    rent = get_rental_student(id,5,offset)
+    num_pages = rent['num_pages']
+    if offset - 1 <= 0:
+        previous = 1
+        offset = 1
+    else:
+        previous = offset - 1
+    if offset + 1 >= num_pages:
+        next = num_pages
+    else:
+        next = offset + 1
+    
+    return render_template('release.html',student=result,rent=rent['data'],previous=previous,next=next,current_page=offset,num_pages=num_pages)
 

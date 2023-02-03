@@ -6,72 +6,98 @@
 
 {% block content %}
 <div class="row">
-        
-    {% if searchMode %}
-    <div class="col s12 m8 offset-m2" style="padding-top: 0.5rem;">
-      <a class="waves-effect waves-light btn" href="/locker">Go Back</a>
-    </div>
-    
-    {% else %}
-      <div class="col s12 m8 offset-m8">
-        <form method="POST" action="/locker/search">
-          <div class="input-field col s12 m4 offset-m1">
-            {{search.search_query(placeholder="Enter search query")}}
-          </div>
-          <div class="input-field col s2 m2" style="display:inline;">
-            <label for="search_submit"><i class="material-icons" style=" text-align: center;margin-left: 3px;color: white;">search</i></label>
-           {{search.submit(id="search_submit", class="purple darken-4 waves-light btn",value="")}}
-          </div>
-        </form>
+  <div class="col s7 offset-s3">
+    <div class="card small indigo lighten-2" style="height: 32vh;">
+    <div class="card-content white-text">
+      <span class="card-title">Student information: {{student.student_id}}</span>
+      <div class="divider"></div>
+      <div class="col s6">
+        <h6>Name: {{student.first_name}}  {{student.last_name}}</h6>
+        <h6>Faculty: {{student.faculty}}</h6>
       </div>
-    </div >
-    {% endif %} 
-      <div class="col s12 m10 offset-m1" style="height:60vh;">
-        <table >
-          <thead >
-            <tr>
-              <th>ID</th>
-              <th>Locker Code</th>
-              <th>Rented By</th>
-              <th>Type</th>
-              <th> Rented From </th>
-              <th> Rented To </th>
-              <th> Date Returned </th>
-              <th>Status</th>
-              <th>Amount Owed</th>
-              <th> </th>
-            </tr>
-          </thead>
-          <tbody >
-            {% if results %}
-            {% for result in results %}
-              <tr>
-                  <td>{{results.id}}</td>
-                  <td>{{result.locker_id}}</td>
-                  <td>{{result.student_id}}</td>
-                  <td>{{result.rent_type}}</td>
-                  <td>{{result.rent_date_from}}</td>
-                  <td>{{result.rent_date_to}}</td>
-                  <td>{{result.date_returned}}</td>
-                  <td>{{result.status.value}}</td>
-                  <td>$ {{result.amount_owed}}</td>
-                  {% if result.status.value != "Returned" and result.status.value != "Verified"%}
-                  <td><a href="/rent/{{result.id}}/release" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">delete</i>Release</a></td>
-                  {% elif result.status.value == "Returned"%}
-                  <td><a href="/rent/{{result.id}}/release/verify" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">delete</i>Verify Release</a></td>
-                  {% elif result.status.value != "Verified"%}
 
-                  {% endif %}
-              </tr>
-            {% endfor %}
-            {% else %}
-            <tr>
-               <td> No Rentals to Release </td>
-            </tr>
-            {% endif %}
-          <tbody>
-        </table>
-      </div>  
+      <div class="col s6">
+        <h6>Phone No: {{student.phone_number}}</h6>
+        <h6>Email:{{student.email}} </h6>
       </div>
+
+      <div class="col s6">
+        <h6>Standing: {{student.rentStanding}}</h6></p>
+      </div>
+    </div>
+
+    <div class="card-action">
+      <div class="col s1 offset-s10 floating-action-btn">
+        <a class="btn-floating btn-small waves-effect waves-light purple darken-4"><i class="material-icons">add </i></a>
+      </div>
+    </div>
+    </div>
+    </div>
+</div>
+
+<div class="row">
+  <div class="col s12 m10 offset-m1">
+    <h6>Rental History of {{student.first_name}} {{student.last_name}} </h6>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Locker ID</th>
+          <th>Rent Type</th>
+          <th>Rented From</th>
+          <th>Expected Return</th>
+          <th>Date Returned</th>
+          <th>Amount Owed </th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rent %}
+        <tr>
+          <td><a href="/rent/{{r.id}}">{{r.id}}</a></td>
+          <td><a href="/locker/{{r.locker_id}}">{{r.locker_id}}</a></td>
+          <td>{{r.rent_type}}</td>
+          <td>{{r.rent_date_from.date()}}</td>
+          <td>{{r.rent_date_to.date()}}</td>
+          {% if r.date_returned %}
+          <td>{{r.date_returned.date()}}</td>
+          {% else %}
+          <td>Not yet returned </td>
+          {% endif %}
+          <td>{{r.amount_owed}}</td>
+          <td>{{r.status.value}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+</div>
+
+<div class="col m5 offset-m5">
+  <ul class="pagination">
+
+  {% if current_page == 1 %}
+  <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+  {% else %}
+  <li><a href="/student/{{student.student_id}}/page/{{previous}}"><i class="material-icons">chevron_left</i></a></li>
+  {% endif %}
+
+  {% for n in range(1,num_pages + 1) %}
+  
+  
+  {% if n == current_page %}
+  <li class="waves effect purple darken-4"><a href="/student/{{student.student_id}}/page/{{n}}" style="color:white;">{{n}}</a></li>
+  {% else %}
+  <li class="waves-effect purple darken-4"><a href="/student/{{student.student_id}}/page/{{n}}" style="color:white;">{{n}}</a></li>
+  {% endif %}
+  {% endfor %}
+
+  {% if current_page == num_pages %}
+  <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+  {% else %}
+  <li><a href="/student/{{student.student_id}}/page/{{next}}"><i class="material-icons">chevron_right</i></a></li>
+  {% endif %}
+</ul>
+</div>
+
 </div>
 {% endblock %}
