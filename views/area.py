@@ -163,10 +163,11 @@ def get_area_id(id):
     area = get_area_by_id(id)
     locker = return_lockers(id,3,1)
     previous = 1
+    num_lockers = len(locker['data' ])
     next = previous + 1
     if not area:
         return redirect(url_for('.render_area_page'))
-    return render_template('get_area.html',area = area,locker=locker["data"], previous=previous,next=next,current_page=1,num_pages=locker['num_pages'])
+    return render_template('get_area.html',area = area,locker=locker["data"], previous=previous,next=next,current_page=1,num_pages=locker['num_pages'],num_lockers=num_lockers)
 
 
 @area_views.route('/area/<id>/page/<offset>', methods=['GET'])
