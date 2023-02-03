@@ -31,7 +31,7 @@
         {% if areaData %}
         {% for a in areaData %}
         <tr>
-            <td>{{a.id}}</td>
+            <td><a href="/area/{{a.id}}">{{a.id}}</a></td>
             <td>{{a.description}}</td>
             <td>{{a.longitude}} </td>
             <td>{{a.latitude}} </td>

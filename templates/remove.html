@@ -53,6 +53,7 @@
         </tr>
       </thead>
       <tbody>
+        {% if rents %}
         {% for r in rents %}
         <tr>
           <td><a href="/rent/{{r.id}}">{{r.id}}</a></td>
@@ -69,6 +70,9 @@
           <td>{{r.status}}</td>
         </tr>
         {% endfor %}
+        {% else %}
+          <td> No Rentals</td>
+        {% endif %}
       </tbody>
     </table>
 </div>

@@ -169,3 +169,21 @@ def get_area_id(id):
     return render_template('get_area.html',area = area,locker=locker["data"], previous=previous,next=next,current_page=1,num_pages=locker['num_pages'])
 
 
+@area_views.route('/area/<id>/page/<offset>', methods=['GET'])
+def get_area_id_multi(id,offset):
+    offset = int(offset)
+    area = get_area_by_id(id)
+    locker = return_lockers(id,3,offset)
+    if not area:
+        return redirect(url_for('.render_area_page'))
+    if offset - 1 <= 0:
+        previous = 1
+        offset = 1
+    else:
+        previous = offset - 1
+    if offset + 1 >= locker['num_pages']:
+        next = locker['num_pages']
+    else:
+        next = offset + 1
+  
+    return render_template('get_area.html',area = area,locker=locker["data"], previous=previous,next=next,current_page=offset,num_pages=locker['num_pages'])

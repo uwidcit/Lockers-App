@@ -169,8 +169,12 @@ def get_rt_Type():
 def get_rentType_by_offset(size,offset):
     l_offset = (offset * size) - size
 
-    count = len(get_All_rentType())
-    
+    count = get_All_rentType()
+
+    if not count:
+        count = 1
+    else:
+        count = len(count)
     if count == 0:
         count = 1
 

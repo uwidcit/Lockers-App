@@ -33,8 +33,8 @@ locker_views = Blueprint('locker_views', __name__, template_folder='../templates
 @locker_views.route("/locker", methods=['GET'])
 def manage_locker():
     get_all_rentals()
-    num_pages = get_num_locker_page(15)
-    lockerData = get_lockers_by_offset(15,1)
+    num_pages = get_num_locker_page(6)
+    lockerData = get_lockers_by_offset(6,1)
     previous = 1
     next = previous + 1
     form = LockerAdd()
@@ -44,8 +44,8 @@ def manage_locker():
 @locker_views.route("/locker/page/<offset>", methods=['GET'])
 def manage_locker_mulpages(offset):
     offset = int(offset)
-    num_pages = get_num_locker_page(15)
-    lockerData = get_lockers_by_offset(15,offset)
+    num_pages = get_num_locker_page(6)
+    lockerData = get_lockers_by_offset(6,offset)
 
     if offset - 1 <= 0:
         previous = 1
@@ -101,7 +101,7 @@ def locker_search():
     form = SearchForm()
     if form.validate_on_submit:
         query = request.args.get("search_query")
-        result = search_lockers(query,1,15)
+        result = search_lockers(query,1,6)
         if result:
            num_pages = result['num_pages']
            return render_template('manage_locker.html', lockerData=result['data'], form = LockerAdd(),delete=ConfirmDelete(), search=SearchForm(),searchMode=False,query=query ,num_pages= num_pages,current_page=1, next= next, previous= previous,trans=TransactionAdd())
@@ -116,7 +116,7 @@ def locker_search_multi(offset):
     form = SearchForm()
     if form.validate_on_submit:
         query = request.args.get("search_query")
-        result = search_lockers(query,offset,15)
+        result = search_lockers(query,offset,6)
         if result:
            num_pages = result['num_pages']
            if offset - 1 <= 0:
@@ -228,7 +228,9 @@ def render_get_lockers(id):
     next = previous + 1
     locker = get_locker_id(id)
     rents = get_locker_rent_history(id,2,1)
-    return render_template('remove.html', locker = locker, rents = rents['data'], previous= previous,current_page=1,next=next,num_pages=rents['num_pages'])
+    if rents:
+        return render_template('remove.html', locker = locker, rents = rents['data'], previous= previous,current_page=1,next=next,num_pages=rents['num_pages'])
+    return render_template('remove.html', locker = locker, rents = None, previous= previous,current_page=1,next=next,num_pages=1)
 
 @locker_views.route("/locker/<id>/page/<offset>", methods=["GET"])
 def render_get_lockers_multi(id,offset):
