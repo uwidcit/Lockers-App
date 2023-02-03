@@ -245,6 +245,34 @@ def get_all_rentals():
         update_rent(r.id)
 
     return[r.toJSON() for r in rents]
+
+def get_transactions(id,size,offset):
+    data = get_rent_by_id(id)
+    
+    if not data:
+        return None
+    
+    length_trans = len(data.Transactions)
+    if length_trans == 0:
+         num_pages = 1
+    
+    if length_trans%size != 0:
+        num_pages = int((length_trans/size) + 1)
+    else:
+        num_pages = int(length_trans/size)
+    
+    index = (offset * size) - size
+    stop = (offset * size)
+
+    if(stop > length_trans):
+        stop = length_trans
+    
+    s_list = []
+
+    for d in data.Transactions[index:stop]:
+        s_list.append(d.toJSON())
+
+    return {"num_pages":num_pages,"data":s_list}
     
     
 

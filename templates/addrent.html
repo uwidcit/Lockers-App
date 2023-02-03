@@ -1,21 +1,97 @@
 {% extends "layout.html" %}
-{% block title %}Add Rent{% endblock %}
-{% block page %}Add Rent{% endblock %}
-
-
+{% block title %}Rent Details{% endblock %}
+{% block page %}Rent Details{% endblock %}
 
 {% block content %}
 <div class="row">
-    <div class="row">
-     
- 
-          <div class="input-field col s12 m8 offset-m2">
-           <p> {{data}}</p>
-         </div> 
- 
-      </form>
+  <div class="col s6 offset-s3">
+<div class="card small indigo lighten-2"  style="height: 25vh;">
+    <div class="card-content white-text">
+      <span class="card-title">Rent No.: {{rent.id}} ({{rent.status.value}})</span>
+        <div class="col s12">
+          <div class="divider"> 
+          </div>
+              <h6>Rented By: {{rent.student_id}}</h6>
+        </div>
+        <div class="col s12">
+          <div class="col s6">
+            <p>Date Rented: {{rent.rent_date_from.date()}}</p>
+          </div>
+          <div class="col s6">
+            {% if rent.date_returned %}
+            <p>Date Returned: {{rent.date_returned.date()}}</p>
+            {% else %}
+            <p> Not returned </p>
+            {% endif %}
+          </div>
+            <div class="col s6"> No payments made</div>
+            <div class="divider"></div>
+        </div>
+        
+        <div class="col s12">
+          <h6>Owed: ${{rent.amount_owed}}</h6>
+        </div>   
     </div>
- </div>
+  </div>
+  </div>
+  <div class="row">
+    <div class="col s12 m10 offset-m1">
+      <h6>Transaction History</h6>
+      <table>
+        <tr>
+            <th>ID</th>
+            <th>Currency </th>
+            <th>Transaction Date </th>
+            <th>Amount </th>
+            <th>Type </th>
+            <th>Invoice No</th>
+        </tr>
+        {% if transaction %}
+        {% for t in transaction %}
+            <tr>
+                <td>{{t.id}}</td>
+                <td>{{t.currency}}</td>
+                <td>{{t.transaction_date}}</td>
+                <td>{{t.amount}}</td>
+                <td>{{t.type}}</td>
+                <td>{{t.receipt_number}}</td>
+            </tr>
+        {% endfor %}
+        {% else %}
+            <td> No Transactions </td>
+        {% endif %}
+       </table>
+    </div>
+    <div class="col m5 offset-m5">
+      <ul class="pagination">
+    
+      {% if current_page == 1 %}
+      <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+      {% else %}
+      <li><a href="/rent/{{rent.id}}/page/{{previous}}"><i class="material-icons">chevron_left</i></a></li>
+      {% endif %}
+    
+      {% for n in range(1,num_pages + 1) %}
+      
+      
+      {% if n == current_page %}
+      <li class="waves effect purple darken-4"><a href="/rent/{{rent.id}}/page/{{n}}" style="color:white;">{{n}}</a></li>
+      {% else %}
+      <li class="waves-effect purple darken-4"><a href="/rent/{{rent.id}}/page/{{n}}" style="color:white;">{{n}}</a></li>
+      {% endif %}
+      {% endfor %}
+    
+      {% if current_page == num_pages %}
+      <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+      {% else %}
+      <li><a href="/rent/{{rent.id}}/page/{{next}}"><i class="material-icons">chevron_right</i></a></li>
+      {% endif %}
+    </ul>
+    </div>
+  </div>
+   
+   
+</div>
 {% endblock %}
 
 <script src="/static/keep_alive.js"> </script> 

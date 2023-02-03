@@ -42,11 +42,11 @@
             {% if lockerData %}
             {% for l in lockerData %}
             <tr>
-                <td>{{l.locker_code}}</td>
+                <td><a href="/locker/{{l.locker_code}}">{{l.locker_code}}</a></td>
                 <td>{{l.locker_type}}</td>
                 <td>{{l.status}}</td>
                 <td>{{l.key}} </td>
-                <td><a href="/area">{{l.area_description}}</a></td>
+                <td><a href="/area/{{l.area}}">{{l.area_description}}</a></td>
                 <div style=" position: relative;display: inline-flex;">
                   {% if l.status == "Free"%}
                   <td style="width:120px;"><a href="/locker/rent/{{l.locker_code}}/student" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">check</i>Rent</a></td>
