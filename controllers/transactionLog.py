@@ -70,7 +70,7 @@ def cal_transaction_amount(rent_id):
     amount = 0
     for t in transactions:
         amount =  amount + t.amount
-    return amount
+    return round(amount,2)
 
 def get_all_transactions():
     transactions = TransactionLog.query.all()

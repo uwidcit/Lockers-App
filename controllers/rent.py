@@ -54,7 +54,7 @@ def init_amount_owed(rentType_id, rent_date_from, rent_date_to):
 
     price = float(type.price)
 
-    return price * period_elapsed(rentType_id, rent_date_from, rent_date_to)
+    return round((price * period_elapsed(rentType_id, rent_date_from, rent_date_to)),2)
         
 def recal_amount_owed(rentType_id,date_returned,rent_date_from,rent_date_to):
     if date_returned:
@@ -95,7 +95,7 @@ def late_fees(rentType_id, date_returned, rent_date_from, rent_date_to):
                 time  = period_elapsed(daily_price.id, rent_date_to, date_returned)
         else:
             return 0.0
-        return daily_price.price * time
+        return round((daily_price.price * time),2)
 
 def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to):
     if get_overdue_rent_by_student(student_id) or get_owed_rent_by_student(student_id):
@@ -133,9 +133,9 @@ def update_rent(id):
 
     if not rent:
         return None
-    amt = recal_amount_owed(rent.rent_type,rent.date_returned,rent.rent_date_from,rent.rent_date_to)
+    amt = round(recal_amount_owed(rent.rent_type,rent.date_returned,rent.rent_date_from,rent.rent_date_to),2)
     if amt is not None:
-        rent.amount_owed = amt - cal_transaction_amount(id)
+        rent.amount_owed = round(round(amt,2) - round(cal_transaction_amount(id),2),2)
     rent.status = rent.check_status()
 
     if rent.status.value == "Overdue":

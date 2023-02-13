@@ -31,6 +31,9 @@ def add_student():
             flash("Student not created")
             return redirect(url_for(".render_manage_student"))
         flash("Success")
+        if request.args:
+            callback = request.args.get('callback')
+            return redirect(url_for('locker_views.select_student_page',id=callback))
         return redirect(url_for('.render_manage_student'))
 
 @student_views.route('/student',methods=['GET'])
@@ -136,7 +139,10 @@ def update_student_info(id):
         if student.email != email and email != "":
              if not update_student_email(id,email):
                 flash("Error updating Faculty")
-                return redirect(url_for('.render_manage_student')) 
+                return redirect(url_for('.render_manage_student'))
+        if request.args:
+            callback = request.args.get('callback')
+            return redirect(url_for('locker_views.select_student_page',id=callback))
         return redirect(url_for('.render_manage_student'))
 
 @student_views.route('/student/<id>', methods=['GET'])

@@ -25,7 +25,6 @@ class Locker (db.Model):
     key = db.Column(db.Enum(Key) ,nullable = False)
     area = db.Column(db.Integer, db.ForeignKey("area.id"), nullable=False)
     Rented = db.relationship('Rent', backref='locker', lazy=True, cascade="all, delete-orphan")
-    
 
     def __init__(self,locker_code,locker_type,status,key,area):
         self.locker_code = locker_code

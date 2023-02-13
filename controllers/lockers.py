@@ -78,6 +78,7 @@ def get_locker_id(id):
     locker = db.session.query(Locker,Area).join(Area).filter(Locker.locker_code == id).first()
     if not locker:
         return None
+    
     return locker
 
 def get_locker_id_locker(id):
@@ -201,7 +202,7 @@ def not_verified(id):
         return None
 
 def release_locker(id):
-    locker = get_locker_id(id)
+    locker = get_locker_id_locker(id)
     
     if not locker :
         return None
@@ -211,7 +212,6 @@ def release_locker(id):
     try:
         db.session.add(locker)
         db.session.commit()
-        
         return locker
     except SQLAlchemyError as e:
         create_log(id, type(e), datetime.now())

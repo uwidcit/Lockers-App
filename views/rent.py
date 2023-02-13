@@ -9,6 +9,7 @@ from controllers import (
     get_transactions,
     get_all_rentals,
     release_rental,
+    release_locker,
     get_lockers_available,
     get_student_by_id,
     get_All_rentType,
@@ -115,6 +116,7 @@ def return_locker_to_pool(id):
         return redirect(url_for('.rent_page'))
 
     if rental.status == Status.VERIFIED:
+        result = verify_rental(id)
         flash('Cannot verify locker it has already been verified')
         return redirect(url_for('locker_views.manage_locker'))
     elif rental.status != Status.RETURNED:

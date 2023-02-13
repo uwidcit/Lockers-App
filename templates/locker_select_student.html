@@ -45,7 +45,7 @@
               <td>{{s.email}}</td>
               <td>{{s.rentStanding}}</td>
               <td  style="width:120px;"><a href="#" onclick="createRent({{s.student_id}})"><i class="material-icons left">add</i>Add</a></td>
-              <td  style="width:120px;"><a href="#" onclick="editMode({{s}})"><i class="material-icons left">edit</i>Edit</a></td>
+              <td  style="width:120px;"><a href="#" onclick="editMode({{s}},{{id}})"><i class="material-icons left">edit</i>Edit</a></td>
           </tr>
               
           {% endfor %}
@@ -62,7 +62,7 @@
        <div class="modal" id="new_student" style="max-height: 100%;border-radius: 25px; height: 67vh;">
         <div class="modal-content">
           <h6 style="font-weight: bold;">Add Student </h6>
-         <form id="newStudent" class="col s12 m12" method="POST" action="/student" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
+         <form id="newStudent" class="col s12 m12" method="POST" action="/student?callback={{id}}" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
             {{ form.csrf_token }}
             <div class="input-field col s12 m12"> 
              <p>Student ID</p>           
@@ -191,9 +191,9 @@
     var instances = M.Modal.init(elems);
     });
   
-    function editMode(student){
+    function editMode(student,locker){
      form = document.getElementById('updateStudent')
-     form.action = "/student/"+student.student_id+"/update"
+     form.action = "/student/"+student.student_id+"/update?callback="+locker
   
      student_id =  document.getElementById('u_sid')
      student_id.value = student.student_id
