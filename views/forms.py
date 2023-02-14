@@ -7,7 +7,6 @@ from controllers import (
     get_rt_Type,
     getLockerTypes,
     getStatuses,
-    getKey,
 )
 
 class LockerAdd(FlaskForm):
@@ -16,7 +15,7 @@ class LockerAdd(FlaskForm):
     locker_code = StringField('locker_code', validators=[InputRequired()])
     locker_type  = SelectField(u'locker_type', choices= getLockerTypes())
     status  = SelectField(u'status', choices=status)
-    key = SelectField('key', choices= getKey(), validators=[InputRequired()])
+    key = StringField('key', validators=[InputRequired()])
     area = SelectField('area', choices=[])
     submit = SubmitField('Add Locker', render_kw={'class': 'btn waves-effect waves-light white-text'})
 

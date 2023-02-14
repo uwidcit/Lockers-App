@@ -6,6 +6,7 @@ class Key_Type(Enum):
     LOCK = "Lock"
 
 class MasterKey(db.Model):
+    __tablename__ = "masterkey"
     id = db.Column(db.Integer, primary_key = True)
     masterkey_id = db.Column(db.String, unique= True, nullable=False)
     series = db.Column(db.String, nullable=False)

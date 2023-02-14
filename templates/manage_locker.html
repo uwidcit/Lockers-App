@@ -142,13 +142,8 @@
                   </div>  
                   
                   <div class="col s6">
-                    <p>Key Status</p>
-                  <select id="l_key" name="key" style="display:inline;">
-                    <option value=”” disabled selected>Select a Key Status</option>
-                    {% for subfield in form.key %}
-                     {{subfield}}
-                    {% endfor %}
-                  </select>
+                    <p>Key</p>
+                    {{ form.key(size=20, class="validate")}}
                   </div>
 
                   <div class="col s12 m12">
@@ -220,12 +215,7 @@
                 
                 <div class="col s6">
                   <p>Key Status</p>
-                <select id="u_l_key" name="key" style="display:inline;">
-                  <option value=”” disabled selected>Select a Key Status</option>
-                  {% for subfield in form.key %}
-                   {{subfield}}
-                  {% endfor %}
-                </select>
+                  {{ form.key(size=20, class="validate",id="u_l_key")}}
                 </div>
 
                 <div class="col s12 m12">
@@ -328,6 +318,7 @@
   
    type = document.getElementById('u_locker_type')
    key = document.getElementById('u_l_key')
+   key.value = locker.key
   
    stats = document.getElementById('u_stats')
    area = document.getElementById('u_area')
@@ -341,9 +332,6 @@
         type.selectedIndex = i
       }
   
-      if(key.options[i].value === locker.key){
-        key.selectedIndex = i
-      }
    }
   
    for(i =0; i < area.options.length;i++){
