@@ -1,6 +1,7 @@
 from .user import *
 from .auth import *
 from .manage_uploads import *
+from .masterkey import *
 from .lockers import *
 from .area import *
 from .rent import *
