@@ -3,6 +3,7 @@ from .auth import *
 from .manage_uploads import *
 from .masterkey import *
 from .key import *
+from .key_history import *
 from .lockers import *
 from .area import *
 from .rent import *
