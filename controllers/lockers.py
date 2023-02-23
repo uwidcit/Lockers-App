@@ -1,6 +1,6 @@
 from models import Locker
-from models import Area, Rent
-from models.locker import Status, LockerTypes,Key
+from models import Area, Rent,Key
+from models.locker import Status, LockerTypes
 from database import db
 from controllers.log import create_log
 from controllers.area import get_area_by_id,get_area_by_description
@@ -9,9 +9,9 @@ from flask import flash
 from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
 
-def add_new_locker(locker_code,locker_type,status,key,area,):
+def add_new_locker(locker_code,locker_type,status,key_id,area,):
     try:
-        locker = Locker(locker_code,locker_type,status,key,area)
+        locker = Locker(locker_code,locker_type,status,key_id,area)
         db.session.add(locker)
         db.session.commit()
         return locker
@@ -88,7 +88,7 @@ def get_locker_id_locker(id):
     return locker
 
 def search_lockers(query,offset,size):
-    data = db.session.query(Locker,Area).join(Area).filter(or_(Locker.locker_code.like(query), Locker.locker_type.like(query), Locker.status.like(query), Locker.status.like(query), Area.description.like(query))).all()
+    data = db.session.query(Locker,Area,Key).join(Area,Key).filter(or_(Locker.locker_code.like(query), Locker.locker_type.like(query), Locker.status.like(query), Locker.status.like(query), Locker.key.like(query),Area.description.like(query))).all()
 
     if not data:
         return None
@@ -130,13 +130,12 @@ def get_all_lockers():
 def get_num_lockers():
     try:
         lockers = Locker.query.all()
-        count = 0
 
-        for l in lockers:
-            count += 1
-
-        if not count or count == 0:
-            return 1
+        if not lockers:
+            count = 1
+        else:
+            count = len(lockers)
+       
         return count
     except:
         db.session.close()
@@ -248,11 +247,10 @@ def update_key(id, new_key):
         return None
     else:
         try:
-            if new_key.upper() in Key.__members__:
-                locker.key = Key[new_key.upper()]
-                db.session.add(locker)
-                db.session.commit()
-                return locker
+            locker.key = new_key
+            db.session.add(locker)
+            db.session.commit()
+            return locker
         except SQLAlchemyError as e:
             create_log(id, type(e), datetime.now())
             flash("Unable to update key. Check Error Log for more Details")
@@ -332,6 +330,3 @@ def getStatuses():
 
 def getLockerTypes():
     return [ e.value for e in LockerTypes]
-    
-def getKey():
-    return [ e.value for e in Key]
