@@ -43,24 +43,26 @@
       </div>
       
 
-      {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <nav class="white black-text" style="padding: 10px">
-      <div class="nav-wrapper">
-          <ul class="flashes">
-          {% for message in messages %}
-            <li>{{ message }}</li>
-          {% endfor %}
-          </ul>
-      </div>
-    </nav>
-    {% endif %}
-    {% endwith %}
+     
 
    
       <div class=" deep-purple lighten-5 col s10" style="padding:10px; height: 90vh; width: 80vw; margin-left:30px; margin-top:10px; border-radius: 25px;overflow-y: hidden; overflow-x: hidden; display: flexbox;" > 
         {% block content %}{% endblock %}
       </div>
+
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      <nav class="purple darken-4 center white-text" style="padding: 10px; position: fixed; margin-top: 85vh;">
+        <div class="nav-wrapper">
+            <ul class="flashes">
+            {% for message in messages %}
+              <li style="font-weight: bold;font-size: 14px;">{{ message }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+      </nav>
+      {% endif %}
+      {% endwith %}
 
     </div>
     
