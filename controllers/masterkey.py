@@ -18,9 +18,8 @@ def get_all_masterkeys(size,offset):
     m_offset = (offset * size)
 
     masterkeys = MasterKey.query.all()
-
+    
     if not masterkeys:
-        print("pear")
         return {'num_pages': 1, "data":[]}
     
     length_masterkeys = len(masterkeys)
@@ -41,7 +40,6 @@ def get_all_masterkeys(size,offset):
     for d in masterkeys[index:stop]:
         m_list.append(d.toJSON())
     return {'num_pages':num_pages, "data":m_list}
-    
     
 
 def get_masterkey_by_id(id):

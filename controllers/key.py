@@ -15,14 +15,13 @@ def new_key(key_id, masterkey_id,key_status,date_added):
         db.session.rollback()
         return None
 
-def get_all_masterkeys(size,offset):
+def get_all_keys(size,offset):
     k_offset = (offset * size)
 
     keys = Key.query.all()
 
     if not keys:
         return None
-    
     length_keys = len(keys)
     if length_keys == 0:
         num_pages = 1
