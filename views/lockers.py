@@ -13,6 +13,7 @@ from controllers import (
     get_area_choices,
     get_All_rentType,
     get_all_rentType_tuple,
+    get_all_rentType_current,
     get_available_student,
     get_lockers_available,
     get_lockers_by_offset,
@@ -76,7 +77,7 @@ def select_student_page(id):
     studentData = get_available_student()
     search = SearchForm()
     rent = RentAdd()
-    rent.rent_type.choices = get_all_rentType_tuple()
+    rent.rent_type.choices = get_all_rentType_current()
     search.submit.label.text = "Search Student"
     return render_template("locker_select_student.html",studentData=studentData,form=StudentAdd(),search=search,rent=rent,id = id)
 
