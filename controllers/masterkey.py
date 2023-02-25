@@ -20,7 +20,8 @@ def get_all_masterkeys(size,offset):
     masterkeys = MasterKey.query.all()
 
     if not masterkeys:
-        return None
+        print("pear")
+        return {'num_pages': 1, "data":[]}
     
     length_masterkeys = len(masterkeys)
     if length_masterkeys == 0:

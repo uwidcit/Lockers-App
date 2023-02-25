@@ -43,6 +43,7 @@ def render_manage_student():
     next = previous + 1
     search = SearchForm()
     search.submit.label.text = "Search Student"
+    print(studentData)
     return render_template("manage_student.html",studentData=studentData["data"],num_pages= studentData["num_pages"], current_page =1 ,previous = previous, next = next , form=StudentAdd(),search=search)
 
 @student_views.route('/student/page/<offset>',methods=['GET'])

@@ -15,4 +15,5 @@ def render_masterkey_page():
     next = previous + 1
     search = SearchForm()
     search.submit.label.text = "Search Master Key"
-    return render_template("manage_masterkey.html", current_page =1 ,previous = previous, next = next, search=search)
+    print(masterkeyData)
+    return render_template("manage_masterkey.html", current_page =1 ,previous = previous, next = next, search=search, num_pages= masterkeyData["num_pages"])
