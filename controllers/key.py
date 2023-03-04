@@ -44,7 +44,7 @@ def get_all_keys(size,offset):
     
 
 def get_key_by_id(id):
-    key = Key.filter(Key.id.like(id)).first()
+    key = Key.query.filter(Key.id.like(id)).first()
 
     if not key:
         return None
@@ -67,7 +67,7 @@ def update_key_id(id,new_key_id):
         return None
 
 
-def update_masterkey_id(id,new_id):
+def update_key_masterkey_id(id,new_id):
     key = get_key_by_id(id)
 
     if not key:

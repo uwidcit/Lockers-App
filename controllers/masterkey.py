@@ -3,6 +3,7 @@ from database import db
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import and_, or_
 from datetime import datetime
+from models.masterkey import Key_Type
 
 def new_masterkey(masterkey_id, series,key_type,date_added):
     try:
@@ -43,7 +44,7 @@ def get_all_masterkeys(size,offset):
     
 
 def get_masterkey_by_id(id):
-    masterkey = MasterKey.filter(or_(MasterKey.id.like(id), MasterKey.masterkey_id.like(id))).first()
+    masterkey = MasterKey.query.filter(or_(MasterKey.id.like(id), MasterKey.masterkey_id.like(id))).first()
 
     if not masterkey:
         return None
@@ -93,3 +94,19 @@ def delete_masterkey(id):
     except SQLAlchemyError:
         db.session.rollback()
         return None
+
+def update_masterkey_type(id, new_type):
+    masterkey = get_masterkey_by_id(id)
+    if not masterkey:
+        return None
+    
+    try:
+        if new_type.upper() in Key_Type.__members__:
+            masterkey.key_type = Key_Type[new_type.upper()]
+            db.session.add(masterkey)
+            db.session.commit()
+            return masterkey
+    except SQLAlchemyError:
+        db.session.rollback()
+        return None
+    
