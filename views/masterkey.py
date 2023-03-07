@@ -6,11 +6,13 @@ from controllers import (
     new_masterkey,
     delete_masterkey,
     get_masterkey_by_id,
+    get_key_statuses,
+    search_masterkey,
     update_masterkey_id,
     update_series,
     update_masterkey_type
     )
-from views.forms import SearchForm, masterKeyForm, ConfirmDelete
+from views.forms import SearchForm, masterKeyForm, ConfirmDelete, KeyAdd
 
 masterkey_views = Blueprint('masterkey_views', __name__, template_folder='../templates')
 
@@ -20,8 +22,10 @@ def render_masterkey_page():
     previous = 1
     next = previous + 1
     search = SearchForm()
+    keys = KeyAdd()
+    keys.key_status.choices = get_key_statuses()
     search.submit.label.text = "Search Master Key"
-    return render_template("manage_masterkey.html", current_page =1 ,previous = previous, next = next, search=search, masterkeyData=masterkeyData["data"], num_pages= masterkeyData["num_pages"], form = masterKeyForm(), delete = ConfirmDelete())
+    return render_template("manage_masterkey.html", current_page =1 ,previous = previous, next = next, search=search, masterkeyData=masterkeyData["data"], keys = keys ,num_pages= masterkeyData["num_pages"], form = masterKeyForm(), delete = ConfirmDelete())
 
 @masterkey_views.route('/masterkey', methods=['POST'])
 def create_new_masterkey():
@@ -90,9 +94,11 @@ def render_masterkey_mulpages(offset):
         next = masterkeyData["num_pages"]
     else:
         next = offset + 1
+    keys = KeyAdd()
+    keys.key_status.choices = get_key_statuses()
     search = SearchForm()
     search.submit.label.text = "Search Master Key"
-    return render_template("manage_masterkey.html", current_page =offset ,previous = previous, next = next, search=search, masterkeyData=masterkeyData["data"], num_pages= masterkeyData["num_pages"], form = masterKeyForm(), delete = ConfirmDelete())
+    return render_template("manage_masterkey.html", current_page =offset ,previous = previous, next = next, search=search, keys= keys, masterkeyData=masterkeyData["data"], num_pages= masterkeyData["num_pages"], form = masterKeyForm(), delete = ConfirmDelete())
 
 @masterkey_views.route('/masterkey/search/',methods=['GET'])
 def masterkey_search():
@@ -102,10 +108,12 @@ def masterkey_search():
     form = SearchForm()
     if form.validate_on_submit:
         query = request.args.get("search_query")
-        result = search_masterkeys(query,1,6)
+        result = search_masterkey(query,1,6)
         if result:
            num_pages = result['num_pages']
-           return render_template("manage_masterkey.html", current_page =1 ,previous = previous, next = next, search=search, masterkeyData=result["data"], num_pages= result["num_pages"], form = masterKeyForm(), delete = ConfirmDelete())
+           keys = KeyAdd()
+           keys.key_status.choices = get_key_statuses()
+           return render_template("manage_masterkey.html", current_page =1 ,previous = previous, next = next, keys = keys, search=SearchForm(), masterkeyData=result["data"], num_pages= result["num_pages"], form = masterKeyForm(), delete = ConfirmDelete())
          
         else:
             flash('Master Key doesn''t exist')
@@ -117,7 +125,7 @@ def masterkey_search_multi(offset):
     form = SearchForm()
     if form.validate_on_submit:
         query = request.args.get("search_query")
-        result = search_masterkeys(query,1,6)
+        result = search_masterkey(query,offset,6)
         if result:
             if offset - 1 <= 0:
                 previous = 1
@@ -129,7 +137,10 @@ def masterkey_search_multi(offset):
             else:
                 next = offset + 1
             num_pages = result["num_pages"]
-            return render_template("manage_masterkey.html", current_page =offset ,previous = previous, next = next, search=search, masterkeyData=result["data"], num_pages= result["num_pages"], form = masterKeyForm(), delete = ConfirmDelete())
+            keys = KeyAdd()
+            keys.key_status.choices = get_key_statuses()
+            return render_template("manage_masterkey.html", current_page =offset ,previous = previous, next = next, keys = keys, search=SearchForm(), masterkeyData=result["data"], num_pages= result["num_pages"], form = masterKeyForm(), delete = ConfirmDelete())
         else:
             flash('Master Key doesn''t exist')
             return redirect(url_for('.render_masterkey_page'))
+    

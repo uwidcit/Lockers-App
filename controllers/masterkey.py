@@ -1,4 +1,4 @@
-from models import MasterKey
+from models import MasterKey,Key
 from database import db
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import and_, or_
@@ -109,4 +109,28 @@ def update_masterkey_type(id, new_type):
     except SQLAlchemyError:
         db.session.rollback()
         return None
+
+def search_masterkey(query,offset,size):
+    data = db.session.query(MasterKey).filter(or_(MasterKey.id.like(query), MasterKey.masterkey_id.like(query), MasterKey.series.like(query), MasterKey.key_type.like(query))).all()
+    if not data:
+        return {'num_pages':1,'data':[]}
     
+    length_mkey = len(data)
+    if length_mkey == 0:
+         num_pages = 1
+    
+    if length_mkey%size != 0:
+        num_pages = int((length_mkey/size) + 1)
+    else:
+        num_pages = int(length_mkey/size)
+    
+    index = (offset * size) - size
+    stop = (offset * size)
+
+    if(stop > length_mkey):
+        stop = length_mkey
+    
+    m_list = []
+    for masterkey in data[index:stop]:
+        m_list.append(masterkey.toJSON())
+    return {"num_pages": num_pages,"data":m_list}
