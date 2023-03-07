@@ -163,6 +163,20 @@ def get_all_rentType_tuple():
 
     return rentTuple
 
+def get_all_rentType_current():
+    rentType = RentTypes.query.filter(RentTypes.period_to >= datetime.today().date())
+    rentTuple = []
+    if not rentType:
+        return None
+    
+    for r in rentType:
+        r['period_from'] = datetime.strptime(r['period_from'], '%Y-%m-%d')
+        r['period_to'] = datetime.strptime(r['period_to'], '%Y-%m-%d')
+        rentTuple =  rentTuple + [(r["id"], r["type"]+" $"+str(r["price"]) +" Period: "+ str(r["period_from"].year) +'/'+str(r["period_from"].month) + " to " + str(r["period_to"].year) +'/'+ str(r["period_to"].month))]
+
+    return rentTuple
+
+
 def get_rt_Type():
     return [rt.value for rt in Types]
 

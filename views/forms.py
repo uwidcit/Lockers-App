@@ -12,6 +12,7 @@ from controllers import (
 class LockerAdd(FlaskForm):
     status = getStatuses()
     status.remove('Rented')
+    status.remove('Not Verified')
     locker_code = StringField('locker_code', validators=[InputRequired()])
     locker_type  = SelectField(u'locker_type', choices= getLockerTypes())
     status  = SelectField(u'status', choices=status)

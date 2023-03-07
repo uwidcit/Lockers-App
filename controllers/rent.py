@@ -57,15 +57,18 @@ def init_amount_owed(rentType_id, rent_date_from, rent_date_to):
     return round((price * period_elapsed(rentType_id, rent_date_from, rent_date_to)),2)
         
 def recal_amount_owed(rentType_id,date_returned,rent_date_from,rent_date_to):
-    if date_returned:
+    timestamp = datetime.now()
+    semester_period = get_rentType_by_id(rentType_id)
+    if date_returned and date_returned <= semester_period.period_to:
         if date_returned > rent_date_to:
             return init_amount_owed(rentType_id,rent_date_from,rent_date_to) + late_fees(rentType_id,date_returned,rent_date_from,rent_date_to)
         return init_amount_owed(rentType_id,rent_date_from,rent_date_to)
-    elif not date_returned:
-        timestamp = datetime.now()
-        if timestamp > rent_date_to:
+    elif not date_returned and timestamp <= semester_period.period_to:
+        if timestamp > rent_date_to and timestamp <= semester_period.period_to:
            return init_amount_owed(rentType_id,rent_date_from,rent_date_to) + late_fees(rentType_id,timestamp,rent_date_from,rent_date_to)
         return init_amount_owed(rentType_id,rent_date_from,rent_date_to)
+    else:
+        return init_amount_owed(rentType_id,rent_date_from,rent_date_to) + late_fees(rentType_id,semester_period.period_to,rent_date_from,rent_date_to)
 
 def late_fees(rentType_id, date_returned, rent_date_from, rent_date_to):
     type = get_rentType_by_id(rentType_id)
