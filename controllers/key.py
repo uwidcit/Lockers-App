@@ -15,14 +15,13 @@ def new_key(key_id, masterkey_id,key_status,date_added):
         db.session.rollback()
         return None
 
-def get_all_masterkeys(size,offset):
+def get_all_keys(size,offset):
     k_offset = (offset * size)
 
     keys = Key.query.all()
 
     if not keys:
         return None
-    
     length_keys = len(keys)
     if length_keys == 0:
         num_pages = 1
@@ -45,7 +44,7 @@ def get_all_masterkeys(size,offset):
     
 
 def get_key_by_id(id):
-    key = Key.filter(Key.id.like(id)).first()
+    key = Key.query.filter(Key.id.like(id)).first()
 
     if not key:
         return None
@@ -68,7 +67,7 @@ def update_key_id(id,new_key_id):
         return None
 
 
-def update_masterkey_id(id,new_id):
+def update_key_masterkey_id(id,new_id):
     key = get_key_by_id(id)
 
     if not key:

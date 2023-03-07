@@ -66,4 +66,9 @@ class SearchForm(FlaskForm):
     search_query = StringField('search_string', validators=[InputRequired()])
     submit = SubmitField('Search', render_kw={'class': 'btn waves-effect waves-light white-text'}) 
     
-    
+class masterKeyForm(FlaskForm):
+    masterkey_id = StringField('masterkey_id', validators=[InputRequired()])
+    series = StringField('series', validators=[InputRequired()])
+    date_added = DateField('date_added', validators=[InputRequired()])
+    key_type = SelectField('key_type', choices=["Combination", "Lock"])
+    submit = SubmitField('Add Master Key', render_kw={'class': 'btn waves-effect waves-light white-text'})

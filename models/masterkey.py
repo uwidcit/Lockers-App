@@ -1,5 +1,6 @@
 from database import db
 from enum import Enum
+from datetime import datetime
 
 class Key_Type(Enum):
     COMBINATION = "Combination"
@@ -25,6 +26,5 @@ class MasterKey(db.Model):
             'id':self.id,
             'masterkey_id':self.masterkey_id,
             'series': self.series,
-            'key_type': self.key_type.value
-        }
-        
+            'key_type': self.key_type.value,
+            'date_added':  datetime.strftime(self.date_added,'%Y-%m-%d')}
