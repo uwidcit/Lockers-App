@@ -98,6 +98,7 @@ def release_locker(id):
     
     if rental.status == Status.PAID :
         d_return = datetime.now()
+        d_return.replace(second=0,microsecond=0)
         rental = release_rental(id,d_return)
     elif rental.status == Status.RETURNED:
         flash('Cannot release locker it has already been released')

@@ -88,7 +88,7 @@ def get_locker_id_locker(id):
     return locker
 
 def search_lockers(query,offset,size):
-    data = db.session.query(Locker,Area,Key).join(Area,Key).filter(or_(Locker.locker_code.like(query), Locker.locker_type.like(query), Locker.status.like(query), Locker.status.like(query), Locker.key.like(query),Area.description.like(query))).all()
+    data = db.session.query(Locker,Area).join(Area).filter(or_(Locker.locker_code.like(query), Locker.locker_type.like(query), Locker.status.like(query), Locker.status.like(query), Locker.key.like(query),Area.description.like(query))).all()
 
     if not data:
         return None

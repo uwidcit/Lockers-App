@@ -86,7 +86,7 @@ def add_locker():
     form = LockerAdd() # create form object
     if form.validate_on_submit:
         data = request.form # get data from form submission
-        new_locker = add_new_locker(locker_code=data['locker_code'], locker_type=data['locker_type'], status=data['status'], key=data['key'],area=data['area'])
+        new_locker = add_new_locker(locker_code=data['locker_code'], locker_type=data['locker_type'], status=data['status'], key_id=data['key'],area=data['area'])
         if not new_locker:
             return redirect(url_for('.manage_locker'))
             #jsonify({"message":"Locker already exist or some error has occurred"}),400
