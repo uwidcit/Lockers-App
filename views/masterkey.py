@@ -7,6 +7,7 @@ from controllers import (
     delete_masterkey,
     get_masterkey_by_id,
     get_key_statuses,
+    new_key,
     search_masterkey,
     update_masterkey_id,
     update_series,
@@ -48,7 +49,7 @@ def remove_master_key(masterkey_id):
         if not masterkey:
             flash("Master Key doesn't exist")
             return redirect(url_for('.render_masterkey_page'))
-        flash('Master Key deleted !')
+        flash('Master Key deleted!')
     return redirect(url_for('.render_masterkey_page'))
 
 @masterkey_views.route("/masterkey/<masterkey_id>/update", methods=['POST'])
@@ -109,7 +110,7 @@ def masterkey_search():
     if form.validate_on_submit:
         query = request.args.get("search_query")
         result = search_masterkey(query,1,6)
-        if result:
+        if result and result['data'] != []:
            num_pages = result['num_pages']
            keys = KeyAdd()
            keys.key_status.choices = get_key_statuses()
@@ -143,4 +144,21 @@ def masterkey_search_multi(offset):
         else:
             flash('Master Key doesn''t exist')
             return redirect(url_for('.render_masterkey_page'))
-    
+
+@masterkey_views.route('/masterkey/key',methods=['POST'])
+def create_key():
+    form = KeyAdd()
+    if form.validate_on_submit:
+        key_id = request.form.get('key_id')
+        masterkey_id = request.form.get('masterkey_id')
+        key_status = request.form.get('key_status')
+        date_added = datetime.strptime(request.form.get('date_added'),'%Y-%m-%d')
+        key = new_key(key_id,masterkey_id,key_status,date_added)
+        if not key:
+            flash('Key not created')
+            return redirect(url_for('.render_masterkey_page')) 
+        else:
+            flash('Success adding '+key_id)
+            return redirect(url_for('.render_masterkey_page'))
+    flash('Something went wrong')
+    return redirect(url_for('.render_masterkey_page'))

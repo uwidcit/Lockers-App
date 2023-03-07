@@ -45,18 +45,12 @@
       
 
       {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <nav class="white black-text" style="padding: 10px">
-      <div class="nav-wrapper">
-          <ul class="flashes">
+      {% if messages %}
           {% for message in messages %}
-            <li>{{ message }}</li>
+            <body onload="M.toast({html:'{{message}}'})"></body>
           {% endfor %}
-          </ul>
-      </div>
-    </nav>
-    {% endif %}
-    {% endwith %}
+      {% endif %}
+      {% endwith %}
 
    
       <div class=" deep-purple lighten-5 col s10" style="padding:10px; height: 90vh; width: 80vw; margin-left:30px; margin-top:10px; border-radius: 25px;overflow-y: hidden; overflow-x: hidden; display: flexbox;" > 
@@ -71,6 +65,11 @@
     <script src = "/static/keep_alive.js"></script>
     <script type="text/javascript">
       $(".button-collapse").sideNav();
+
+      function displayMessage(message){
+        M.toast({html:message})
+      }
+
     </script>
     <style>
       .indentMenu {

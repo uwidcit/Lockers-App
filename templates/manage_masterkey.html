@@ -190,6 +190,7 @@
               <div class ="modal-content" id="content">
                 <h6 style="font-weight: bold;"> Add Master Key </h6>
                 <form id="newKey" class="col s12 m12" method="POST" action="/masterkey/key" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
+                  {{keys.csrf_token}}
                   <div class="input-field col s12 m12">  
                     <div class="col s6">
                       <p>Key ID</p>
@@ -204,7 +205,7 @@
                    <div class="input-field col s12 m12">  
                     <div class="col s6">
                       <p>Key ID</p>
-                      <select id="key_type" name="key_type" style="display:inline;">
+                      <select id="key_status" name="key_status" style="display:inline;">
                         <option value=”” disabled selected>Select a Key Status</option>
                         {% for subfield in keys.key_status %}
                          {{subfield}}
