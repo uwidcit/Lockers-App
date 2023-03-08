@@ -25,6 +25,7 @@ from views import (
     area_views,
     index_views,
     masterkey_views,
+    key_views,
 )
 
 # New views must be imported and added to this list
@@ -38,6 +39,7 @@ views = [
     area_views,
     index_views,
     masterkey_views,
+    key_views,
 ]
 
 def add_views(app, views):

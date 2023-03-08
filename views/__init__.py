@@ -8,3 +8,4 @@ from .rent import *
 from .forms import *
 from .student import *
 from .masterkey import *
+from .key import *

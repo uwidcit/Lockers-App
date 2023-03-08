@@ -1,0 +1,141 @@
+{% extends "layout.html" %}
+{% block title %}Key {% endblock %}
+{% block page %}Key{% endblock %}
+
+{{ super() }}
+
+{% block content %}
+<div class="row">
+    <div class="row">
+        <div class="col s12 m8 offset-m7">
+          <form action="/key/search">
+            <div class="input-field col s12 m4 offset-m1">
+             <div class = "row">
+              <input type="search" name="search_query" placeholder="Enter search query" required/>
+             </div>
+            </div>
+
+            <div class="input-field col s2 m2" style="display:inline; padding-left: 0px;" >
+              <button type="submit" style="padding: 9px 21.5px 37px 21.5px" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons" style="padding: 5px; font-size: 2rem; color:white; ">search</i></button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="col s12 m10 offset-m1" style="height:60vh;">
+        <table>
+          <tr>
+              <th>KeyID</th>
+              <th>MasterKey </th>
+              <th>Status</th>
+              <th>Date Added</th>
+              
+          </tr>
+
+        {% if keyData %}
+        {% for k in keyData %}
+        <tr>
+            <td><a href="/key/{{k.key_id}}">{{k.key_id}}</a></td>
+            <td><a href="/masterkey/{{k.masterkey_id}}">{{k.masterkey_id}}</a></a></td>
+            <td>{{k.key_status}} </td>
+            <td>{{k.date_added}}</td>
+            <div style=" position: relative;display: inline-flex;">
+            <td style="width:150px;"><a href="#new_key" onclick="newKey('{{k.key_id}}')" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">add</i>Assign</a></td>
+              <td style="width:120px;"><a href="#edit" onclick="editMode({{k}})" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">edit</i>Edit</a></td>
+              <td style="width:120px;"><a href="#delete" onclick="removeMode({{k}})" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">delete</i>Delete</a></td>
+            </div>
+        </tr>
+            
+        {% endfor %}
+        {% endif %}
+        </table>
+    </div>
+    <div class="col m5 offset-m5">
+        <ul class="pagination">
+
+        {% if current_page == 1  %}
+        <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+        {% else %}
+        <li><a href="#/page{{previous}}"><i class="material-icons">chevron_left</i></a></li>
+        {% endif %}
+
+        {% for n in range(1,num_pages + 1) %}
+        
+        
+        {% if n == current_page %}
+        {% if query %}
+        <li class="active purple darken-4"><a href="/masterkey/search/page/{{n}}/?search_query={{query}}" style="color:white;">{{n}}</a></li>
+        {% else %}
+        <li class="waves effect purple darken-4"><a href="/masterkey/page/{{n}}" style="color:white;">{{n}}</a></li>
+        {% endif %}
+        {% else %}
+        {% if query %}
+        <li class="waves-effect purple darken-4"><a href="/masterkey/search/page/{{n}}/?search_query={{query}}" style="color:white;">{{n}}</a></li>
+        {% else %}
+        <li class="waves-effect purple darken-4"><a href="/masterkey/page/{{n}}" style="color:white;">{{n}}</a></li>
+        {% endif %}
+        {% endif %}
+        {% endfor %}
+
+        {% if current_page == num_pages %}
+        <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+        {% else %}
+        <li><a href="#/page{{next}}"><i class="material-icons">chevron_right</i></a></li>
+        {% endif %}
+      </ul>
+      </div>
+      <div class="col s1 m1 offset-m11" >
+        <div class="floating-action-btn" style="position: absolute; bottom: 8vh;">
+         <a class="btn-floating btn-large waves-effect waves-light purple darken-4 modal-trigger"  href="#new_key"><i class="material-icons">add </i></a>
+       </div>
+     </div>
+    
+     <div class="row">
+        <div class ="modal" id="new_key" style="max-height: 100%;border-radius: 25px; height: 65vh;">
+            <div class ="modal-content" id="content">
+              <h6 style="font-weight: bold;"> Add Master Key </h6>
+              <form id="newKey" class="col s12 m12" method="POST" action="/masterkey/key" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
+                {{keys.csrf_token}}
+                <div class="input-field col s12 m12">  
+                  <div class="col s6">
+                    <p>Key ID</p>
+                    {{ keys.key_id(size=20, class="validate")}}
+                  </div>  
+                  <div class="col s6">
+                    <p>MasterKey ID</p>
+                    {{ keys.masterkey_id(size=20, class="validate",id="u_m_key")}}
+                  </div> 
+                 </div> 
+                 
+                 <div class="input-field col s12 m12">  
+                  <div class="col s6">
+                    <p>Key ID</p>
+                    <select id="key_status" name="key_status" style="display:inline;">
+                      <option value=”” disabled selected>Select a Key Status</option>
+                      {% for subfield in keys.key_status %}
+                       {{subfield}}
+                      {% endfor %}
+                    </select>
+                  </div>  
+                  <div class="col s6">
+                    <p>Date Added</p>
+                    {{ keys.date_added(size=20, class="datepicker")}}
+                  </div> 
+                 </div> 
+                 <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+                  {{keys.submit(class=" right purple darken-4 waves-light btn")}}
+                  <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+                </div> 
+              </form>
+              </div>
+              </div>
+     </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('.modal');
+    var instances = M.Modal.init(elems);
+    });
+</script>
+
+{% endblock %}

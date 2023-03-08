@@ -26,6 +26,6 @@ class Key(db.Model):
         return{
             'key_id':self.key_id,
             'masterkey_id':self.masterkey_id,
-            'key_status':self.key_status,
+            'key_status':self.key_status.value,
             'date_added':self.date_added
         }
