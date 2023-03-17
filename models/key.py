@@ -1,4 +1,5 @@
 from database import db
+from datetime import datetime
 from enum import Enum
 
 class Key_Status(Enum):
@@ -27,5 +28,5 @@ class Key(db.Model):
             'key_id':self.key_id,
             'masterkey_id':self.masterkey_id,
             'key_status':self.key_status.value,
-            'date_added':self.date_added
+            'date_added': datetime.strftime(self.date_added,'%Y-%m-%d')
         }

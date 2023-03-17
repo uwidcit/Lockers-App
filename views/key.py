@@ -21,7 +21,7 @@ def render_keys_page():
     keys = KeyAdd()
     keys.key_status.choices = get_key_statuses()
     search.submit.label.text = "Search Key"
-    return render_template('manage_keys.html', current_page=1, masterkeys = get_all_masterkeys_no_offset(), previous=previous, next = next, search = search, keyData = keyData['data'], num_pages=keyData["num_pages"], delete = ConfirmDelete, keys = keys)
+    return render_template('manage_keys.html', current_page=1, masterkeys = get_all_masterkeys_no_offset(), previous=previous, next = next, search = search, keyData = keyData['data'], num_pages=keyData["num_pages"], delete = ConfirmDelete(), keys = keys)
 
 @key_views.route('/key',methods=['POST'])
 def create_key():
