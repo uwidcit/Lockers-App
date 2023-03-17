@@ -1,6 +1,7 @@
 from database import db
 from enum import Enum
 class RentStanding(Enum):
+    REGISTRATION = "INCOMPLETE REGISTRATION"
     GOOD = "GOOD"
     RENTING = "RENTING"
     OVERDUE = "OVERDUE"
