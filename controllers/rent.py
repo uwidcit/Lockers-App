@@ -1,5 +1,5 @@
 from models import Rent, Status 
-from math import ceil
+from math import ceil,floor
 
 from controllers.rentType import (
     get_rentType_by_id,
@@ -32,23 +32,19 @@ def period_elapsed(rentType_id, rent_date_from, rent_date_to):
 
     if type.type.value == "Hourly":
         time = rent_date_to - rent_date_from
-        minutes =   time.seconds/3600 - int(time.seconds/3600)
-        if minutes < 0.5:
-            period = ceil((time.days*24) +  int(time.seconds/3600)) + round(minutes,1)
-        else:
-            period = ceil((time.days*24) +  int(time.seconds/3600) +minutes)
+        period = floor((time.days*24) +  time.seconds/3600)
         return period
     elif type.type.value == "Daily":
         time = rent_date_to - rent_date_from   
         return  time.days
     elif type.type.value == "Weekly":
         time = rent_date_to - rent_date_from   
-        return time.days/7
+        return ceil(time.days/7)
     elif type.type.value == "Monthly":
         time = (rent_date_to.year - rent_date_from.year)  * 12 + (rent_date_to.month - rent_date_from.month)
         if time == 0 or time == -1:
             time = 1
-        return  time
+        return ceil(time)
     elif type.type.value == "Semester":
         return 1
 
@@ -63,16 +59,17 @@ def init_amount_owed(rentType_id, rent_date_from, rent_date_to):
     return round((price * period_elapsed(rentType_id, rent_date_from, rent_date_to)),2)
         
 def recal_amount_owed(rentType_id,date_returned,rent_date_from,rent_date_to):
-    timestamp = datetime.now().date()
-    
+    timestamp = datetime.now()
     semester_period = get_rentType_by_id(rentType_id)
+    orignal_duration = period_elapsed(rentType_id,rent_date_from,rent_date_to)
     if date_returned and date_returned.date() <= semester_period.period_to:
-        date_returned.replace(second=0,microsecond=0)
-        if date_returned > rent_date_to:
+        return_duration = period_elapsed(rentType_id,rent_date_from,date_returned)
+        if return_duration > orignal_duration:
             return init_amount_owed(rentType_id,rent_date_from,rent_date_to) + late_fees(rentType_id,date_returned,rent_date_from,rent_date_to)
         return init_amount_owed(rentType_id,rent_date_from,rent_date_to)
-    elif not date_returned and timestamp <= semester_period.period_to:
-        if timestamp > rent_date_to.date() and timestamp <= semester_period.period_to:
+    elif not date_returned and timestamp.date() <= semester_period.period_to:
+        return_duration = period_elapsed(rentType_id,rent_date_from,timestamp)
+        if return_duration > orignal_duration and timestamp.date() <= semester_period.period_to:
            return init_amount_owed(rentType_id,rent_date_from,rent_date_to) + late_fees(rentType_id,timestamp,rent_date_from,rent_date_to)
         return init_amount_owed(rentType_id,rent_date_from,rent_date_to)
     else:
