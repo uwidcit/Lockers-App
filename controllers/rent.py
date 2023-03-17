@@ -33,6 +33,8 @@ def period_elapsed(rentType_id, rent_date_from, rent_date_to):
     if type.type.value == "Hourly":
         time = rent_date_to - rent_date_from
         period = floor((time.days*24) +  time.seconds/3600)
+        if period == 0:
+            period = 1
         return period
     elif type.type.value == "Daily":
         time = rent_date_to - rent_date_from   

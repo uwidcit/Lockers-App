@@ -53,7 +53,6 @@
                   {% elif l.status == "Rented"%}
                   <td style="width:120px;"><a href="#" onclick="releaseMode({{l.current_rental}})" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">close</i>Release</a></td>
                   {% elif l.status == "Not Verified" %}
-                  {{l.current_rental}}
                   <td style="width:120px;"><a href="/rent/{{l.current_rental.id}}/release/verify" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">verified_user</i>Verify</a></td>
                   {% endif %}
                   

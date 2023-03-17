@@ -73,5 +73,5 @@ class Rent(db.Model):
         if not self.date_returned:
          rent_dict.update({'date_returned':''})
         else:
-            rent_dict.update({'date_returned':self.date_returned})
+            rent_dict.update({'date_returned':datetime.strftime(self.date_returned,'%Y-%m-%d')})
         return rent_dict
