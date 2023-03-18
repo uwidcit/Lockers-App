@@ -1,7 +1,6 @@
 from datetime import datetime
 from database import db
 from enum import Enum
-from models import RentTypes
 
 class Status(Enum):
     PARTIAL = "Partial"

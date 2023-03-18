@@ -2,6 +2,7 @@ from .user import *
 from .area import *
 from .locker import *
 from .masterkey import *
+from .notes import *
 from .key import *
 from .key_history import *
 from .student import *
