@@ -110,3 +110,5 @@ def delete_key(id):
     except SQLAlchemyError:
         db.session.rollback()
         return None
+def get_key_statuses():
+    return [e.value for e in Key_Status]
