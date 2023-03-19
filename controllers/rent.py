@@ -129,6 +129,10 @@ def update_rent(id):
 
     if not rent:
         return None
+    
+    if rent.status is Status.VERIFIED:
+        return rent
+    
     amt = round(recal_amount_owed(rent.rent_type,rent.date_returned,rent.rent_date_from,rent.rent_date_to),2)
     if amt is not None:
         rent.amount_owed = round(round(amt,2) - round(cal_transaction_amount(id),2),2)
