@@ -330,3 +330,21 @@ def getStatuses():
 
 def getLockerTypes():
     return [ e.value for e in LockerTypes]
+
+def swap_key(id1, id2):
+    locker1 = get_locker_id_locker(id1)
+    locker2 = get_locker_id_locker(id2)
+    if locker1 or locker2 is None:
+        return None
+    temp = locker1.key
+    locker1.key = locker2.Key
+    locker2.key = temp
+    try:
+        db.session.add(locker1)
+        db.session.add(locker2)
+        db.session.commit()
+        return locker1
+    except SQLAlchemyError:
+        db.session.rollback()
+        return None
+

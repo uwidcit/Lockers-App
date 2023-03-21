@@ -26,6 +26,7 @@ from controllers import (
     search_lockers,
     update_locker_type,
     update_locker_status,
+    swap_key,
 )
 
 locker_views = Blueprint('locker_views', __name__, template_folder='../templates')
@@ -249,5 +250,16 @@ def render_get_lockers_multi(id,offset):
             next = num_pages
         else:
             next = offset + 1
-
     return render_template('remove.html', locker = locker, rents = rents['data'], num_pages=num_pages, current_page=offset, previous=previous, next=next)
+
+@locker_views.route('/locker/<id>/key/swap', methods=['POST'])
+def switch_key(id):
+    form = LockerAdd()
+    if form.validate_on_submit:
+        locker2 = request.form.get("locker_code")
+        locker1 = swap_key(id, locker2)
+        if locker1:
+            flash("Success!")
+            return redirect(url_for('.manage_locker'))
+    flash("Failure")
+    return redirect(url_for('.manage_locker'))
