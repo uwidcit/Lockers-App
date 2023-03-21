@@ -51,9 +51,10 @@
                   {% if l.status == "Free"%}
                   <td style="width:120px;"><a href="/locker/rent/{{l.locker_code}}/student" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">check</i>Rent</a></td>
                   {% elif l.status == "Rented"%}
-                  <td style="width:120px;"><a href="#" onclick="releaseMode({{l.current_rental}})" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">close</i>Release</a></td>
+                  <td style="width:120px;"><a href="#" onclick="loadComments({{l.current_rental.id}},1)" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">check</i>Note</a></td>
+                  <td style="width:150px;"><a href="#" onclick="releaseMode({{l.current_rental}})" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">close</i>Release</a></td>
                   {% elif l.status == "Not Verified" %}
-                  {{l.current_rental}}
+                  <td style="width:120px;"><a href="#" onclick="loadComments(1)" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">check</i>Note</a></td>
                   <td style="width:120px;"><a href="/rent/{{l.current_rental.id}}/release/verify" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">verified_user</i>Verify</a></td>
                   {% endif %}
                   
@@ -238,6 +239,18 @@
         </div>     
       </div>
 
+      <div class="modal" id="comment_modal" style="max-height: 100%;border-radius: 25px; height: 65vh;">
+        <div class="modal-content">
+          <form action="" id="new_comment_form">
+            <input type="text" id="comment">
+            <input type="submit">
+          </form>
+          <div id ="notes_content">
+
+          </div>
+        </div>
+
+      </div>
       <div class ="modal" id="new_transaction" style="max-height: 100%;border-radius: 25px; height: 65vh;">
         <div class="modal-content">
           <h6 style="font-weight: bold;">New Transaction </h6>
@@ -305,6 +318,28 @@
   var instances = M.Modal.init(elems);
   });
 
+  function loadComments(id,num){
+    fetch(window.origin+'/rent/'+id+'/notes').then((response) => response.json())
+    .then(data => {
+        notes = document.getElementById('notes_content')
+        if (data['data'].length == 0){
+          notes.innerHTML = '<p> No available comments </p>'
+        }
+        else{
+          results = ``
+            for (d in data['data']){
+                results += `
+                <p> $d.comment </p>
+                `
+            } notes.innerHTML = results
+        }
+        
+        elem = document.getElementById('comment_modal');
+        instance = M.Modal.getInstance(elem)
+        instance.open()
+    })
+  }
+
   function iteratePage(number){
     window.location = window.location +'/page/'+number
   }
@@ -347,8 +382,6 @@
       } 
 
    }
-
-
    elem = document.getElementById('edit_locker');
    instance = M.Modal.getInstance(elem)
    instance.open()
