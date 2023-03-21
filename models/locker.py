@@ -37,22 +37,6 @@ class Locker (db.Model):
             'status': self.status.value,
             'key':self.key,
             'area': self.area,
-            'current_rental':self.get_current_rent()
         }
-    def get_current_rent(self):
-        if not self.Rented:
-            return []
-        for s in self.Rented:
-            if s.status.value != "Verified":
-                rent = s.toJSON()
-                rent['status'] = rent['status'].value
-                rent['rent_date_from'] = datetime.strftime(rent['rent_date_from'],'%Y-%m-%d')
-                rent['rent_date_to'] = datetime.strftime(rent['rent_date_to'],'%Y-%m-%d')
-                if s.date_returned:
-                    rent['date_returned'] = datetime.strftime(rent['date_returned'],'%Y-%m-%d')
-                else:
-                    rent['date_returned'] = ""
-                return rent
-            return []
 
     

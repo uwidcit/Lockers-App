@@ -57,10 +57,10 @@
           <td><a href="/rent/{{r.id}}">{{r.id}}</a></td>
           <td><a href="/locker/{{r.locker_id}}">{{r.locker_id}}</a></td>
           <td>{{r.rent_type}}</td>
-          <td>{{r.rent_date_from.date()}}</td>
-          <td>{{r.rent_date_to.date()}}</td>
+          <td>{{r.rent_date_from}}</td>
+          <td>{{r.rent_date_to}}</td>
           {% if r.date_returned %}
-          <td>{{r.date_returned.date()}}</td>
+          <td>{{r.date_returned}}</td>
           {% else %}
           <td>Not yet returned </td>
           {% endif %}

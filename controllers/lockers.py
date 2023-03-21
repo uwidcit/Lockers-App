@@ -1,12 +1,13 @@
 from models import Locker
 from models import Area, Rent,Key
+from models.rent import Status as RStatus
 from models.locker import Status, LockerTypes
 from database import db
 from controllers.log import create_log
 from controllers.area import get_area_by_id,get_area_by_description
 from datetime import datetime
 from flask import flash
-from sqlalchemy import or_
+from sqlalchemy import or_,and_
 from sqlalchemy.exc import SQLAlchemyError
 
 def add_new_locker(locker_code,locker_type,status,key_id,area,):
@@ -155,12 +156,15 @@ def get_num_locker_page(size):
 def get_lockers_by_offset(size,offset):
      l_offset = (offset * size) - size
      lockers = db.session.query(Locker,Area).join(Area).limit(size).offset(l_offset)
-
+     
      if not lockers:
         return None
      data = []
      for locker,area in lockers:
         l = locker.toJSON()
+        current_rental = Rent.query.filter(and_(Rent.locker_id == l['locker_code'], Rent.status != RStatus.VERIFIED)).first()
+        if current_rental:
+            l['current_rental'] = current_rental.toJSON()
         l['area_description'] = area.description
         data.append(l)
      return data
