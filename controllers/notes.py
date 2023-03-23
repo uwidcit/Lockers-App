@@ -21,7 +21,7 @@ def get_comment(id):
     return note
 
 def get_all_comments(id):
-    notes = Notes.query.filter_by(rent_id=id).all()
+    notes = Notes.query.filter_by(rent_id=id).order_by(Notes.id.desc()).all()
 
     if not notes:
         return None

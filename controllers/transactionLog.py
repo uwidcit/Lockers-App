@@ -103,7 +103,7 @@ def get_num_transactions_page(size):
 
 def get_transactions_by_offset(size, offset):
     t_offset = (offset * size) - size
-    transactions = TransactionLog.query.limit(size).offset(t_offset)
+    transactions = TransactionLog.query.order_by(TransactionLog.id.desc()).limit(size).offset(t_offset)
         
     if not transactions:
         return None

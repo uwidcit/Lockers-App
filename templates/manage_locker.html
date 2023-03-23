@@ -241,15 +241,17 @@
 
       <div class="modal" id="comment_modal" style="max-height: 100%;border-radius: 25px; height: 65vh;">
         <div class="modal-content">
-          <form action="" id="new_comment_form">
-            <input type="text" id="comment">
+          <form action="" id="new_comment_form" method="POST">
+            <input type="text" id="comment" name="comment">
             <input type="submit">
           </form>
           <div id ="notes_content">
 
           </div>
         </div>
+        <div class="modal-footer" id="notes_foot">
 
+        </div>
       </div>
       <div class ="modal" id="new_transaction" style="max-height: 100%;border-radius: 25px; height: 65vh;">
         <div class="modal-content">
@@ -318,10 +320,39 @@
   var instances = M.Modal.init(elems);
   });
 
+  var num_pages_notes  = 0
+  var current_page = 0
+
+  var form = document.getElementById('new_comment_form')
+  form.addEventListener('submit', (e)=>{
+    e.preventDefault()
+    text = form.elements[0].value
+    data = {
+      'comment':text
+    }
+    fetch(form.action,{
+      method:'POST',
+      body:JSON.stringify(data),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8"
+      }}).then((response) => response.json())
+      .then(data =>{
+        console.log(data)
+        elem = document.getElementById('comment_modal');
+        instance = M.Modal.getInstance(elem)
+        instance.close()
+        loadComments(data[0]['rent_id'],1)
+      })
+  })
+
+
   function loadComments(id,num){
     fetch(window.origin+'/rent/'+id+'/notes').then((response) => response.json())
     .then(data => {
         notes = document.getElementById('notes_content')
+        form = document.getElementById('new_comment_form')
+        footer = document.getElementById('notes_foot')
+        form.action = window.origin+'/rent/'+id+'/notes'
         if (data['data'].length == 0){
           notes.innerHTML = '<p> No available comments </p>'
         }
@@ -329,10 +360,36 @@
           results = ``
             for (d in data['data']){
                 results += `
-                <p> $d.comment </p>
+                <div class="card small" style="height: 10vh;">
+                  <div class="card-content">
+                    <div class="col s6">
+                    <p> Created on :${data['data'][d].date_created} </p>
+                    <p> ${data['data'][d].comment} </p>
+                   </div>
+                  </div>
+                </div>
                 `
-            } notes.innerHTML = results
+            } 
+               notes.innerHTML = results
         }
+        num_pages_notes = data['num_pages']
+        current_page = 1
+
+        if(num_pages_notes <= 1){
+          pagination = `
+          <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+          <li class="waves-effect purple darken-4"><a href="#" style="color:white;">${current_page}</a></li>
+          <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+          `  
+        }
+        else{
+          pagination = `
+          <li><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+          <li class="waves-effect purple darken-4"><a href="#" style="color:white;">${current_page}</a></li>
+          <li><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+          `
+        }
+        footer.innerHTML = pagination
         
         elem = document.getElementById('comment_modal');
         instance = M.Modal.getInstance(elem)
@@ -340,8 +397,8 @@
     })
   }
 
-  function iteratePage(number){
-    window.location = window.location +'/page/'+number
+  function iterateNotes(number){
+    
   }
 
   function editMode(locker){
@@ -398,6 +455,8 @@
    instance = M.Modal.getInstance(elem)
    instance.open()
   }
+
+
 
   function releaseMode(rent){
 

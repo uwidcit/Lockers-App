@@ -136,7 +136,7 @@ def return_locker_to_pool(id):
 
 @rent_views.route('/rent/<id>/notes',methods=['GET'])
 def notes_api(id):
-    notes = get_comments_offset(id,6,1)
+    notes = get_comments_offset(id,3,1)
     return jsonify(notes),200
 
 @rent_views.route('/rent/<id>/notes',methods=['POST'])
@@ -145,7 +145,7 @@ def new_note_api(id):
     new_comment = create_comment(id,data['comment'],datetime.now().date())
 
     if new_comment:
-        return jsonify(new_comment,200)
+        return jsonify(new_comment.toJSON(),200)
 
     return jsonify({'error':'Not created'}),400
 
