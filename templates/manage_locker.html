@@ -239,12 +239,18 @@
         </div>     
       </div>
 
-      <div class="modal" id="comment_modal" style="max-height: 100%;border-radius: 25px; height: 65vh;">
+      <div class="modal" id="comment_modal" style="max-height: 100%;border-radius: 25px; height: 82vh;">
         <div class="modal-content">
-          <form action="" id="new_comment_form" method="POST">
-            <input type="text" id="comment" name="comment">
-            <input type="submit">
-          </form>
+          <div class="card">
+            <div class="card-content">
+              <h6>New Comment</h6>
+              <form action="" id="new_comment_form" method="POST">
+                <input type="text" id="comment" name="comment">
+                <input type="submit">
+              </form>
+            </div>
+          </div>
+          
           <div id ="notes_content">
 
           </div>
@@ -363,9 +369,11 @@
                 <div class="card small" style="height: 10vh;">
                   <div class="card-content">
                     <div class="col s6">
-                    <p> Created on :${data['data'][d].date_created} </p>
                     <p> ${data['data'][d].comment} </p>
                    </div>
+                   <div class="col s6 ">
+                    <p> Created on :${data['data'][d].date_created} </p>
+                    </div>
                   </div>
                 </div>
                 `
@@ -377,16 +385,24 @@
 
         if(num_pages_notes <= 1){
           pagination = `
+          <div class="col s6 offset-s2">
+          <ul class="pagination">
           <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
           <li class="waves-effect purple darken-4"><a href="#" style="color:white;">${current_page}</a></li>
           <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+          </ul>
+          </div>
           `  
         }
         else{
           pagination = `
-          <li><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+          <div class="col s6 offset-s1">
+          <ul class="pagination">
+          <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
           <li class="waves-effect purple darken-4"><a href="#" style="color:white;">${current_page}</a></li>
-          <li><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+          <li><a href="#!" onclick="iterateNotes(${id},1)"><i class="material-icons">chevron_right</i></a></li>
+          </ul>
+          </div>
           `
         }
         footer.innerHTML = pagination
@@ -397,8 +413,67 @@
     })
   }
 
-  function iterateNotes(number){
+  function iterateNotes(id,number){
+    footer = document.getElementById('notes_foot')
+    if (current_page + number <= num_pages_notes && current_page + num_pages_notes > 0){
+        current_page = current_page + number
+    }
+
+    if (current_page === 1){
+      pagination = `
+          <div class="col s6 offset-s1">
+          <ul class="pagination">
+          <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+          <li class="waves-effect purple darken-4"><a href="#" style="color:white;">${current_page}</a></li>
+          <li><a href="#!" onclick="iterateNotes(${id},1)"><i class="material-icons">chevron_right</i></a></li>
+          </ul>
+          </div>
+          `
+    }
+
+    else if(current_page == num_pages_notes){
+      pagination = `
+          <div class="col s6 offset-s1">
+          <ul class="pagination">
+          <li><a href="#!" onclick="iterateNotes(${id},-1)"><i class="material-icons">chevron_left</i></a></li>
+          <li class="waves-effect purple darken-4"><a href="#" style="color:white;">${current_page}</a></li>
+          <li class="disabled"><a href="#!")"><i class="material-icons">chevron_right</i></a></li>
+          </ul>
+          </div>
+          `
+    }
+    else{
+       pagination = `
+          <div class="col s6 offset-s1">
+          <ul class="pagination">
+          <li><a href="#!" onclick="iterateNotes(${id},-1)"><i class="material-icons">chevron_left</i></a></li>
+          <li class="waves-effect purple darken-4"><a href="#" style="color:white;">${current_page}</a></li>
+          <li><a href="#!"  onclick="iterateNotes(${id},1)"><i class="material-icons">chevron_right</i></a></li>
+          </ul>
+          </div>
+          `
+    }
+    footer.innerHTML = pagination
     
+    notes = document.getElementById('notes_content')
+    
+    fetch(window.origin+'/rent/'+id+'/notes/'+current_page).then((response) => response.json())
+    .then(data => {
+      results = ``
+            for (d in data['data']){
+                results += `
+                <div class="card small" style="height: 10vh;">
+                  <div class="card-content">
+                    <div class="col s6">
+                    <p> Created on :${data['data'][d].date_created} </p>
+                    <p> ${data['data'][d].comment} </p>
+                   </div>
+                  </div>
+                </div>
+                `
+            } 
+            notes.innerHTML = results
+    })
   }
 
   function editMode(locker){

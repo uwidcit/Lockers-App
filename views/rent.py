@@ -139,6 +139,13 @@ def notes_api(id):
     notes = get_comments_offset(id,3,1)
     return jsonify(notes),200
 
+
+@rent_views.route('/rent/<id>/notes/<offset>',methods=['GET'])
+def notes_api_multi(id,offset):
+    offset = int(offset)
+    notes = get_comments_offset(id,3,offset)
+    return jsonify(notes),200
+
 @rent_views.route('/rent/<id>/notes',methods=['POST'])
 def new_note_api(id):
     data = request.json
