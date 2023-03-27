@@ -14,6 +14,7 @@ from controllers import (
 )
 
 transactionLog_views = Blueprint('transactionLog_views', __name__, template_folder='../templates')
+page_size = 6
 
 @transactionLog_views.route('/transactionLog/sID=<id>', methods=['GET'])
 def render_transaction_page_student(id):
@@ -70,19 +71,18 @@ def get_transaction(id):
 
 @transactionLog_views.route('/transactionLog', methods=['GET'])
 def manage_transaction():
-    num_pages = get_num_transactions_page(7)
-    transaction_data = get_transactions_by_offset(7, 1)
+    num_pages = get_num_transactions_page(page_size)
+    transaction_data = get_transactions_by_offset(page_size, 1)
     previous = 1
     next = previous + 1
-    form = TransactionAdd()
 
     return render_template('transactionLog.html', transaction_data = transaction_data, form = TransactionAdd(), search=SearchForm(),searchMode=False, num_pages= num_pages,current_page=1, next=next, previous= previous)
 
 @transactionLog_views.route('/transactionLog/page/<offset>', methods=['GET'])
 def manage_transaction_pages_multi(offset):
     offset = int(offset)
-    num_pages = get_num_transactions_page(7)
-    transaction_data = get_transactions_by_offset(7, offset)
+    num_pages = get_num_transactions_page(page_size)
+    transaction_data = get_transactions_by_offset(page_size, offset)
 
     if offset - 1 <=0:
         previous = 1
@@ -93,15 +93,14 @@ def manage_transaction_pages_multi(offset):
         next = num_pages
     else:
         next = offset + 1
-        form = TransactionAdd()
-        return render_template('transactionLog.html', transaction_data = transaction_data, form = TransactionAdd(), search=SearchForm(),searchMode=False, num_pages= num_pages,current_page=1, next=next, previous= previous)
+    return render_template('transactionLog.html', transaction_data = transaction_data, form = TransactionAdd(), search=SearchForm(),searchMode=False, num_pages= num_pages,current_page=1, next=next, previous= previous)
 
 @transactionLog_views.route('/transactionLog/search/', methods=['GET'])
 def search_transaction_page():
     form = SearchForm()
     if form.validate_on_submit:
         query = request.args.get('search_query')
-        transaction_data = search_transaction(query,7, 1)
+        transaction_data = search_transaction(query,page_size, 1)
         if transaction_data:
             previous = 1
             next = previous + 1
@@ -115,7 +114,7 @@ def search_transaction_page_multi(offset):
     form = SearchForm()
     if form.validate_on_submit:
         query = request.args.get('search_query')
-        transaction_data = search_transaction(query,7, offset)
+        transaction_data = search_transaction(query,page_size, offset)
         if transaction_data:
          num_pages = transaction_data['num_pages']
          if offset - 1 <= 0:

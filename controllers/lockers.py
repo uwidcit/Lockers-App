@@ -5,6 +5,7 @@ from models.locker import Status, LockerTypes
 from database import db
 from controllers.log import create_log
 from controllers.area import get_area_by_id,get_area_by_description
+from controllers.key_history import new_keyHistory
 from datetime import datetime
 from flask import flash
 from sqlalchemy import or_,and_
@@ -15,6 +16,7 @@ def add_new_locker(locker_code,locker_type,status,key_id,area,):
         locker = Locker(locker_code,locker_type,status,key_id,area)
         db.session.add(locker)
         db.session.commit()
+        new_keyHistory(key_id,locker.locker_code,datetime.now().date())
         return locker
     except SQLAlchemyError as e:
         db.session.rollback()
@@ -254,6 +256,7 @@ def update_key(id, new_key):
             locker.key = new_key
             db.session.add(locker)
             db.session.commit()
+            new_keyHistory(new_key,locker.locker_code,datetime.now().date())
             return locker
         except SQLAlchemyError as e:
             create_log(id, type(e), datetime.now())
@@ -347,6 +350,8 @@ def swap_key(id1, id2):
         db.session.add(locker1)
         db.session.add(locker2)
         db.session.commit()
+        new_keyHistory(locker1.key,locker1.locker_code,datetime.now().date())
+        new_keyHistory(locker2.key,locker2.locker_code,datetime.now().date())
         return locker1
     except SQLAlchemyError:
         db.session.rollback()

@@ -82,14 +82,10 @@ def get_all_transactions():
 
 def get_num_transactions():
     trans = TransactionLog.query.all()
-    count = 0
-
-    for t in trans:
-        count += 1
-
-    if not count or count == 0:
+    if not trans:
         return 1
-    return count
+    
+    return len(trans)
    
 
 def get_num_transactions_page(size):

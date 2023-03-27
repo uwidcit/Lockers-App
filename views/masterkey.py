@@ -16,10 +16,11 @@ from controllers import (
 from views.forms import SearchForm, masterKeyForm, ConfirmDelete, KeyAdd
 
 masterkey_views = Blueprint('masterkey_views', __name__, template_folder='../templates')
+page_size = 6
 
 @masterkey_views.route('/masterkey', methods=['GET'])
 def render_masterkey_page():
-    masterkeyData = get_all_masterkeys(15,1)
+    masterkeyData = get_all_masterkeys(page_size,1)
     previous = 1
     next = previous + 1
     search = SearchForm()
@@ -85,7 +86,7 @@ def update_masterkey(masterkey_id):
 @masterkey_views.route('/masterkey/page/<offset>', methods=['GET'])
 def render_masterkey_mulpages(offset):
     offset = int(offset)
-    masterkeyData = get_all_masterkeys(15,offset)
+    masterkeyData = get_all_masterkeys(page_size,offset)
     if offset - 1 <= 0:
         previous = 1
         offset = 1
@@ -109,7 +110,7 @@ def masterkey_search():
     form = SearchForm()
     if form.validate_on_submit:
         query = request.args.get("search_query")
-        result = search_masterkey(query,1,6)
+        result = search_masterkey(query,1,page_size)
         if result and result['data'] != []:
            num_pages = result['num_pages']
            keys = KeyAdd()
@@ -126,7 +127,7 @@ def masterkey_search_multi(offset):
     form = SearchForm()
     if form.validate_on_submit:
         query = request.args.get("search_query")
-        result = search_masterkey(query,offset,6)
+        result = search_masterkey(query,offset,page_size)
         if result:
             if offset - 1 <= 0:
                 previous = 1

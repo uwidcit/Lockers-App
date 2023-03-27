@@ -48,26 +48,24 @@
                 <td>{{l.key}} </td>
                 <td><a href="/area/{{l.area}}">{{l.area_description}}</a></td>
                 <div style=" position: relative;display: inline-flex;">
-                  <td>
-                    <a class="dropdown-trigger btn-floating purple darken-4 waves-effect" data-target="dropdown1">
-                      <i class="large material-icons">list</i></a>
-                    <ul id='dropdown1' class='dropdown-content'>
-                      {% if l.status == "Free"%}
+                <td>
+                    <a class="dropdown-trigger btn-floating purple darken-4 waves-effect" data-target="{{l.locker_code}}_dropdown1"><i class="large material-icons">list</i></a>
+                    <ul id='{{l.locker_code}}_dropdown1' class='dropdown-content'>
+                      {% if l.status == "Free" %}
                       <li><a href="/locker/rent/{{l.locker_code}}/student"><i class="material-icons left">check</i>Rent</a></li>
-                      {% elif l.status == "Rented"%}
+                      {% elif l.status == "Rented" %}
                       <li><a href="#" onclick="loadComments({{l.current_rental.id}},1)"><i class="material-icons left">check</i>Note</a></li>
                       <li><a href="#" onclick="releaseMode({{l.current_rental}})"><i class="material-icons left">close</i>Release</a></li>
                       {% elif l.status == "Not Verified" %}
-                      <li><a href="#" onclick="loadComments(1)"><i class="material-icons left">check</i>Note</a></li>
+                      <li><a href="#" onclick="loadComments({{l.current_rental.id}},1)"><i class="material-icons left">check</i>Note</a></li>
                       <li><a href="/rent/{{l.current_rental.id}}/release/verify"><i class="material-icons left">verified_user</i>Verify</a></li>
                       {% endif %}
-                      
                       <li><a href="#edit" onclick="editMode({{l}})"><i class="material-icons left">edit</i>Edit</a></li>
                       <li><a href="#delete" onclick="removeMode({{l}})"><i class="material-icons left">delete</i>Delete</a></li>
                       <li><a href="#delete" onclick="OpenswapKey('{{l.locker_code}}')"><i class="material-icons left">swap_horiz</i>Swap</a></li>
                       </ul>
                     </div>
-                  </td>    
+                  </td>
                 </div>
             </tr>
                 
