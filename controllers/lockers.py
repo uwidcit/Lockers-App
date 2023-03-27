@@ -338,10 +338,10 @@ def getLockerTypes():
 def swap_key(id1, id2):
     locker1 = get_locker_id_locker(id1)
     locker2 = get_locker_id_locker(id2)
-    if locker1 or locker2 is None:
+    if locker1 is None or locker2 is None:
         return None
     temp = locker1.key
-    locker1.key = locker2.Key
+    locker1.key = locker2.key
     locker2.key = temp
     try:
         db.session.add(locker1)
@@ -351,3 +351,9 @@ def swap_key(id1, id2):
     except SQLAlchemyError:
         db.session.rollback()
         return None
+
+def get_all_locker_names():
+   queryLocker = Locker.query.all()
+   if not queryLocker:
+    return []
+   return [l.locker_code for l in queryLocker]
