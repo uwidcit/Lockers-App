@@ -59,14 +59,18 @@ class Rent(db.Model):
         return amount
     
     def toJSON(self):
-        return {
+        rent_dict =  {
             "id":self.id,
             "student_id" : self.student_id,
             "locker_id":  self.locker_id,
             "rent_type": self.rent_type,
-            "rent_date_from": self.rent_date_from,
-            "rent_date_to": self.rent_date_to,
-            "date_returned":self.date_returned,
+            "rent_date_from": datetime.strftime(self.rent_date_from,'%Y-%m-%d'),
+            "rent_date_to": datetime.strftime(self.rent_date_to,'%Y-%m-%d'),
             "amount_owed":self.amount_owed,
             "status":self.check_status().value
-        }
+            }
+        if not self.date_returned:
+         rent_dict.update({'date_returned':''})
+        else:
+            rent_dict.update({'date_returned':datetime.strftime(self.date_returned,'%Y-%m-%d')})
+        return rent_dict

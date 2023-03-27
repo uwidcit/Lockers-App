@@ -37,7 +37,6 @@ class Locker (db.Model):
             'status': self.status.value,
             'key':self.key,
             'area': self.area,
-            'current_rental':self.get_current_rent()
         }
     def get_current_rent(self):
         if not self.Rented:
