@@ -58,6 +58,7 @@
                   
                   <td style="width:120px;"><a href="#edit" onclick="editMode({{l}})" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">edit</i>Edit</a></td>
                   <td style="width:120px;"><a href="#delete" onclick="removeMode({{l}})" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">delete</i>Delete</a></td>
+                  <td style="width:120px;"><a href="#delete" onclick="OpenswapKey('{{l.locker_code}}')" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">swap_horiz</i>Swap</a></td>
                 </div>
             </tr>
                 
@@ -139,10 +140,9 @@
                     {% endfor %}
                   </select>
                   </div>  
-                  
-                  <div class="col s6">
-                    <p>Key</p>
-                    {{ form.key(size=20, class="validate")}}
+                  <p>Key</p>
+                  <div class="input-field col s6">
+                    {{ form.key(size=18, class="validate")}}
                   </div>
 
                   <div class="col s12 m12">
@@ -212,8 +212,8 @@
                 </select>
                 </div>  
                 
-                <div class="col s6">
-                  <p>Key Status</p>
+                <div class="input-field col s6">
+                  <p>Key</p>
                   {{ form.key(size=20, class="validate",id="u_l_key")}}
                 </div>
 
@@ -294,11 +294,22 @@
       </div>
       </div>
     </div>
+    <div class ="modal" id="swap_key" style="max-height: 100%;border-radius: 25px; height: 65vh;">
+      <div class ="modal-content" id="content">
+        <form id="swapKey_form" action="" method="post" > 
+        <div class = "input-field col s6 m2 offset-m1"> <input type="text" name="locker_code2" id="locker_code2"></div>
+        <input type="submit"></form>
+      </div>
+      </div>
   </div>
   </div>
 
-   
+ <script src="/static/autocomplete.js"></script>  
+
  <script>
+  autocomplete(document.getElementById('locker_code2'),{{locker_names | safe}})
+  autocomplete(document.getElementById('key'),{{keys | safe}})
+  autocomplete(document.getElementById('u_l_key'),{{keys | safe}})
   document.addEventListener('DOMContentLoaded', function() {
   var elems = document.querySelectorAll('.modal');
   var instances = M.Modal.init(elems);
@@ -384,6 +395,14 @@
       window.location.href = "/rent/"+rent.id+"/release";
     }
     
+  }
+
+  function OpenswapKey(locker_id){
+    form = document.getElementById("swapKey_form")
+    form.action = "/locker/" + locker_id + "/key/swap"
+    elem = document.getElementById('swap_key');
+    instance = M.Modal.getInstance(elem)
+    instance.open()
   }
 
 </script>
