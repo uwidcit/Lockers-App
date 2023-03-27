@@ -29,6 +29,7 @@ from controllers import (
     update_locker_status,
     swap_key,
     get_all_locker_names,
+    get_all_keys_id
 )
 
 locker_views = Blueprint('locker_views', __name__, template_folder='../templates')
@@ -42,7 +43,7 @@ def manage_locker():
     next = previous + 1
     form = LockerAdd()
     form.area.choices = get_area_choices()
-    return render_template('manage_locker.html', lockerData=lockerData,form = form ,delete=ConfirmDelete(), search=SearchForm(),searchMode=False, num_pages= num_pages, locker_names= get_all_locker_names(), current_page=1, next= next, previous= previous,trans=TransactionAdd())
+    return render_template('manage_locker.html', lockerData=lockerData,form = form ,delete=ConfirmDelete(), search=SearchForm(),keys=get_all_keys_id(), num_pages= num_pages, locker_names= get_all_locker_names(), current_page=1, next= next, previous= previous,trans=TransactionAdd())
 
 @locker_views.route("/locker/page/<offset>", methods=['GET'])
 def manage_locker_mulpages(offset):
@@ -61,7 +62,7 @@ def manage_locker_mulpages(offset):
         next = offset + 1
     form = LockerAdd()
     form.area.choices = get_area_choices()
-    return render_template('manage_locker.html', lockerData=lockerData,form = form ,delete=ConfirmDelete(), search=SearchForm(),searchMode=False, num_pages= num_pages,locker_names= get_all_locker_names(), current_page=offset,next= next, previous= previous,trans=TransactionAdd())
+    return render_template('manage_locker.html', lockerData=lockerData,form = form ,delete=ConfirmDelete(), search=SearchForm(),keys=get_all_keys_id(), num_pages= num_pages,locker_names= get_all_locker_names(), current_page=offset,next= next, previous= previous,trans=TransactionAdd())
 
 
 @locker_views.route('/locker/<id>/delete', methods=['GET'])
@@ -107,7 +108,7 @@ def locker_search():
         result = search_lockers(query,1,6)
         if result:
            num_pages = result['num_pages']
-           return render_template('manage_locker.html', lockerData=result['data'], form = LockerAdd(),delete=ConfirmDelete(), search=SearchForm(),searchMode=False,query=query ,num_pages= num_pages,locker_names= get_all_locker_names(), current_page=1, next= next, previous= previous,trans=TransactionAdd())
+           return render_template('manage_locker.html', lockerData=result['data'], form = LockerAdd(),delete=ConfirmDelete(), search=SearchForm(),keys=get_all_keys_id(),query=query ,num_pages= num_pages,locker_names= get_all_locker_names(), current_page=1, next= next, previous= previous,trans=TransactionAdd())
          
         else:
             flash('Record doesn''t exist')
@@ -131,7 +132,7 @@ def locker_search_multi(offset):
             next = num_pages
         else:
             next = offset + 1
-        return render_template('manage_locker.html', lockerData=result['data'], form = LockerAdd(),delete=ConfirmDelete(), search=SearchForm(),searchMode=False,query= query, num_pages= num_pages, locker_names = get_all_locker_names(), current_page=1, next= next, previous= previous,trans=TransactionAdd())
+        return render_template('manage_locker.html', lockerData=result['data'], form = LockerAdd(),delete=ConfirmDelete(), search=SearchForm(),keys=get_all_keys_id(),query= query, num_pages= num_pages, locker_names = get_all_locker_names(), current_page=1, next= next, previous= previous,trans=TransactionAdd())
     else:
         flash('Record doesn''t exist')
         return redirect(url_for('.manage_locker'))
@@ -232,8 +233,8 @@ def render_get_lockers(id):
     locker = get_locker_id(id)
     rents = get_locker_rent_history(id,2,1)
     if rents:
-        return render_template('remove.html', locker = locker, rents = rents['data'], previous= previous,current_page=1,next=next, locker_names= get_all_locker_names(), num_pages=rents['num_pages'])
-    return render_template('remove.html', locker = locker, rents = None, previous= previous,current_page=1,next=next,num_pages=1, locker_names= get_all_locker_names())
+        return render_template('remove.html', locker = locker, rents = rents['data'], previous= previous,current_page=1,next=next, locker_names= get_all_locker_names(), num_pages=rents['num_pages'],keys=get_all_keys_id())
+    return render_template('remove.html', locker = locker, rents = None, previous= previous,current_page=1,next=next,num_pages=1, locker_names= get_all_locker_names(),keys=get_all_keys_id())
 
 @locker_views.route("/locker/<id>/page/<offset>", methods=["GET"])
 def render_get_lockers_multi(id,offset):
@@ -252,7 +253,7 @@ def render_get_lockers_multi(id,offset):
             next = num_pages
         else:
             next = offset + 1
-    return render_template('remove.html', locker = locker, rents = rents['data'], num_pages=num_pages, current_page=offset, locker_names= get_all_locker_names(), previous=previous, next=next)
+    return render_template('remove.html', locker = locker, rents = rents['data'], num_pages=num_pages, current_page=offset, locker_names= get_all_locker_names(), previous=previous, next=next,keys=get_all_keys_id())
 
 @locker_views.route('/locker/<id>/key/swap', methods=['POST'])
 def switch_key(id):

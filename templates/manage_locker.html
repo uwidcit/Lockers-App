@@ -140,10 +140,9 @@
                     {% endfor %}
                   </select>
                   </div>  
-                  
-                  <div class="col s6">
-                    <p>Key</p>
-                    {{ form.key(size=20, class="validate")}}
+                  <p>Key</p>
+                  <div class="input-field col s6">
+                    {{ form.key(size=18, class="validate")}}
                   </div>
 
                   <div class="col s12 m12">
@@ -213,8 +212,8 @@
                 </select>
                 </div>  
                 
-                <div class="col s6">
-                  <p>Key Status</p>
+                <div class="input-field col s6">
+                  <p>Key</p>
                   {{ form.key(size=20, class="validate",id="u_l_key")}}
                 </div>
 
@@ -309,6 +308,8 @@
 
  <script>
   autocomplete(document.getElementById('locker_code2'),{{locker_names | safe}})
+  autocomplete(document.getElementById('key'),{{keys | safe}})
+  autocomplete(document.getElementById('u_l_key'),{{keys | safe}})
   document.addEventListener('DOMContentLoaded', function() {
   var elems = document.querySelectorAll('.modal');
   var instances = M.Modal.init(elems);
