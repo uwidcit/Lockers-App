@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block title %}Rent {% endblock %}
+{% block page %}Rent{% endblock %}
+
+{{ super() }}
+
+{% block content %}
+<div class="row">
+  <div class="row">
+    <form id="newLocker" class="col s12 m8 offset-m2" method="POST" action="/import" enctype="multipart/form-data">
+        <input type="file" name="backup" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
+        <input type="submit">
+    </form>
+
+    <form id="newLocker" class="col s12 m8 offset-m2" method="GET" action="/export/file">
+      <label for="export_btn">Export Data</label>
+      <input type="submit" id="export_btn">
+  </form>
+
+  </div>
+</div>
+{% endblock %}

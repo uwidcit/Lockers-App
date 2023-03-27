@@ -122,7 +122,21 @@ def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to):
             db.session.rollback()   
             return None
         
-
+def import_verified_rent(student_id,locker_id,rentType,rent_date_from,rent_date_to,amount_owed,status,date_returned):
+    rent = Rent(student_id, locker_id, rentType,rent_date_from,rent_date_to,amount_owed)
+    if status == 'Verified':
+        rent.status = Status.VERIFIED
+        rent.date_returned = date_returned
+        try:
+            db.session.add(rent)
+            db.session.commit()
+            return rent
+        except SQLAlchemyError as e:
+            db.session.rollback()   
+            return None
+    else:
+        return None
+    
 
 def get_rent_by_id(id):
     rent = Rent.query.filter_by(id=id).first()
