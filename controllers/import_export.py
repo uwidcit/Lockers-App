@@ -13,7 +13,7 @@ from controllers import (
     import_verified_rent,
     create_rent,
     new_rentType,
-    #create_command,
+    create_comment,
     add_new_transaction
 )
 
@@ -68,7 +68,7 @@ def import_all(uploaded_file):
     import_keyHistory(uploaded_file)
     import_rentTypes(uploaded_file)
     import_rent(uploaded_file)
-    #import_notes(uploaded_file)
+    import_notes(uploaded_file)
     import_transactionLog(uploaded_file)
     
 def import_masterkey(uploaded_file):
@@ -139,7 +139,7 @@ def import_notes(uploaded_file):
     reader = pd.read_excel(uploaded_file,"notes")
     notes_json = reader.to_dict('records')
     for n in notes_json:
-        #create_comment(n['rent_id'],n['comment'],datetime.strptime(n['date_created'],'%Y-%m-%d %H:%M:%S')
+        create_comment(n['rent_id'],n['comment'],n['date_created'])
         return True
     return True
 
@@ -150,10 +150,12 @@ def import_transactionLog(uploaded_file):
         add_new_transaction(tL['rent_id'], tL['currency'],tL['transaction_date'], tL['amount'], tL['description'], tL['type'], tL['receipt_number'])
     return True
 
-
-
-
-
+def delete_all():
+    for m in model_list:
+        db.session.query(m).delete()
+        db.session.commit()
+    return True
+        
 
 
 
