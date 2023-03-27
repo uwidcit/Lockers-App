@@ -21,7 +21,7 @@ def get_all_keys(size,offset):
     keys = Key.query.all()
 
     if not keys:
-        return None
+        return {'num_pages':1, "data":[]}
     length_keys = len(keys)
     if length_keys == 0:
         num_pages = 1
@@ -112,3 +112,10 @@ def delete_key(id):
         return None
 def get_key_statuses():
     return [e.value for e in Key_Status]
+
+def get_all_keys_id():
+    keys = Key.query.all()
+
+    if not keys:
+        return []
+    return [k.key_id for k in keys]

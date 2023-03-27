@@ -144,10 +144,17 @@
                 </form>
               </div>
             </div>
-            <div class ="modal" id="assign_Key" style="max-height: 100%;border-radius: 25px; height: 65vh;">
+            <div class ="modal" id="assign_Key" style="max-height: 100%;border-radius: 25px; height: 35vh;">
               <div class ="modal-content" id="content">
+                <h6>Assign Key</h6>
                 <form id="assignKey" class="col s12 m12" method="POST" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
-                  <input type="text">
+                  <div class="input-field col s8 m8 offset-m2">
+                    <input type="text" id="assignBox" name="assign">
+                  </div>                  
+                  <div class="input-field col s8 m8 offset-m2" style="display:inline;">
+                    <input type="submit" value="Assign" class="right purple darken-4 waves-light btn">
+                    <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>          
+                  </div>
                 </form>
                 </div>
             </div>
@@ -194,7 +201,7 @@
 <script src="/static/autocomplete.js"></script>
 
 <script>
-    
+    autocomplete(document.getElementById('assignBox'),{{lockers| safe}})
     autocomplete(document.getElementById('m_key'),{{masterkeys| safe}})
     autocomplete(document.getElementById('u_m_key'),{{masterkeys| safe}})
     document.addEventListener('DOMContentLoaded', function() {
