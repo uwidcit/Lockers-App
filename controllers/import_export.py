@@ -56,7 +56,7 @@ def export_all():
                 column_settings.append({'header': header})
             worksheet.add_table(0, 0, max_row, max_col - 1, {'columns': column_settings})
             index = index+1
-    writer.close()
+    buffer.seek(0)
     return buffer
 
 def import_all(uploaded_file):

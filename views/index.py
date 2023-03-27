@@ -47,5 +47,4 @@ def import_api():
 @index_views.route('/export/file',methods=['GET'])
 def ex_student():
     data_list = export_all()
-    data_list.seek(0)
     return send_file(data_list,mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",as_attachment=True, attachment_filename="lockers_dump_"+str(uuid.uuid4()).split("-")[0]+".xlsx")
