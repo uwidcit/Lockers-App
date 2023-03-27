@@ -34,6 +34,9 @@
     </div>
   </div>
   </div>
+  <div>
+    <td style="width:120px;"><a href="#" onclick="releaseMode({{rent.toJSON()}})" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">close</i>Release</a></td>
+  </div>
   <div class="row">
     <div class="col s12 m10 offset-m1">
       <h6>Transaction History</h6>
@@ -92,6 +95,33 @@
    
    
 </div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+  var elems = document.querySelectorAll('.modal');
+  var instances = M.Modal.init(elems);
+  });
+
+  function releaseMode(rent){
+    console.log(rent)
+if (rent.amount_owed != 0){
+  rent_id = document.getElementById('t_rent_id')
+  amount = document.getElementById('t_amount')
+  form = document.getElementById("newTransaction")
+
+  form.action = "/locker/" +rent.locker_id+"/transaction"
+  rent_id.value = rent.id
+  amount.value = rent.amount_owed
+
+  elem = document.getElementById('new_transaction');
+  instance = M.Modal.getInstance(elem)
+  instance.open()
+}
+else{
+  window.location.href = "/rent/"+rent.id+"/release";
+}
+
+}
+</script>
 {% endblock %}
 
 <script src="/static/keep_alive.js"> </script> 

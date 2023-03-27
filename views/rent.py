@@ -98,6 +98,7 @@ def release_locker(id):
     
     if rental.status == Status.PAID :
         d_return = datetime.now()
+        d_return.replace(second=0,microsecond=0)
         rental = release_rental(id,d_return)
     elif rental.status == Status.RETURNED:
         flash('Cannot release locker it has already been released')
@@ -155,6 +156,8 @@ def rent_locker(id):
        if student:
             rent_date_from = datetime.strptime(data['rent_date_from'],'%Y-%m-%dT%H:%M')
             rent_date_to =datetime.strptime(data['rent_date_to'],'%Y-%m-%dT%H:%M')
+            if rent_date_to <= rent_date_from:
+                return redirect(url_for('locker_views.manage_locker'))
             rental = create_rent(student_id=data['student_id'], locker_id=id,rentType=data['rent_type'],rent_date_from = rent_date_from,rent_date_to = rent_date_to)
             if rental:
                 flash("Success")

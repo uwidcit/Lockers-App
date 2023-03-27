@@ -12,6 +12,7 @@ from controllers import (
 class LockerAdd(FlaskForm):
     status = getStatuses()
     status.remove('Rented')
+    status.remove('Not Verified')
     locker_code = StringField('locker_code', validators=[InputRequired()])
     locker_type  = SelectField(u'locker_type', choices= getLockerTypes())
     status  = SelectField(u'status', choices=status)
@@ -71,3 +72,10 @@ class masterKeyForm(FlaskForm):
     date_added = DateField('date_added', validators=[InputRequired()])
     key_type = SelectField('key_type', choices=["Combination", "Lock"])
     submit = SubmitField('Add Master Key', render_kw={'class': 'btn waves-effect waves-light white-text'})
+
+class KeyAdd(FlaskForm):
+    key_id = StringField('key_id', validators=[InputRequired()])
+    masterkey_id = StringField('masterkey_id', validators=[InputRequired()])
+    key_status = SelectField('key_status', choices=[])
+    date_added = DateField('date_added', validators=[InputRequired()])
+    submit = SubmitField('Add Key', render_kw={'class': 'btn waves-effect waves-light white-text'})

@@ -13,6 +13,7 @@ from controllers import (
     get_area_choices,
     get_All_rentType,
     get_all_rentType_tuple,
+    get_all_rentType_current,
     get_available_student,
     get_lockers_available,
     get_lockers_by_offset,
@@ -77,7 +78,7 @@ def select_student_page(id):
     studentData = get_available_student()
     search = SearchForm()
     rent = RentAdd()
-    rent.rent_type.choices = get_all_rentType_tuple()
+    rent.rent_type.choices = get_all_rentType_current()
     search.submit.label.text = "Search Student"
     return render_template("locker_select_student.html",studentData=studentData,form=StudentAdd(),search=search,rent=rent,id = id)
 
@@ -86,7 +87,7 @@ def add_locker():
     form = LockerAdd() # create form object
     if form.validate_on_submit:
         data = request.form # get data from form submission
-        new_locker = add_new_locker(locker_code=data['locker_code'], locker_type=data['locker_type'], status=data['status'], key=data['key'],area=data['area'])
+        new_locker = add_new_locker(locker_code=data['locker_code'], locker_type=data['locker_type'], status=data['status'], key_id=data['key'],area=data['area'])
         if not new_locker:
             return redirect(url_for('.manage_locker'))
             #jsonify({"message":"Locker already exist or some error has occurred"}),400

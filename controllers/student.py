@@ -250,7 +250,7 @@ def get_rental_student(id,size,offset):
     rent = db.session.query(Student,Rent).join(Rent).filter(Student.student_id==id).order_by(Rent.id.desc()).all()
 
     if not rent:
-        return None
+        return {"num_pages":1,"data":[]}
     length_rent = len(rent)
 
     if length_rent == 0:

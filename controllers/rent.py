@@ -1,4 +1,5 @@
 from models import Rent, Status 
+from math import ceil,floor
 
 from controllers.rentType import (
     get_rentType_by_id,
@@ -30,19 +31,22 @@ def period_elapsed(rentType_id, rent_date_from, rent_date_to):
         return -1
 
     if type.type.value == "Hourly":
-        time = rent_date_to - rent_date_from   
-        return (time.days*24) + (time.seconds/3600)
+        time = rent_date_to - rent_date_from
+        period = floor((time.days*24) +  time.seconds/3600)
+        if period == 0:
+            period = 1
+        return period
     elif type.type.value == "Daily":
         time = rent_date_to - rent_date_from   
         return  time.days
     elif type.type.value == "Weekly":
         time = rent_date_to - rent_date_from   
-        return time.days/7
+        return ceil(time.days/7)
     elif type.type.value == "Monthly":
         time = (rent_date_to.year - rent_date_from.year)  * 12 + (rent_date_to.month - rent_date_from.month)
         if time == 0 or time == -1:
             time = 1
-        return  time
+        return ceil(time)
     elif type.type.value == "Semester":
         return 1
 
@@ -57,45 +61,46 @@ def init_amount_owed(rentType_id, rent_date_from, rent_date_to):
     return round((price * period_elapsed(rentType_id, rent_date_from, rent_date_to)),2)
         
 def recal_amount_owed(rentType_id,date_returned,rent_date_from,rent_date_to):
+    timestamp = datetime.now()
+    semester_period = get_rentType_by_id(rentType_id)
+    orignal_duration = period_elapsed(rentType_id,rent_date_from,rent_date_to)
+
     if date_returned:
-        if date_returned > rent_date_to:
+        date_returned_1 = date_returned
+        return_duration = period_elapsed(rentType_id,rent_date_from,date_returned)
+    else:
+        date_returned_1 = timestamp
+        return_duration = period_elapsed(rentType_id,rent_date_from,timestamp)
+
+    
+    if date_returned_1.date() <= semester_period.period_to:
+        if return_duration > orignal_duration:
             return init_amount_owed(rentType_id,rent_date_from,rent_date_to) + late_fees(rentType_id,date_returned,rent_date_from,rent_date_to)
-        return init_amount_owed(rentType_id,rent_date_from,rent_date_to)
-    elif not date_returned:
-        timestamp = datetime.now()
-        if timestamp > rent_date_to:
-           return init_amount_owed(rentType_id,rent_date_from,rent_date_to) + late_fees(rentType_id,timestamp,rent_date_from,rent_date_to)
-        return init_amount_owed(rentType_id,rent_date_from,rent_date_to)
+        else:
+            return init_amount_owed(rentType_id,rent_date_from,rent_date_to)
+    else:
+        return init_amount_owed(rentType_id,rent_date_from,rent_date_to) + late_fees(rentType_id,semester_period.period_to,rent_date_from,rent_date_to)
+   
 
 def late_fees(rentType_id, date_returned, rent_date_from, rent_date_to):
     type = get_rentType_by_id(rentType_id)
     
+    timestamp = datetime.now()
     if not type:
         return -1
-    daily_price = get_rentType_daily_period(rent_date_from,rent_date_to)
-    
-    if not daily_price:
-        return -1
-    timestamp = datetime.now()
-    if type.type.value == "Hourly":
-        if timestamp > rent_date_to and not date_returned:
-            time = period_elapsed(rentType_id, rent_date_to, timestamp)
-            
-        elif date_returned and date_returned > rent_date_to:
-            time  = period_elapsed(rentType_id, rent_date_to, date_returned)
-        else:
-            return 0.00
-        return type.price * time
+    orignal_duration = period_elapsed(rentType_id,rent_date_from,rent_date_to)
+
+    if date_returned:
+        provisional_date = date_returned
+        duration = period_elapsed(rentType_id,rent_date_from,date_returned)
     else:
+        provisional_date = timestamp
+        duration = period_elapsed(rentType_id,rent_date_from,timestamp)
 
-        if timestamp > rent_date_to and not date_returned:
-            time  = period_elapsed(daily_price.id, rent_date_to, timestamp)
-
-        elif date_returned and date_returned > rent_date_to:
-                time  = period_elapsed(daily_price.id, rent_date_to, date_returned)
-        else:
-            return 0.0
-        return round((daily_price.price * time),2)
+    if duration > orignal_duration:
+        return (duration - orignal_duration) * type.price
+    else:
+        return 0.00
 
 def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to):
     if get_overdue_rent_by_student(student_id) or get_owed_rent_by_student(student_id):
@@ -133,6 +138,10 @@ def update_rent(id):
 
     if not rent:
         return None
+    
+    if rent.status is Status.VERIFIED:
+        return rent
+    
     amt = round(recal_amount_owed(rent.rent_type,rent.date_returned,rent.rent_date_from,rent.rent_date_to),2)
     if amt is not None:
         rent.amount_owed = round(round(amt,2) - round(cal_transaction_amount(id),2),2)
