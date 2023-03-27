@@ -45,7 +45,7 @@ class Locker (db.Model):
         for s in self.Rented:
             if s.status.value != "Verified":
                 rent = s.toJSON()
-                rent['status'] = rent['status'].value
+                rent['status'] = rent['status']
                 rent['rent_date_from'] = datetime.strftime(rent['rent_date_from'],'%Y-%m-%d')
                 rent['rent_date_to'] = datetime.strftime(rent['rent_date_to'],'%Y-%m-%d')
                 if s.date_returned:

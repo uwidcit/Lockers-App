@@ -68,5 +68,5 @@ class Rent(db.Model):
             "rent_date_to": self.rent_date_to,
             "date_returned":self.date_returned,
             "amount_owed":self.amount_owed,
-            "status":self.check_status()
+            "status":self.check_status().value
         }
