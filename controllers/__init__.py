@@ -11,4 +11,5 @@ from .rentType import *
 from .student import *
 from .transactionLog import *
 from .log import *
+from .notes import *
 from .import_export import *
