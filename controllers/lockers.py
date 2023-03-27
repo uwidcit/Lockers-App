@@ -347,4 +347,3 @@ def swap_key(id1, id2):
     except SQLAlchemyError:
         db.session.rollback()
         return None
-
