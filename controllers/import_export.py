@@ -80,7 +80,7 @@ def import_masterkey(uploaded_file):
     
 
 def import_key(uploaded_file):
-    reader = pd.read_excel(uploaded_file,"key")
+    reader = pd.read_excel(uploaded_file,"KeysTable")
     key_json = reader.to_dict('records')
     for k in key_json:
         new_key(k['key_id'],k['masterkey_id'],k['key_status'],datetime.strptime(k['date_added'],'%Y-%m-%d'))
@@ -109,6 +109,7 @@ def import_locker(uploaded_file):
             add_new_locker(l['locker_code'], l['locker_type'],'Free',l['key'],l['area'])
         else:
             add_new_locker(l['locker_code'], l['locker_type'],l['status'],l['key'],l['area'])
+            
     return True
 
 def import_keyHistory(uploaded_file):
@@ -151,8 +152,12 @@ def import_transactionLog(uploaded_file):
     return True
 
 def delete_all():
-    for m in model_list:
-        db.session.query(m).delete()
+    for m in model_list: 
+        db.session.execute('TRUNCATE TABLE public."'+m.__tablename__+'" CASCADE')
+        if m == Student:
+            db.session.execute('ALTER SEQUENCE public.'+m.__tablename__+'_student_id_seq RESTART WITH 1')
+        else:
+            db.session.execute('ALTER SEQUENCE public.'+m.__tablename__+'_id_seq RESTART WITH 1')
         db.session.commit()
     return True
         

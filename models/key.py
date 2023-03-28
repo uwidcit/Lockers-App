@@ -13,7 +13,7 @@ class Key_Status(Enum):
 class Key(db.Model):
     __tablename__ = 'KeysTable'
     key_id = db.Column(db.String, primary_key = True)
-    masterkey_id  = db.Column (db.Integer, db.ForeignKey("masterkey.id"),nullable = False)
+    masterkey_id  = db.Column (db.String, db.ForeignKey("masterkey.masterkey_id"),nullable = False)
     key_status = db.Column(db.Enum(Key_Status),nullable = False)
     date_added = db.Column (db.Date, nullable = False)
 

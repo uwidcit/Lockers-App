@@ -18,7 +18,7 @@ def add_new_student(s_id, f_name, l_name, faculty,p_no,email):
         return new_student
 
     except SQLAlchemyError as e:
-        create_log(s_id, type(e), datetime.now())
+        #create_log(s_id, type(e), datetime.now())
         flash("Unable to Add new Student. Check Error Log for more Details")
         db.session.rollback()
         return None

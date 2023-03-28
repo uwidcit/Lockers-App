@@ -1,7 +1,7 @@
 from models import Locker
-from models import Area, Rent,Key
-from models.rent import Status as RStatus
-from models.locker import Status, LockerTypes
+from models import Area, Rent
+from models.rent import RentStatus as RStatus
+from models.locker import LockerStatus as Status, LockerTypes
 from database import db
 from controllers.log import create_log
 from controllers.area import get_area_by_id,get_area_by_description
@@ -19,6 +19,7 @@ def add_new_locker(locker_code,locker_type,status,key_id,area,):
         new_keyHistory(key_id,locker.locker_code,datetime.now().date())
         return locker
     except SQLAlchemyError as e:
+        print(e)
         db.session.rollback()
         flash(create_log(e, locker_code))
         return None

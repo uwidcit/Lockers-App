@@ -1,6 +1,6 @@
 from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify,url_for,flash
 from datetime import datetime
-from models.rent import Status
+from models.rent import RentStatus as Status
 from views.forms import SearchForm
 from controllers import (
     create_rent,

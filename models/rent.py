@@ -2,7 +2,7 @@ from datetime import datetime
 from database import db
 from enum import Enum
 
-class Status(Enum):
+class RentStatus(Enum):
     PARTIAL = "Partial"
     RETURNED = "Returned"
     PAID = "Paid"
@@ -19,7 +19,7 @@ class Rent(db.Model):
     rent_date_to = db.Column(db.DateTime, nullable= False)
     date_returned = db.Column(db.DateTime, nullable = True)
     amount_owed = db.Column(db.Float, nullable= False)
-    status = db.Column(db.Enum(Status), nullable = False)
+    status = db.Column(db.Enum(RentStatus), nullable = False)
     Transactions = db.relationship('TransactionLog', backref='rent', lazy=True, cascade="all, delete-orphan")
 
     def __init__(self, student_id, locker_id, rent_type, rent_date_from, rent_date_to,amount_owed):
@@ -36,19 +36,19 @@ class Rent(db.Model):
         timestamp.replace(microsecond=0)
         if not self.Transactions:
             if timestamp > self.rent_date_to and not self.date_returned:
-                return Status.OVERDUE
-            return Status.OWED
+                return RentStatus.OVERDUE
+            return RentStatus.OWED
         else:
             amount = self.cal_transactions()
             if amount < self.amount_owed:
-                return Status.PARTIAL
+                return RentStatus.PARTIAL
             elif self.amount_owed == 0:
                 if self.date_returned:
-                    if self.status == Status.VERIFIED:
-                        return Status.VERIFIED
-                    return Status.RETURNED
-                return Status.PAID
-            return Status.OWED
+                    if self.status == RentStatus.VERIFIED:
+                        return RentStatus.VERIFIED
+                    return RentStatus.RETURNED
+                return RentStatus.PAID
+            return RentStatus.OWED
 
     def cal_transactions(self):
         if not self.Transactions:

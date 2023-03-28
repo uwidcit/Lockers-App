@@ -1,4 +1,5 @@
-from models import Rent, Status 
+from models import Rent 
+from models.rent import RentStatus as Status
 from math import ceil,floor
 
 from controllers.rentType import (
@@ -183,14 +184,14 @@ def update_rent(id):
 
 
 def get_overdue_rent_by_student(s_id):
-    rent = Rent.query.filter_by(student_id= s_id,status = Status.OVERDUE).first()
+    rent = Rent.query.filter(and_(Rent.student_id == s_id,Rent.status.value == Status.OVERDUE)).first()
     if not rent :
         return None
     rent = update_rent(rent.id)
     return rent
 
 def get_owed_rent_by_student(s_id):
-    rent = Rent.query.filter_by(student_id= s_id,status = Status.OWED).first()
+    rent = Rent.query.filter(and_(Rent.student_id== s_id,Rent.status.value == Status.OWED)).first()
     if not rent :
         return None
     rent = update_rent(rent.id)
