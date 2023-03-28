@@ -17,7 +17,7 @@ class Locker (db.Model):
     locker_code = db.Column(db.String, primary_key= True)
     locker_type = db.Column(db.Enum(LockerTypes),nullable = False)
     status = db.Column(db.Enum(Status), nullable=False)
-    key = db.Column(db.String,db.ForeignKey("key.key_id") ,nullable = False)
+    key = db.Column(db.String,db.ForeignKey("KeysTable.key_id") ,nullable = False)
     area = db.Column(db.Integer, db.ForeignKey("area.id"), nullable=False)
     Rented = db.relationship('Rent', backref='locker', lazy=True, cascade="all, delete-orphan")
 
