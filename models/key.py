@@ -11,6 +11,7 @@ class Key_Status(Enum):
 
 
 class Key(db.Model):
+    __tablename__ = 'KeyTable'
     key_id = db.Column(db.String, primary_key = True)
     masterkey_id  = db.Column (db.Integer, db.ForeignKey("masterkey.id"),nullable = False)
     key_status = db.Column(db.Enum(Key_Status),nullable = False)
