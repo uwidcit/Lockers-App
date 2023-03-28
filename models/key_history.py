@@ -3,7 +3,7 @@ from datetime import datetime
 
 class KeyHistory(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    key_id = db.Column(db.String, db.ForeignKey("key.key_id"), nullable=False)
+    key_id = db.Column(db.String, db.ForeignKey("KeysTable.key_id"), nullable=False)
     locker_id = db.Column(db.String, db.ForeignKey("locker.locker_code"), nullable=False)
     date_moved = db.Column(db.Date, nullable=False, default= datetime.now().date())
 
