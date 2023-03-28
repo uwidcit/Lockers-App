@@ -52,8 +52,7 @@ def loadConfig(app, config):
     if app.config['ENV'] == "DEVELOPMENT":
         app.config.from_object('config')
         app.config['GIT_ENV'] = ""
-        app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://saclockers_mmqb_user:CmhH6dQ7lbBgY42cUnu0BY7558Rjx8i3@dpg-cgh4rll269v15ejvlcig-a.oregon-postgres.render.com/saclockers_mmqb"
-        #'sqlite:///' + os.path.join(app.root_path,'test_database.db')
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.root_path,'test_database.db')
     else:
         app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
         app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
