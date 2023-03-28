@@ -10,7 +10,7 @@ class Types (Enum):
     SEMESTER = "Semester"
 
 class RentTypes(db.Model):
-    __tablename__= "RentTypes"
+    __tablename__= "rental_types"
     id = db.Column(db.Integer, primary_key = True)
     period_from = db.Column(db.Date, nullable = False)
     period_to = db.Column(db.Date, nullable = False)

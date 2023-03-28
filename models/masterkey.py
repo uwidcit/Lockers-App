@@ -13,6 +13,7 @@ class MasterKey(db.Model):
     series = db.Column(db.String, nullable=False)
     key_type = db.Column(db.Enum(Key_Type), nullable=False)
     date_added = db.Column(db.Date, nullable = False)
+    keys = db.relationship('Key', backref='masterkey', lazy=True, cascade="all, delete-orphan")
 
     def __init__(self,masterkey_id,series,key_type,date_added):
         self.masterkey_id = masterkey_id

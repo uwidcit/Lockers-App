@@ -1,7 +1,7 @@
 from datetime import datetime
 from database import db
 import pandas as pd
-import io
+import io,os
 from models import *
 from controllers import (
     new_masterkey,
@@ -152,13 +152,18 @@ def import_transactionLog(uploaded_file):
     return True
 
 def delete_all():
-    for m in model_list: 
-        db.session.execute('TRUNCATE TABLE public."'+m.__tablename__+'" CASCADE')
-        if m == Student:
-            db.session.execute('ALTER SEQUENCE public.'+m.__tablename__+'_student_id_seq RESTART WITH 1')
-        else:
-            db.session.execute('ALTER SEQUENCE public.'+m.__tablename__+'_id_seq RESTART WITH 1')
-        db.session.commit()
+    if  os.environ.get('ENV') == "DEVELOPMENT":
+        for m in model_list: 
+            db.session.execute('TRUNCATE TABLE public.'+m.__tablename__+' CASCADE')
+            if m == Student:
+                db.session.execute('ALTER SEQUENCE public.'+m.__tablename__+'_student_id_seq RESTART WITH 1')
+            else:
+                db.session.execute('ALTER SEQUENCE public.'+m.__tablename__+'_id_seq RESTART WITH 1')
+            db.session.commit()
+    else:
+        for m in model_list: 
+            db.session.query(m).delete()
+            db.session.commit()
     return True
         
 

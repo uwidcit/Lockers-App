@@ -11,7 +11,7 @@ class Key_Status(Enum):
 
 
 class Key(db.Model):
-    __tablename__ = 'KeysTable'
+    __tablename__ = 'locker_keys_table'
     key_id = db.Column(db.String, primary_key = True)
     masterkey_id  = db.Column (db.String, db.ForeignKey("masterkey.masterkey_id"),nullable = False)
     key_status = db.Column(db.Enum(Key_Status),nullable = False)
