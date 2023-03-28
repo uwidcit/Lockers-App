@@ -15,6 +15,7 @@ class Student(db.Model):
     phone_number = db.Column(db.String, nullable= False) 	
     email = db.Column(db.String, nullable= False, unique = True)
     rentStanding = db.Column(db.Enum(RentStanding), nullable=False)
+    rentals = db.relationship('Rent', backref='student',lazy=True, cascade="all, delete-orphan")
     
 
     def __init__(self, student_id, first_name, last_name,faculty, phone_number, email):

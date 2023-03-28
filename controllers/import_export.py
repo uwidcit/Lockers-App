@@ -80,7 +80,7 @@ def import_masterkey(uploaded_file):
     
 
 def import_key(uploaded_file):
-    reader = pd.read_excel(uploaded_file,"KeysTable")
+    reader = pd.read_excel(uploaded_file,"locker_keys_table")
     key_json = reader.to_dict('records')
     for k in key_json:
         new_key(k['key_id'],k['masterkey_id'],k['key_status'],datetime.strptime(k['date_added'],'%Y-%m-%d'))
@@ -116,14 +116,14 @@ def import_keyHistory(uploaded_file):
     reader = pd.read_excel(uploaded_file,"key_history")
     keyH_json = reader.to_dict('records')
     for kh in keyH_json:
-        new_keyHistory(kh['key_id'], kh['locker_id'],datetime.strptime(kh['date_added'],'%Y-%m-%d'))
+        new_keyHistory(kh['key_id'], kh['locker_id'],kh['date_moved'])
     return True
 
 def import_rentTypes(uploaded_file):
-    reader = pd.read_excel(uploaded_file,"RentTypes")
+    reader = pd.read_excel(uploaded_file,"rental_types")
     rentTypes_json = reader.to_dict('records')
     for rT in rentTypes_json:
-        new_rentType(datetime.strptime(rT['period_from'],'%Y-%m-%d'),datetime.strptime(rT['period_to'],'%Y-%m-%d'),rT['type'],rT['price'])
+        new_rentType(rT['period_from'],rT['period_to'],rT['type'],rT['price'])
     return True
 
 def import_rent(uploaded_file):
@@ -152,14 +152,15 @@ def import_transactionLog(uploaded_file):
     return True
 
 def delete_all():
-    if  os.environ.get('ENV') == "DEVELOPMENT":
-        for m in model_list: 
-            db.session.execute('TRUNCATE TABLE public.'+m.__tablename__+' CASCADE')
-            if m == Student:
-                db.session.execute('ALTER SEQUENCE public.'+m.__tablename__+'_student_id_seq RESTART WITH 1')
-            else:
-                db.session.execute('ALTER SEQUENCE public.'+m.__tablename__+'_id_seq RESTART WITH 1')
-            db.session.commit()
+    if os.environ.get('ENV') == "PRODUCTION":
+        string = 'TRUNCATE TABLE '
+        for m in model_list:
+            string= string +'public.'+m.__tablename__+','
+        
+        string = string[:-1]
+        string = string + ' RESTART IDENTITY'
+        db.session.execute(string)
+        db.session.commit()
     else:
         for m in model_list: 
             db.session.query(m).delete()

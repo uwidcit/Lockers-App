@@ -124,6 +124,8 @@ def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to):
             return None
         
 def import_verified_rent(student_id,locker_id,rentType,rent_date_from,rent_date_to,amount_owed,status,date_returned):
+    rent_date_to =  datetime.strptime(rent_date_to,'%Y-%m-%d %H:%M:%S')
+    date_returned =  datetime.strptime(date_returned,'%Y-%m-%d %H:%M:%S')
     rent = Rent(student_id, locker_id, rentType,rent_date_from,rent_date_to,amount_owed)
     if status == 'Verified':
         rent.status = Status.VERIFIED
