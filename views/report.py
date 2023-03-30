@@ -16,7 +16,7 @@ def report_page():
 @report_views.route('/report/transactions', methods=['GET'])
 def transaction_report():
     transaction_data=get_all_transactions()
-    transaction_data_jsonified=json.dumps(transaction_data)
+    transaction_data_jsonified=jsonify(transaction_data)
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font('Arial', '', 16)
