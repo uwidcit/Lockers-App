@@ -1,10 +1,11 @@
-from flask import Blueprint, redirect, render_template, request, send_from_directory,flash,url_for
+from flask import Blueprint, redirect, render_template,jasonify, request, send_from_directory,flash,url_for
 from controllers import get_current_user
 report_views = Blueprint('report_views', __name__, template_folder='../templates')
+from fpdf import FPDF
 
 from controllers import (
     get_all_lockers,
-
+    get_all_transactions,
 
 )
 
@@ -12,6 +13,15 @@ from controllers import (
 def report_page():
     return render_template('report.html')
 
-@report_views.route('/report/transactions', methods=['POST'])
-def report_page():
+@report_views.route('/report/transactions', methods=['GET'])
+def transaction_report():
+    transaction_data=get_all_transactions
+    transaction_data_jasonified=jasonify(transaction_data)
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font('Arial', '', 16)
+    for log in transaction_data_jasonified:
+        pdf.cell(w=0, h=10, txt=log, ln=1, align='L')
+    pdf.output(f'./transaction_report.pdf', 'F')
+    flash("success")
     return render_template('report.html')
