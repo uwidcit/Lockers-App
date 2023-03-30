@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template,jasonify, request, send_from_directory,flash,url_for
+from flask import Blueprint, redirect, render_template,jsonify, request, send_from_directory,flash,url_for
 from controllers import get_current_user
 report_views = Blueprint('report_views', __name__, template_folder='../templates')
 from fpdf import FPDF
@@ -15,8 +15,8 @@ def report_page():
 
 @report_views.route('/report/transactions', methods=['GET'])
 def transaction_report():
-    transaction_data=get_all_transactions
-    transaction_data_jasonified=jasonify(transaction_data)
+    transaction_data=get_all_transactions()
+    transaction_data_jsonified=jsonify(transaction_data)
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font('Arial', '', 16)
