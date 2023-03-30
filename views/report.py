@@ -19,7 +19,7 @@ def transaction_report():
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font('Arial', '', 16)
-    for log in range(transaction_data):
+    for log in transaction_data:
         pdf.cell(w=0, h=10, txt=log, ln=1, align='L')
     pdf.output(f'./transaction_report.pdf', 'F')
     flash("success")
