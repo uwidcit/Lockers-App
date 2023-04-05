@@ -29,7 +29,8 @@ from controllers import (
     update_locker_status,
     swap_key,
     get_all_locker_names,
-    get_all_keys_id
+    get_all_keys_id,
+    get_current_rental,
 )
 
 locker_views = Blueprint('locker_views', __name__, template_folder='../templates')
@@ -232,9 +233,12 @@ def render_get_lockers(id):
     next = previous + 1
     locker = get_locker_id(id)
     rents = get_locker_rent_history(id,2,1)
+    current_rental = get_current_rental(id)
+    form = LockerAdd()
+    form.area.choices = get_area_choices()
     if rents:
-        return render_template('remove.html', locker = locker, rents = rents['data'], previous= previous,current_page=1,next=next, locker_names= get_all_locker_names(), num_pages=rents['num_pages'],keys=get_all_keys_id())
-    return render_template('remove.html', locker = locker, rents = None, previous= previous,current_page=1,next=next,num_pages=1, locker_names= get_all_locker_names(),keys=get_all_keys_id())
+        return render_template('remove.html', locker = locker, rents = rents['data'], previous= previous,current_page=1,next=next, locker_names= get_all_locker_names(), num_pages=rents['num_pages'],keys=get_all_keys_id(),trans=TransactionAdd(),current_rental= current_rental, form = form)
+    return render_template('remove.html', locker = locker, rents = None, previous= previous,current_page=1,next=next,num_pages=1, locker_names= get_all_locker_names(),keys=get_all_keys_id(),trans=TransactionAdd(),current_rental= current_rental,form = form)
 
 @locker_views.route("/locker/<id>/page/<offset>", methods=["GET"])
 def render_get_lockers_multi(id,offset):

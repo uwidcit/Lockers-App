@@ -118,14 +118,13 @@ def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to):
             update_student_status(student_id,"RENTING")
             return rent
         except SQLAlchemyError as e:
+            print(e)
             create_log(student_id, type(e), datetime.now())
             flash("Unable to create rent. Check Error Log for more Details")
             db.session.rollback()   
             return None
         
 def import_verified_rent(student_id,locker_id,rentType,rent_date_from,rent_date_to,amount_owed,status,date_returned):
-    rent_date_to =  datetime.strptime(rent_date_to,'%Y-%m-%d %H:%M:%S')
-    date_returned =  datetime.strptime(date_returned,'%Y-%m-%d %H:%M:%S')
     rent = Rent(student_id, locker_id, rentType,rent_date_from,rent_date_to,amount_owed)
     if status == 'Verified':
         rent.status = Status.VERIFIED
@@ -135,6 +134,7 @@ def import_verified_rent(student_id,locker_id,rentType,rent_date_from,rent_date_
             db.session.commit()
             return rent
         except SQLAlchemyError as e:
+            print(e)
             db.session.rollback()   
             return None
     else:
@@ -186,14 +186,14 @@ def update_rent(id):
 
 
 def get_overdue_rent_by_student(s_id):
-    rent = Rent.query.filter(and_(Rent.student_id == s_id,Rent.status.value == Status.OVERDUE)).first()
+    rent = Rent.query.filter(and_(Rent.student_id == s_id,Rent.status == Status.OVERDUE)).first()
     if not rent :
         return None
     rent = update_rent(rent.id)
     return rent
 
 def get_owed_rent_by_student(s_id):
-    rent = Rent.query.filter(and_(Rent.student_id== s_id,Rent.status.value == Status.OWED)).first()
+    rent = Rent.query.filter(and_(Rent.student_id== s_id,Rent.status == Status.OWED)).first()
     if not rent :
         return None
     rent = update_rent(rent.id)

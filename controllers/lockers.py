@@ -172,6 +172,13 @@ def get_lockers_by_offset(size,offset):
         data.append(l)
      return data
 
+def get_current_rental(id):
+    current_rental = Rent.query.filter(and_(Rent.locker_id == id, Rent.status != RStatus.VERIFIED)).first()
+    if current_rental:
+        return current_rental.toJSON()
+    return None
+
+
 def rent_locker(id):
     locker = get_locker_id_locker(id)
     if not locker or locker.status == Status.RENTED:
