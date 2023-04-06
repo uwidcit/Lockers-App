@@ -34,9 +34,6 @@
     </div>
   </div>
   </div>
-  <div>
-    <td style="width:120px;"><a href="#" onclick="releaseMode({{rent.toJSON()}})" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">close</i>Release</a></td>
-  </div>
   <div class="row">
     <div class="col s12 m10 offset-m1">
       <h6>Transaction History</h6>
@@ -93,12 +90,117 @@
     </div>
   </div>
    
-   
+  {% if rent.amount_owed > 0 %}
+  <div class="fixed-action-btn">
+    <a class="btn-floating btn-large waves-effect waves-light purple darken-4"  onclick="releaseMode({{rent.toJSON()}})"><i class="material-icons">account_balance_wallet</i></a>
+    <ul>
+      <li><a class="btn-floating purple darken-4" onclick="loadComments({{rent.id}},1)"><i class="material-icons left">note_add</i>Note</a></li>
+    </ul>
+  </div>
+  {% elif rent.amount == 0 and rent.status.value == "Paid"%}
+  <div class="fixed-action-btn">
+    <a class="btn-floating btn-large waves-effect waves-light purple darken-4"  onclick="releaseMode({{rent}})"><i class="material-icons">lock_open</i></a>
+    <ul>
+      <li><a class="btn-floating purple darken-4" onclick="loadComments({{rent.id}},1)"><i class="material-icons left">note_add</i>Note</a></li>
+    </ul>
+  </div>
+  {% elif rent.amount == 0 and rent.status.value == "Returned"%}
+  <div class="fixed-action-btn">
+    <a class="btn-floating btn-large waves-effect waves-light purple darken-4" href="/rent/{{rent.id}}/release/verify?callback=Rent"><i class="material-icons">assignment_turned_in</i></a>
+    <ul>
+      <li><a class="btn-floating purple darken-4" onclick="loadComments({{rent.id}},1)"><i class="material-icons left">note_add</i>Note</a></li>
+    </ul>
+  </div>
+  {% else %}
+  <div class="fixed-action-btn">
+    <a class="btn-floating btn-large waves-effect waves-light purple darken-4" onclick="loadComments({{rent.id}},1)"><i class="material-icons">note_add</i></a>
+  </div>
+  {% endif %}
+
+  <div class ="modal" id="new_transaction" style="max-height: 100%;border-radius: 25px; height: 75vh;">
+    <div class="modal-content">
+      <h6 style="font-weight: bold;">New Transaction </h6>
+      <form id="newTransaction" class="col s12 m12" method="POST" action="" style="padding: 10px; border-color: black;border: 2px; border-style: solid;" >
+  
+        {{ trans.csrf_token }}
+    
+        <div class="input-field col s12 m4">
+        <p> RentID </p>
+        {{trans.rent_id(size=18, class="validate",id="t_rent_id")}}
+        </div>
+        
+        <div class="input-field col s12 m2 offset-m1">
+        <p> Currency </p>
+        {{trans.currency(size=18, class="validate")}}
+        </div> 
+        
+        <div class="input-field col s12 m4 offset-m1">
+        <p> Amount </p>
+        {{trans.amount(size=18, class="validate", id="t_amount")}}
+        </div>
+    
+        <div class="input-field col s12 m4">
+        <p> Transaction Date </p>
+        {{trans.transaction_date(size=18, class="validate")}}
+        </div>
+    
+    
+        <div class="input-field col s12 m8"> 
+        <p> Description </p>
+        {{trans.description(size=18, class="validate")}}
+        </div>
+    
+        <div class="input-field col s12 m4" style="display:inline;">
+        <p> Transaction Type </p>
+        <select name="t_type" style="display:inline;">
+            <option value=”” disabled selected>Select Transaction Type</option>
+            {% for subfield in trans.t_type %}
+             {{subfield}}
+            {% endfor %}
+          </select>
+        </div>
+    
+        <div class="input-field col s12 m4">
+          <p> Receipt Number </p>
+          {{trans.receipt_number(size=18, class="validate")}}
+          </div>
+    
+          <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+            {{trans.submit(id="t_submit",class="purple darken-4 waves-light btn")}}
+          <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+          </div> 
+            
+        </form> 
+  </div>
+  </div>
+
+  <div class="modal" id="comment_modal" style="max-height: 100%;border-radius: 25px; height: 75vh;">
+    <div class="modal-content">
+      <div class="card">
+        <div class="card-content">
+          <h6>New Comment</h6>
+          <form action="" id="new_comment_form" method="POST">
+            <input class="input-field s10 m10" type="text" id="comment" name="comment">
+            <input type="submit" value="Comment" class="purple darken-4 waves-light btn">
+          </form>
+        </div>
+      </div>
+      
+      <div id ="notes_content">
+  
+      </div>
+    </div>
+    <div class="modal-footer"  id="notes_foot">
+  
+    </div>
+  </div>
 </div>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-  var elems = document.querySelectorAll('.modal');
-  var instances = M.Modal.init(elems);
+    var elemsBtn = document.querySelectorAll('.fixed-action-btn');
+    var elems = document.querySelectorAll('.modal');
+    var instancesBtn = M.FloatingActionButton.init(elemsBtn);
+    var instances = M.Modal.init(elems);
   });
 
   function releaseMode(rent){
@@ -121,6 +223,136 @@ else{
 }
 
 }
+
+function loadComments(id,num){
+    fetch(window.origin+'/rent/'+id+'/notes').then((response) => response.json())
+    .then(data => {
+        notes = document.getElementById('notes_content')
+        form = document.getElementById('new_comment_form')
+        footer = document.getElementById('notes_foot')
+        form.action = window.origin+'/rent/'+id+'/notes'
+        if (data['data'].length == 0){
+          notes.innerHTML = `<div class="card small" style="height: 10vh;">
+                  <div class="card-content">
+                    <div class="col s6">
+                    <p> No comments on this rental </p>
+                   </div>
+                  </div>
+                </div>`
+        }
+        else{
+          results = ``
+            for (d in data['data']){
+                results += `
+                <div class="card small" style="height: 10vh;">
+                  <div class="card-content">
+                    <div class="col s6">
+                    <p> ${data['data'][d].comment} </p>
+                   </div>
+                   <div class="col s6 ">
+                    <p> Created on :${data['data'][d].date_created} </p>
+                    </div>
+                  </div>
+                </div>
+                `
+            } 
+               notes.innerHTML = results
+        }
+        num_pages_notes = data['num_pages']
+        current_page = 1
+
+        if(num_pages_notes <= 1){
+          pagination = `
+          <div class="col s6 push-s1">
+          <ul class="pagination">
+          <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+          <li class="waves-effect purple darken-4"><a href="#" style="color:white;">${current_page}</a></li>
+          <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+          </ul>
+          </div>
+          `  
+        }
+        else{
+          pagination = `
+          <div class="col s6 push-s1">
+          <ul class="pagination">
+          <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+          <li class="waves-effect purple darken-4"><a href="#" style="color:white;">${current_page}</a></li>
+          <li><a href="#!" onclick="iterateNotes(${id},1)"><i class="material-icons">chevron_right</i></a></li>
+          </ul>
+          </div>
+          `
+        }
+        footer.innerHTML = pagination
+        
+        elem = document.getElementById('comment_modal');
+        instance = M.Modal.getInstance(elem)
+        instance.open()
+    })
+  }
+
+  function iterateNotes(id,number){
+    footer = document.getElementById('notes_foot')
+    if (current_page + number <= num_pages_notes && current_page + num_pages_notes > 0){
+        current_page = current_page + number
+    }
+
+    if (current_page === 1){
+      pagination = `
+          <div class="col s6 push-s1">
+          <ul class="pagination">
+          <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+          <li class="waves-effect purple darken-4"><a href="#" style="color:white;">${current_page}</a></li>
+          <li><a href="#!" onclick="iterateNotes(${id},1)"><i class="material-icons">chevron_right</i></a></li>
+          </ul>
+          </div>
+          `
+    }
+
+    else if(current_page == num_pages_notes){
+      pagination = `
+          <div class="col s6 push-s1">
+          <ul class="pagination">
+          <li><a href="#!" onclick="iterateNotes(${id},-1)"><i class="material-icons">chevron_left</i></a></li>
+          <li class="waves-effect purple darken-4"><a href="#" style="color:white;">${current_page}</a></li>
+          <li class="disabled"><a href="#!")"><i class="material-icons">chevron_right</i></a></li>
+          </ul>
+          </div>
+          `
+    }
+    else{
+       pagination = `
+          <div class="col s6 push-s1">
+          <ul class="pagination">
+          <li><a href="#!" onclick="iterateNotes(${id},-1)"><i class="material-icons">chevron_left</i></a></li>
+          <li class="waves-effect purple darken-4"><a href="#" style="color:white;">${current_page}</a></li>
+          <li><a href="#!"  onclick="iterateNotes(${id},1)"><i class="material-icons">chevron_right</i></a></li>
+          </ul>
+          </div>
+          `
+    }
+    footer.innerHTML = pagination
+    
+    notes = document.getElementById('notes_content')
+    
+    fetch(window.origin+'/rent/'+id+'/notes/'+current_page).then((response) => response.json())
+    .then(data => {
+      results = ``
+            for (d in data['data']){
+                results += `
+                <div class="card small" style="height: 10vh;">
+                  <div class="card-content">
+                    <div class="col s6">
+                    <p> Created on :${data['data'][d].date_created} </p>
+                    <p> ${data['data'][d].comment} </p>
+                   </div>
+                  </div>
+                </div>
+                `
+            } 
+            notes.innerHTML = results
+    })
+  }
 </script>
 {% endblock %}
 

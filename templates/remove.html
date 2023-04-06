@@ -279,21 +279,21 @@
 <div class="fixed-action-btn">
   <a class="btn-floating btn-large waves-effect waves-light purple darken-4" href="/rent/{{current_rental.id}}/release/verify?callback={{locker[0].locker_code}}"><i class="material-icons">assignment_turned_in</i></a>
   <ul>
-    <li><a class="btn-floating purple darken-4" onclick="loadComments({{current_rental.id}},1)"><i class="material-icons left">check</i>Note</a></li>
+    <li><a class="btn-floating purple darken-4" onclick="loadComments({{current_rental.id}},1)"><i class="material-icons left">note_add</i>Note</a></li>
   </ul>
 </div>
 {% elif locker[0].status.value == 'Rented' and current_rental.amount_owed > 0 %}
 <div class="fixed-action-btn">
   <a class="btn-floating btn-large waves-effect waves-light purple darken-4"  onclick="releaseMode({{current_rental}})"><i class="material-icons">account_balance_wallet</i></a>
   <ul>
-    <li><a class="btn-floating purple darken-4" onclick="loadComments({{current_rental.id}},1)"><i class="material-icons left">check</i>Note</a></li>
+    <li><a class="btn-floating purple darken-4" onclick="loadComments({{current_rental.id}},1)"><i class="material-icons left">note_add</i>Note</a></li>
   </ul>
 </div>
  {% else %}
  <div class="fixed-action-btn">
   <a class="btn-floating btn-large waves-effect waves-light purple darken-4"  onclick="releaseMode({{current_rental}})"><i class="material-icons">lock_open</i></a>
   <ul>
-    <li><a class="btn-floating purple darken-4" onclick="loadComments({{current_rental.id}},1)"><i class="material-icons left">check</i>Note</a></li>
+    <li><a class="btn-floating purple darken-4" onclick="loadComments({{current_rental.id}},1)"><i class="material-icons left">note_add</i>Note</a></li>
   </ul>
   </div>
 {% endif %}
