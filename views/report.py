@@ -20,7 +20,8 @@ def transactions_report():
     pdf.add_page()
     pdf.set_font('Arial', '', 16)
     for log in transactions_data:
-        pdf.cell(w=0, h=10, txt=log, ln=1, align='L')
+        entry="\n"+log.id+"\n"+log.rent_id+"\n"+log.currency+"\n"+log.transaction_date+log.amount+"\n"+log.type+log+"\n".receipt_numberlog+"\n"
+        pdf.cell(w=0, h=10, txt=entry, ln=1, align='L')       
     pdf.output(f'./transaction_report.pdf', 'F')
     flash("success")
     return render_template('report.html')
