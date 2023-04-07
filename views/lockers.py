@@ -215,11 +215,22 @@ def create_new_transaction(id):
         
         newTransaction = add_new_transaction (rent_id,currency,transaction_date,amount,description, t_type, receipt_number)
         
+        url = url_for('.manage_locker')
+
+        if request.args:
+            callback = request.args.get('callback')
+            callback_id = request.args.get('id')
+
+            if callback.lower() == 'rent':
+                url = url_for('rent_views.get_rent_id',id=callback_id)
+            elif callback.lower() == 'locker':
+                url = url_for('locker_views.render_get_lockers',id=callback_id)
+
         if not newTransaction:
             flash('Error adding transaction')
-            return redirect(url_for('.manage_locker'))
+            return redirect(url)
         flash('Success')
-        return redirect(url_for('.manage_locker'))
+        return redirect(url)
 
 @locker_views.route("/locker/<id>/rent", methods=["GET"])
 def render_lockers_rent(id):

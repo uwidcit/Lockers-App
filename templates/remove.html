@@ -317,7 +317,7 @@ if (rent.amount_owed != 0){
   amount = document.getElementById('t_amount')
   form = document.getElementById("newTransaction")
 
-  form.action = "/locker/" +rent.locker_id+"/transaction"
+  form.action = "/locker/" +rent.locker_id+"/transaction?callback=locker&id="+rent.locker_id
   rent_id.value = rent.id
   amount.value = rent.amount_owed
 
