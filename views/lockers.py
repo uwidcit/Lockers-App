@@ -91,11 +91,18 @@ def add_locker():
     if form.validate_on_submit:
         data = request.form # get data from form submission
         new_locker = add_new_locker(locker_code=data['locker_code'], locker_type=data['locker_type'], status=data['status'], key_id=data['key'],area=data['area'])
+        url = url_for('.manage_locker')
+        if request.args:
+            callback = request.args.get('callback')
+            callback_id = request.args.get('id')
+            if callback.lower() == 'area':
+                url = url_for('area_views.get_area_id',id=callback_id)
+
         if not new_locker:
-            return redirect(url_for('.manage_locker'))
+            return redirect(url)
             #jsonify({"message":"Locker already exist or some error has occurred"}),400
-       
-    return redirect(url_for('.manage_locker'))
+    
+    return redirect(url)
     #jsonify({"data":new_locker.toJSON()}),201
 
 @locker_views.route('/locker/search/',methods=['GET'])

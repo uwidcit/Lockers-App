@@ -189,7 +189,7 @@ def return_lockers(id,size,offset):
     if not area:
         return None
     
-    length_area = len(area.locker )
+    length_area = len(area.locker)
     if length_area == 0:
          num_pages = 1
     

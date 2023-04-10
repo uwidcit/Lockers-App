@@ -24,12 +24,6 @@
         <div class="col s6"><h6>Number of Lockers: {{num_lockers}}</h6></div>
        </div>
     </div>
-
-    <div class="card-action">
-      <div class="col s1 offset-s10 floating-action-btn">
-        <a class="btn-floating btn-small waves-effect waves-light purple darken-4"><i class="material-icons">add </i></a>
-      </div>
-    </div>
   </div>
   </div>
 </row>
@@ -41,14 +35,14 @@
         <th>Locker Code</th>
         <th>Locker Type </th>
         <th>Status</th>
-        <th>Key Status</th>
+        <th>Key ID</th>
     </tr>
     {% for l in area.locker %}
     <tr>
       <td><a href="/locker/{{l.locker_code}}">{{l.locker_code}}</a></td>
       <td>{{l.locker_type.value}}</td>
       <td>{{l.status.value}}</td>
-      <td>{{l.key.value}} </td>
+      <td>{{l.key}} </td>
     </tr>
     {% endfor %}
   </table>
@@ -80,5 +74,93 @@
   {% endif %}
 </ul>
 </div>
+
+
+  <div class="fixed-action-btn">
+    <a class="btn-floating btn-large waves-effect waves-light purple darken-4" onclick="openNewLocker({{area.toJSON()}})"><i class="material-icons">add </i></a>
+  </div>
 </div>
+
+<div class ="modal" id="new_locker" style="max-height: 100%;border-radius: 25px; height: 65vh;">
+  <div class ="modal-content" id="content">
+    <h6 style="font-weight: bold;"> Add Locker </h6>
+    <form id="newLocker" class="col s12 m12" method="POST" action="/locker" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
+         {{ form.csrf_token }}
+         <div class="input-field col s12 m12">  
+          <div class="col s6">
+            <p>Locker Code</p>
+          {{ form.locker_code(size=20, class="validate")}}
+          </div>  
+          <div class="col s6">
+            <p>Locker Type</p>
+            <select id="locker_type" name="locker_type" style="display:inline;">
+              <option value=”” disabled selected>Select a Locker Type</option>
+              {% for subfield in form.locker_type %}
+                {{subfield}}
+              {% endfor %}
+            </select>
+          </div> 
+         </div>   
+
+         <div class="input-field col s12 m12">
+          <div class="col s6">
+          <p>Status</p>
+          <select id="stats" name="status" style="display:inline;">
+            <option value=”” disabled selected>Select a Status</option>
+            {% for subfield in form.status %}
+             {{subfield}}
+            {% endfor %}
+          </select>
+          </div>  
+          <p>Key</p>
+          <div class="input-field col s6">
+            {{ form.key(size=18, class="validate")}}
+          </div>
+
+          <div class="col s12 m12">
+            <p>Area</p>
+          <select id="area" name="area" style="display:inline;">
+            <option value=”” disabled selected>Select a Area Status</option>
+            {% for subfield in form.area %}
+             {{subfield}}
+            {% endfor %}
+          </select>
+        </div>  
+      </div>
+         <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+           {{form.submit(class=" right purple darken-4 waves-light btn")}}
+           <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+         </div>       
+     </form>
+  </div>     
+</div>
+<script src="/static/autocomplete.js"></script> 
+<script>
+  autocomplete(document.getElementById('key'),{{keys | safe}})
+  document.addEventListener('DOMContentLoaded', function() {
+    var elemsBtn = document.querySelectorAll('.fixed-action-btn');
+    var elems = document.querySelectorAll('.modal');
+    var instancesBtn = M.FloatingActionButton.init(elemsBtn);
+    var instances = M.Modal.init(elems);
+  });
+
+  function openNewLocker(e_area){
+   form = document.getElementById('newLocker')
+   form.action = "/locker?callback=area&id="+e_area.id
+  
+   area = document.getElementById('area')
+  
+   for(i =0; i < area.options.length;i++){
+    if(area.options[i].value == e_area.id){
+        area.selectedIndex = i
+      }
+   }
+      elem = document.getElementById('new_locker');
+      instance = M.Modal.getInstance(elem)
+      instance.open()
+   }
+   
+  
+
+</script>
 {% endblock %}

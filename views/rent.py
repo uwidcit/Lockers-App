@@ -94,9 +94,16 @@ def get_all_rent():
 @rent_views.route('/rent/<id>/release', methods=['GET'])
 def release_locker(id):
     rental = update_rent(id)
-
+    url = url_for('locker_views.manage_locker')
+    if request.args:
+            callback = request.args.get('callback')
+            callback_id = request.args.get('id')
+            if callback.lower() == 'rent':
+                url = url_for('.get_rent_id',id=callback_id)
+            elif callback.lower() == 'student':
+                url = url_for('student_views.get_student_render',id=callback_id)
     if not rental:
-        return redirect(url_for('locker_views.manage_locker'))
+        return redirect(url)
     
     if rental.status == Status.PAID :
         d_return = datetime.now()
@@ -104,35 +111,44 @@ def release_locker(id):
         rental = release_rental(id,d_return)
     elif rental.status == Status.RETURNED:
         flash('Cannot release locker it has already been released')
-        return redirect(url_for('locker_views.manage_locker'))
+        return redirect(url)
     else:
         flash('Need to pay off balance first')
-        return redirect(url_for('locker_views.manage_locker'))
+        return redirect(url)
     flash('Success')
-    return redirect(url_for('locker_views.manage_locker'))
+    return redirect(url)
 
 @rent_views.route('/rent/<id>/release/verify', methods=['GET'])
 def return_locker_to_pool(id):
     rental = update_rent(id)
 
+    url = url_for('locker_views.manage_locker')
+    if request.args:
+            callback = request.args.get('callback')
+            callback_id = request.args.get('id')
+            if callback.lower() == 'rent':
+                url = url_for('.get_rent_id',id=callback_id)
+            elif callback.lower() == 'student':
+                url = url_for('student_views.get_student_render',id=callback_id)
+
     if not rental:
-        return redirect(url_for('.rent_page'))
+        return redirect(url)
 
     if rental.status == Status.VERIFIED:
         result = verify_rental(id)
         flash('Cannot verify locker it has already been verified')
-        return redirect(url_for('locker_views.manage_locker'))
+        return redirect(url)
     elif rental.status != Status.RETURNED:
         flash('Cannot verify locker it has already fees attached')
-        return redirect(url_for('locker_views.manage_locker'))
+        return redirect(url)
     else:
         result = verify_rental(id)
         if result:
             flash('Success')
-            return redirect(url_for('locker_views.manage_locker'))
+            return redirect(url)
         else:
             flash("An error has occured checked the logs")
-            return redirect(url_for('locker_views.manage_locker'))
+            return redirect(url)
 
 @rent_views.route('/rent/<id>/notes',methods=['GET'])
 def notes_api(id):
@@ -185,5 +201,34 @@ def rent_locker(id):
         flash('Student doesn''t exist add them')
         return redirect(url_for('student_views.student_add')) 
 
+
+@rent_views.route('/makerent/student/<student_id>', methods=['POST'])
+def rent_locker_student(student_id):
+    form = RentAdd() 
+    if form.validate_on_submit:
+       data = request.form 
+       student = get_student_by_id(student_id)
+
+       url = url_for('locker_views.manage_locker')
+    
+       if request.args:
+            callback = request.args.get('callback')
+            callback_id = request.args.get('id')
+            if callback.lower() == 'student':
+                url = url_for('student_views.get_student_render', id=callback_id)
+
+       if student:
+            locker = data['rent_locker_id']
+            rent_date_from = datetime.strptime(data['rent_date_from'],'%Y-%m-%dT%H:%M')
+            rent_date_to =datetime.strptime(data['rent_date_to'],'%Y-%m-%dT%H:%M')
+            if rent_date_to <= rent_date_from:
+                return redirect(url)
+            rental = create_rent(student_id=student_id,locker_id=locker,rentType=data['rent_type'],rent_date_from = rent_date_from,rent_date_to = rent_date_to)
+            if rental:
+                flash("Success")
+            return redirect(url)
+       else:
+        flash('Student doesn''t exist add them')
+        return redirect(url)
 
 
