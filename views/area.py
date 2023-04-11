@@ -6,15 +6,18 @@ from controllers import (
     return_lockers,
     get_area_by_offset,
     get_num_area_page,
+    get_locker_by_area_id_toJSON,
     add_new_area,
     delete_area,
     set_description,
     set_latitude,
     set_longitude,
-    search_area
+    search_area,
+    get_area_choices,
+    get_all_keys_id
 )
 
-from views.forms import AreaAdd,ConfirmDelete,SearchForm
+from views.forms import AreaAdd,ConfirmDelete,SearchForm,LockerAdd
 
 area_views = Blueprint('area_views', __name__, template_folder='../templates')
 
@@ -163,11 +166,14 @@ def get_area_id(id):
     area = get_area_by_id(id)
     locker = return_lockers(id,3,1)
     previous = 1
-    num_lockers = len(locker['data' ])
+    num_lockers = len(get_locker_by_area_id_toJSON(id))
     next = previous + 1
+    form = LockerAdd()
+    form.area.choices = get_area_choices()
     if not area:
+        flash('Area '+id+' not found')
         return redirect(url_for('.render_area_page'))
-    return render_template('get_area.html',area = area,locker=locker["data"], previous=previous,next=next,current_page=1,num_pages=locker['num_pages'],num_lockers=num_lockers)
+    return render_template('get_area.html',area = area,locker=locker["data"], previous=previous,next=next,current_page=1,num_pages=locker['num_pages'],num_lockers=num_lockers,form=form,keys=get_all_keys_id())
 
 
 @area_views.route('/area/<id>/page/<offset>', methods=['GET'])
@@ -175,8 +181,12 @@ def get_area_id_multi(id,offset):
     offset = int(offset)
     area = get_area_by_id(id)
     locker = return_lockers(id,3,offset)
+    num_lockers = len(get_locker_by_area_id_toJSON(id))
+    form = LockerAdd()
+    form.area.choices = get_area_choices()
     if not area:
         return redirect(url_for('.render_area_page'))
+    
     if offset - 1 <= 0:
         previous = 1
         offset = 1
@@ -187,4 +197,4 @@ def get_area_id_multi(id,offset):
     else:
         next = offset + 1
   
-    return render_template('get_area.html',area = area,locker=locker["data"], previous=previous,next=next,current_page=offset,num_pages=locker['num_pages'])
+    return render_template('get_area.html',area = area,locker=locker["data"], previous=previous,next=next,current_page=1,num_pages=locker['num_pages'],num_lockers=num_lockers,form=form,keys=get_all_keys_id())

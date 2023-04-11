@@ -370,3 +370,9 @@ def get_all_locker_names():
    if not queryLocker:
     return []
    return [l.locker_code for l in queryLocker]
+
+def get_lockers_available_names():
+    locker_list = Locker.query.filter(Locker.status == Status.FREE).all()
+    if not locker_list:
+        return []
+    return [l.locker_code for l in locker_list]

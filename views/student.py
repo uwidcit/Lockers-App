@@ -7,7 +7,9 @@ from controllers import (
     get_student_by_id,
     get_student_by_id_json,
     get_rental_student,
-    get_student_current_rental_toJSON,
+    get_all_rentType_current,
+    get_lockers_available_names,
+    get_student_current_rental,
     search_student,
     update_student_id,
     update_student_first_name,
@@ -17,7 +19,7 @@ from controllers import (
     update_student_faculty,
 
     )
-from views.forms import StudentAdd, SearchForm
+from views.forms import StudentAdd, SearchForm, TransactionAdd,RentAdd
 
 student_views = Blueprint('student_views', __name__, template_folder='../templates')
 
@@ -148,12 +150,17 @@ def update_student_info(id):
 @student_views.route('/student/<id>', methods=['GET'])
 def get_student_render(id):
     result = get_student_by_id_json(id)
+    
     if not result:
         return redirect(url_for(".render_manage_student"))
     rent = get_rental_student(id,5,1)
     previous = 1
     next = previous + 1
-    return render_template('release.html',student=result,rent=rent['data'],previous=previous,next=next,current_page=1,num_pages=rent['num_pages'])
+    rentForm = RentAdd()
+    rentForm.student_id.name = "rent_locker_id"
+    rentForm.rent_type.choices = get_all_rentType_current()
+    locker_names = get_lockers_available_names()
+    return render_template('release.html',student=result,rent=rent['data'],previous=previous,next=next,current_page=1,num_pages=rent['num_pages'], current_rental = get_student_current_rental(id), trans= TransactionAdd(),rentForm= rentForm,locker_names=locker_names)
 
 @student_views.route('/student/<id>/page/<offset>', methods=['GET'])
 def get_student_render_multi(id,offset):
@@ -172,6 +179,9 @@ def get_student_render_multi(id,offset):
         next = num_pages
     else:
         next = offset + 1
-    
-    return render_template('release.html',student=result,rent=rent['data'],previous=previous,next=next,current_page=offset,num_pages=num_pages)
+    rentForm = RentAdd()
+    rentForm.student_id.name = "rent_locker_id"
+    rentForm.rent_type.choices = get_all_rentType_current()
+    locker_names = get_lockers_available_names()
+    return render_template('release.html',student=result,rent=rent['data'],previous=previous,next=next,current_page=offset,num_pages=num_pages, current_rental = get_student_current_rental(id), trans= TransactionAdd(),rentForm= rentForm, locker_names=locker_names)
 

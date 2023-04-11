@@ -1,9 +1,10 @@
 from models import Student, Rent
-from models.student import RentStanding 
+from models.student import RentStanding
+from models.rent import RentStatus as RStatus
 from database import db
 from sqlalchemy.exc import SQLAlchemyError
 from flask import flash
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 from controllers.log import create_log
 from datetime import datetime
 
@@ -245,6 +246,12 @@ def get_student_by_faculty(query):
     if not student:
         return None
     return [s.toJSON() for s in student]
+
+def get_student_current_rental(id):
+    current_rental = Rent.query.filter(and_(Rent.student_id == id, Rent.status != RStatus.VERIFIED)).first()
+    if current_rental:
+        return current_rental.toJSON()
+    return None
 
 def get_rental_student(id,size,offset):
     rent = db.session.query(Student,Rent).join(Rent).filter(Student.student_id==id).order_by(Rent.id.desc()).all()
