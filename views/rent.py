@@ -18,7 +18,7 @@ from controllers import (
     update_rent,
     verify_rental
     )
-from views.forms import  RentAdd 
+from views.forms import  RentAdd, TransactionAdd
 
 rent_views = Blueprint('rent_views', __name__, template_folder='../templates')
 
@@ -63,7 +63,7 @@ def get_rent_id(id):
 
     if not rental:
         return redirect(url_for('locker_views.manage_locker'))
-    return render_template('addrent.html', rent = rental,transaction=transaction['data'], current_page=1,next=next,previous=previous,num_pages=transaction['num_pages'])
+    return render_template('addrent.html', rent = rental,transaction=transaction['data'], current_page=1,next=next,previous=previous,num_pages=transaction['num_pages'],trans = TransactionAdd())
 
 @rent_views.route('/rent/<id>/page/<offset>', methods=['GET'])
 def get_rent_id_multi(id,offset):
