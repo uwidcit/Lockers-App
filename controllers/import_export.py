@@ -123,24 +123,31 @@ def import_rentTypes(uploaded_file):
     reader = pd.read_excel(uploaded_file,"rental_types")
     rentTypes_json = reader.to_dict('records')
     for rT in rentTypes_json:
-        new_rentType(rT['period_from'],rT['period_to'],rT['type'],rT['price'])
+        new_rentType(datetime.strptime(rT['period_from'],'%Y-%m-%d'),datetime.strptime(rT['period_to'],'%Y-%m-%d'),rT['type'],rT['price'])
     return True
 
 def import_rent(uploaded_file):
     reader = pd.read_excel(uploaded_file,"rent")
     rent_json = reader.to_dict('records')
     for r in rent_json:
+        r_dfrom = datetime.strptime(r['rent_date_to'],'%Y-%m-%d %H:%M:%S')
+        r_dto = datetime.strptime(r['rent_date_from'],'%Y-%m-%d %H:%M:%S')
         if r['status'] == 'Verified':
-            import_verified_rent(r['student_id'],r['locker_id'], r['rent_type'],r['rent_date_from'],r['rent_date_to'],r['amount_owed'],r['status'],r['date_returned'])
+            d_return = datetime.strptime(r['date_returned'],'%Y-%m-%d %H:%M:%S')
+            import_verified_rent(r['student_id'],r['locker_id'], r['rent_type'],r_dfrom,r_dto,r['amount_owed'],r['status'],d_return)
         else:
-            create_rent(r['student_id'],r['locker_id'], r['rent_type'],r['rent_date_from'],r['rent_date_to'])
+            create_rent(r['student_id'],r['locker_id'], r['rent_type'],r_dfrom,r_dto)
     return True
 
 def import_notes(uploaded_file):
     reader = pd.read_excel(uploaded_file,"notes")
     notes_json = reader.to_dict('records')
     for n in notes_json:
-        create_comment(n['rent_id'],n['comment'],n['date_created'])
+        if type(n['date_created']) is not datetime:
+            d_cre = datetime.strptime(n['date_created'],'%Y-%m-%d')
+        else:
+            d_cre = n['date_created']
+        create_comment(n['rent_id'],n['comment'],d_cre)
         return True
     return True
 

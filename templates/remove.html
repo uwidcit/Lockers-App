@@ -18,23 +18,16 @@
 
       <div class="col s4">
         <h6>Locker Status: {{locker[0].status.value}}</h6>
-        <h6>Key Status:{{locker[0].key.value}} </h6>
+        <h6>Key:{{locker[0].key}} </h6>
       </div>
 
       <div class="col s4">
-        <h6>Located In:<a href="/area/{{locker[1].id}}">{{locker[1].description}}</h6></p>
-      </div>
-    </div>
-
-    <div class="card-action">
-      <div class="col s1 offset-s10 floating-action-btn">
-        <a class="btn-floating btn-small waves-effect waves-light purple darken-4"><i class="material-icons">add </i></a>
+        <h6>Located In:<a href="/area/{{locker[1].id}}">{{locker[1].description}}</h6></a>
       </div>
     </div>
     </div>
     </div>
 </div>
-
 
 <div class="row">
   <div class="col s12 m10 offset-m1">
@@ -76,6 +69,176 @@
       </tbody>
     </table>
 </div>
+</div>
+
+<div class="row">
+
+
+<div class ="modal" id="new_transaction" style="max-height: 100%;border-radius: 25px; height: 75vh;">
+  <div class="modal-content">
+    <h6 style="font-weight: bold;">New Transaction </h6>
+    <form id="newTransaction" class="col s12 m12" method="POST" action="" style="padding: 10px; border-color: black;border: 2px; border-style: solid;" >
+
+      {{ trans.csrf_token }}
+  
+      <div class="input-field col s12 m4">
+      <p> RentID </p>
+      {{trans.rent_id(size=18, class="validate",id="t_rent_id")}}
+      </div>
+      
+      <div class="input-field col s12 m2 offset-m1">
+      <p> Currency </p>
+      {{trans.currency(size=18, class="validate")}}
+      </div> 
+      
+      <div class="input-field col s12 m4 offset-m1">
+      <p> Amount </p>
+      {{trans.amount(size=18, class="validate", id="t_amount")}}
+      </div>
+  
+      <div class="input-field col s12 m4">
+      <p> Transaction Date </p>
+      {{trans.transaction_date(size=18, class="validate")}}
+      </div>
+  
+  
+      <div class="input-field col s12 m8"> 
+      <p> Description </p>
+      {{trans.description(size=18, class="validate")}}
+      </div>
+  
+      <div class="input-field col s12 m4" style="display:inline;">
+      <p> Transaction Type </p>
+      <select name="t_type" style="display:inline;">
+          <option value=”” disabled selected>Select Transaction Type</option>
+          {% for subfield in trans.t_type %}
+           {{subfield}}
+          {% endfor %}
+        </select>
+      </div>
+  
+      <div class="input-field col s12 m4">
+        <p> Receipt Number </p>
+        {{trans.receipt_number(size=18, class="validate")}}
+        </div>
+  
+        <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+          {{trans.submit(id="t_submit",class="purple darken-4 waves-light btn")}}
+        <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+        </div> 
+          
+      </form> 
+</div>
+</div>
+
+<div class="modal" id="edit_locker" style="max-height: 100%;border-radius: 25px; height: 75vh; overflow: hidden;">
+  <div class="modal-content" id="content">
+    <h6 style="font-weight: bold;"> Edit Locker </h6>
+    <form id="editLocker" class="col s12 m12" method="POST" action="/locker" style="padding: 10px; border-color: black;border: 2px; border-style: solid;" >
+      {{ form.csrf_token }}
+         <div class="input-field col s12 m12">  
+          <div class="col s6">
+            <p>Locker Code</p>
+          {{ form.locker_code(size=20, class="validate",id="u_locker_code")}}
+          </div>  
+          <div class="col s6">
+            <p>Locker Type</p>
+            <select id="u_locker_type" name="locker_type" style="display:inline;">
+              <option value=”” disabled selected>Select a Locker Type</option>
+              {% for subfield in form.locker_type %}
+                {{subfield}}
+              {% endfor %}
+            </select>
+          </div> 
+         </div>   
+
+         <div class="input-field col s12 m12">
+          <div class="col s6">
+          <p>Status</p>
+          <select id="u_stats" name="status" style="display:inline;">
+            <option value=”” disabled selected>Select a Status</option>
+            {% for subfield in form.status %}
+             {{subfield}}
+            {% endfor %}
+          </select>
+          </div>  
+          
+          <div class="input-field col s6">
+            <p>Key</p>
+            {{ form.key(size=20, class="validate",id="u_l_key")}}
+          </div>
+
+          <div class="col s12 m12">
+            <p>Area</p>
+          <select id="u_area" name="area" style="display:inline;">
+            <option value=”” disabled selected>Select a Area Status</option>
+            {% for subfield in form.area %}
+             {{subfield}}
+            {% endfor %}
+          </select>
+        </div>  
+      </div>
+
+      <div class="modal-footer col s8 m8 offset-m4" style="display:inline;">
+        {{form.submit(id="u_submit",class="right purple darken-4 waves-light btn")}}
+        <a class="modal-close red darken-4 white-text right waves-light btn">Cancel</a>
+      </div>           
+     </form>
+  </div>     
+</div>
+
+<div class ="modal" id="swap_key" style="max-height: 100%;border-radius: 25px; height: 35vh;">
+  <div class ="modal-content" id="content">
+    <form id="swapKey_form" action="" method="post" class="col s12 m12" style="padding: 10px; border-color: black;border: 2px; border-style: solid;" > 
+      <h6>Assign Key</h6>
+      <div class = "input-field col s8 m8 offset-m2" style="display:inline;"> 
+      <input type="text" name="locker_code2" id="locker_code2">
+    </div>
+    <div class = "input-field col s8 m8 offset-m2" style="display:inline;"> 
+     <input type="submit" value="Swap" class="right purple darken-4 waves-light btn">
+    <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a> 
+    </div>
+  </form>
+  </div>
+  </div>
+
+<div class="modal" id="delete_locker" style="max-height: 100%;border-radius: 25px; height: 35vh;">
+  <div class="modal-content">
+    <h6 style="font-weight: bold;">Delete Locker </h6>
+    <form id="deleteLocker" class="col s12 m12" method="POST" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
+    {{ delete.csrf_token }}
+    <div class="input-field col s12 m12"> 
+      <h5 id="deleteTitle"></h5>
+    </div>
+  
+  <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+    {{delete.submit(class="right purple darken-4 waves-light btn")}}
+    <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>          </div>
+  </form>
+</div>
+</div>
+
+<div class="modal" id="comment_modal" style="max-height: 100%;border-radius: 25px; height: 75vh;">
+  <div class="modal-content">
+    <div class="card">
+      <div class="card-content">
+        <h6>New Comment</h6>
+        <form action="" id="new_comment_form" method="POST">
+          <input class="input-field s10 m10" type="text" id="comment" name="comment">
+          <input type="submit" value="Comment" class="purple darken-4 waves-light btn">
+        </form>
+      </div>
+    </div>
+    
+    <div id ="notes_content">
+
+    </div>
+  </div>
+  <div class="modal-footer"  id="notes_foot">
+
+  </div>
+</div>
+</div>
 
 <div class="col m5 offset-m5">
   <ul class="pagination">
@@ -102,7 +265,291 @@
   <li><a href="/locker/{{locker[0].locker_code}}/page/{{next}}"><i class="material-icons">chevron_right</i></a></li>
   {% endif %}
 </ul>
+
+{% if locker[0].status.value == 'Free' %}
+<div class="fixed-action-btn">
+  <a class="btn-floating btn-large waves-effect waves-light purple darken-4" href="/locker/rent/{{locker[0].locker_code}}/student?callback={{locker[0].locker_code}}"><i class="material-icons">add</i></a>
+  <ul>
+    <li><a class="btn-floating purple darken-4"><i class="material-icons" onclick="editMode({{locker[0].toJSON()}})">mode_edit</i></a></li>
+    <li><a class="btn-floating purple darken-4"><i class="material-icons" onclick="removeMode({{locker[0].toJSON()}})">delete_forever</i></a></li>
+    <li><a class="btn-floating purple darken-4"  onclick="OpenswapKey('{{locker[0].locker_code}}')"><i class="material-icons">swap_horiz</i></a></li>
+  </ul>
 </div>
+{% elif locker[0].status.value == 'Not Verified'%}
+<div class="fixed-action-btn">
+  <a class="btn-floating btn-large waves-effect waves-light purple darken-4" href="/rent/{{current_rental.id}}/release/verify?callback={{locker[0].locker_code}}"><i class="material-icons">assignment_turned_in</i></a>
+  <ul>
+    <li><a class="btn-floating purple darken-4" onclick="loadComments({{current_rental.id}},1)"><i class="material-icons left">check</i>Note</a></li>
+  </ul>
+</div>
+{% elif locker[0].status.value == 'Rented' and current_rental.amount_owed > 0 %}
+<div class="fixed-action-btn">
+  <a class="btn-floating btn-large waves-effect waves-light purple darken-4"  onclick="releaseMode({{current_rental}})"><i class="material-icons">account_balance_wallet</i></a>
+  <ul>
+    <li><a class="btn-floating purple darken-4" onclick="loadComments({{current_rental.id}},1)"><i class="material-icons left">check</i>Note</a></li>
+  </ul>
+</div>
+ {% else %}
+ <div class="fixed-action-btn">
+  <a class="btn-floating btn-large waves-effect waves-light purple darken-4"  onclick="releaseMode({{current_rental}})"><i class="material-icons">lock_open</i></a>
+  <ul>
+    <li><a class="btn-floating purple darken-4" onclick="loadComments({{current_rental.id}},1)"><i class="material-icons left">check</i>Note</a></li>
+  </ul>
+  </div>
+{% endif %}
+</div>
+
+<script src="/static/autocomplete.js"></script>  
+<script>
+  autocomplete(document.getElementById('locker_code2'),{{locker_names | safe}})
+  autocomplete(document.getElementById('u_l_key'),{{keys | safe}})
+  document.addEventListener('DOMContentLoaded', function() {
+    var elemsBtn = document.querySelectorAll('.fixed-action-btn');
+    var elems = document.querySelectorAll('.modal');
+    var instancesBtn = M.FloatingActionButton.init(elemsBtn);
+    var instances = M.Modal.init(elems);
+  });
+
+  function releaseMode(rent){
+
+if (rent.amount_owed != 0){
+  rent_id = document.getElementById('t_rent_id')
+  amount = document.getElementById('t_amount')
+  form = document.getElementById("newTransaction")
+
+  form.action = "/locker/" +rent.locker_id+"/transaction"
+  rent_id.value = rent.id
+  amount.value = rent.amount_owed
+
+  elem = document.getElementById('new_transaction');
+  instance = M.Modal.getInstance(elem)
+  instance.open()
+}
+else{
+  window.location.href = "/rent/"+rent.id+"/release";
+}
+
+}
+
+function editMode(locker){
+   form = document.getElementById('editLocker')
+   form.action = "/locker/"+locker.locker_code+"/update"
+
+   id =  document.getElementById('u_locker_code')
+   id.value = locker.locker_code
+  
+   type = document.getElementById('u_locker_type')
+   key = document.getElementById('u_l_key')
+   key.value = locker.key
+  
+   stats = document.getElementById('u_stats')
+   area = document.getElementById('u_area')
+   button = document.getElementById('u_submit')
+
+
+   button.value = "Update Locker"
+
+   for (i = 0; i < 4; i++){
+      if(type.options[i].value === locker.locker_type){
+        type.selectedIndex = i
+      }
+  
+   }
+  
+   for(i =0; i < area.options.length;i++){
+    console.log(area.options[i].value)
+    if(area.options[i].value == locker.area){
+        area.selectedIndex = i
+      }
+   }
+
+   for (i = 0; i < 3; i++){
+      if(stats.options[i].value === locker.status){
+        stats.selectedIndex = i
+      } 
+
+   }
+   elem = document.getElementById('edit_locker');
+   instance = M.Modal.getInstance(elem)
+   instance.open()
+  }
+
+  function OpenswapKey(locker_id){
+    form = document.getElementById("swapKey_form")
+    form.action = "/locker/" + locker_id + "/key/swap"
+    elem = document.getElementById('swap_key');
+    instance = M.Modal.getInstance(elem)
+    instance.open()
+  }
+
+  function removeMode(locker){
+
+form = document.getElementById('deleteLocker')
+title = document.getElementById('deleteTitle')
+title.innerHTML = "Are you sure you want to delete "+locker.locker_code+"! This action cannot be undone"
+form.action = "/locker/"+locker.locker_code+"/confirmed"
+
+elem = document.getElementById('delete_locker');
+instance = M.Modal.getInstance(elem)
+instance.open()
+}
+
+var num_pages_notes  = 0
+  var current_page = 0
+
+  var form = document.getElementById('new_comment_form')
+  form.addEventListener('submit', (e)=>{
+    e.preventDefault()
+    text = form.elements[0].value
+    data = {
+      'comment':text
+    }
+    fetch(form.action,{
+      method:'POST',
+      body:JSON.stringify(data),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8"
+      }}).then((response) => response.json())
+      .then(data =>{
+        console.log(data)
+        elem = document.getElementById('comment_modal');
+        instance = M.Modal.getInstance(elem)
+        instance.close()
+        loadComments(data[0]['rent_id'],1)
+      })
+  })
+
+
+  function loadComments(id,num){
+    fetch(window.origin+'/rent/'+id+'/notes').then((response) => response.json())
+    .then(data => {
+        notes = document.getElementById('notes_content')
+        form = document.getElementById('new_comment_form')
+        footer = document.getElementById('notes_foot')
+        form.action = window.origin+'/rent/'+id+'/notes'
+        if (data['data'].length == 0){
+          notes.innerHTML = `<div class="card small" style="height: 10vh;">
+                  <div class="card-content">
+                    <div class="col s6">
+                    <p> No comments on this rental </p>
+                   </div>
+                  </div>
+                </div>`
+        }
+        else{
+          results = ``
+            for (d in data['data']){
+                results += `
+                <div class="card small" style="height: 10vh;">
+                  <div class="card-content">
+                    <div class="col s6">
+                    <p> ${data['data'][d].comment} </p>
+                   </div>
+                   <div class="col s6 ">
+                    <p> Created on :${data['data'][d].date_created} </p>
+                    </div>
+                  </div>
+                </div>
+                `
+            } 
+               notes.innerHTML = results
+        }
+        num_pages_notes = data['num_pages']
+        current_page = 1
+
+        if(num_pages_notes <= 1){
+          pagination = `
+          <div class="col s6 push-s1">
+          <ul class="pagination">
+          <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+          <li class="waves-effect purple darken-4"><a href="#" style="color:white;">${current_page}</a></li>
+          <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+          </ul>
+          </div>
+          `  
+        }
+        else{
+          pagination = `
+          <div class="col s6 push-s1">
+          <ul class="pagination">
+          <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+          <li class="waves-effect purple darken-4"><a href="#" style="color:white;">${current_page}</a></li>
+          <li><a href="#!" onclick="iterateNotes(${id},1)"><i class="material-icons">chevron_right</i></a></li>
+          </ul>
+          </div>
+          `
+        }
+        footer.innerHTML = pagination
+        
+        elem = document.getElementById('comment_modal');
+        instance = M.Modal.getInstance(elem)
+        instance.open()
+    })
+  }
+
+  function iterateNotes(id,number){
+    footer = document.getElementById('notes_foot')
+    if (current_page + number <= num_pages_notes && current_page + num_pages_notes > 0){
+        current_page = current_page + number
+    }
+
+    if (current_page === 1){
+      pagination = `
+          <div class="col s6 push-s1">
+          <ul class="pagination">
+          <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+          <li class="waves-effect purple darken-4"><a href="#" style="color:white;">${current_page}</a></li>
+          <li><a href="#!" onclick="iterateNotes(${id},1)"><i class="material-icons">chevron_right</i></a></li>
+          </ul>
+          </div>
+          `
+    }
+
+    else if(current_page == num_pages_notes){
+      pagination = `
+          <div class="col s6 push-s1">
+          <ul class="pagination">
+          <li><a href="#!" onclick="iterateNotes(${id},-1)"><i class="material-icons">chevron_left</i></a></li>
+          <li class="waves-effect purple darken-4"><a href="#" style="color:white;">${current_page}</a></li>
+          <li class="disabled"><a href="#!")"><i class="material-icons">chevron_right</i></a></li>
+          </ul>
+          </div>
+          `
+    }
+    else{
+       pagination = `
+          <div class="col s6 push-s1">
+          <ul class="pagination">
+          <li><a href="#!" onclick="iterateNotes(${id},-1)"><i class="material-icons">chevron_left</i></a></li>
+          <li class="waves-effect purple darken-4"><a href="#" style="color:white;">${current_page}</a></li>
+          <li><a href="#!"  onclick="iterateNotes(${id},1)"><i class="material-icons">chevron_right</i></a></li>
+          </ul>
+          </div>
+          `
+    }
+    footer.innerHTML = pagination
+    
+    notes = document.getElementById('notes_content')
+    
+    fetch(window.origin+'/rent/'+id+'/notes/'+current_page).then((response) => response.json())
+    .then(data => {
+      results = ``
+            for (d in data['data']){
+                results += `
+                <div class="card small" style="height: 10vh;">
+                  <div class="card-content">
+                    <div class="col s6">
+                    <p> Created on :${data['data'][d].date_created} </p>
+                    <p> ${data['data'][d].comment} </p>
+                   </div>
+                  </div>
+                </div>
+                `
+            } 
+            notes.innerHTML = results
+    })
+  }
+</script>
 
 
 
