@@ -44,7 +44,7 @@ def get_all_keys(size,offset):
     
 
 def get_key_by_id(id):
-    key = Key.query.filter(Key.id.like(id)).first()
+    key = Key.query.filter(Key.key_id.like(id)).first()
 
     if not key:
         return None
@@ -89,8 +89,8 @@ def update_key_status(id,new_status):
         return None
     
     try:
-        if new_status.upper() in Key_Status.__members:
-            key.key_status = Key_Status[new_status.upper]
+        if new_status.upper() in Key_Status.__members__:
+            key.key_status = Key_Status[new_status.upper()]
         db.session.add(key)
         db.session.commit()
         return key

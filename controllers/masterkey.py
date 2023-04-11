@@ -1,4 +1,4 @@
-from models import MasterKey,Key
+from models import MasterKey,Key,KeyHistory
 from database import db
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import and_, or_
@@ -142,3 +142,33 @@ def search_masterkey(query,offset,size):
     for masterkey in data[index:stop]:
         m_list.append(masterkey.toJSON())
     return {"num_pages": num_pages,"data":m_list}
+
+def get_key_masterkey_offset(id,offset,size):
+    data = db.session.query(MasterKey,Key).join(Key).filter(or_(MasterKey.id.like(id), MasterKey.masterkey_id.like(id))).all()
+    if not data:
+        return {'num_pages':1,'data':[],"num_keys":0}
+    
+    length_mkey = len(data)
+    if length_mkey == 0:
+         num_pages = 1
+    
+    if length_mkey%size != 0:
+        num_pages = int((length_mkey/size) + 1)
+    else:
+        num_pages = int(length_mkey/size)
+    
+    index = (offset * size) - size
+    stop = (offset * size)
+
+    if(stop >= length_mkey):
+        stop = length_mkey
+    
+    m_list = []
+    for masterkey,key in data[index:stop]:
+        current_locker = KeyHistory.query.order_by(KeyHistory.date_moved.desc()).filter_by(key_id = key.key_id).first()
+        if not current_locker:
+            current_locker = ""
+        temp_key = key.toJSON()
+        temp_key['current_locker'] = current_locker
+        m_list.append(temp_key)
+    return {"num_pages": num_pages,"data":m_list,"num_keys":length_mkey}

@@ -94,7 +94,7 @@
         <div class ="modal" id="new_key" style="max-height: 100%;border-radius: 25px; height: 65vh;">
             <div class ="modal-content" id="content">
               <h6 style="font-weight: bold;"> Add Key </h6>
-              <form id="newKey" class="col s12 m12" method="POST" action="/key" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
+              <form id="newKey" class="col s12 m12" method="POST" action="/masterkey/key?callback=key" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
                 {{keys.csrf_token}}
                 <div class="input-field col s12 m12">  
                   <div class="col s6">
