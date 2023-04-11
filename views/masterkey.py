@@ -6,6 +6,7 @@ from controllers import (
     new_masterkey,
     delete_masterkey,
     get_masterkey_by_id,
+    get_key_masterkey_offset,
     get_key_statuses,
     new_key,
     search_masterkey,
@@ -155,11 +156,64 @@ def create_key():
         key_status = request.form.get('key_status')
         date_added = datetime.strptime(request.form.get('date_added'),'%Y-%m-%d')
         key = new_key(key_id,masterkey_id,key_status,date_added)
+
+        url = url_for('.render_masterkey_page')
+        if request.args:
+            callback = request.args.get('callback')
+            callback_id = request.args.get('id')
+
+            if callback.lower() == 'masterkey' and callback_id:
+                url = url_for('.render_get_masterkey_page',id=callback_id)
+            elif callback.lower()== 'key' and callback_id is None:
+                url = url_for('key_views.render_keys_page')
+
         if not key:
             flash('Key not created')
-            return redirect(url_for('.render_masterkey_page')) 
+            return redirect(url) 
         else:
             flash('Success adding '+key_id)
-            return redirect(url_for('.render_masterkey_page'))
+            return redirect(url)
     flash('Something went wrong')
-    return redirect(url_for('.render_masterkey_page'))
+    return redirect(url)
+
+@masterkey_views.route('/masterkey/<id>', methods=['GET'])
+def render_get_masterkey_page(id):
+    masterkeyData = get_masterkey_by_id(id)
+
+    if not masterkeyData:
+        flash('Not found or does not exist')
+        return redirect(url_for('.render_masterkey_page'))
+    
+    keyData = get_key_masterkey_offset(id,1,3)
+    previous = 1
+    next = previous + 1
+    search = SearchForm()
+    keys = KeyAdd()
+    keys.key_status.choices = get_key_statuses()
+    search.submit.label.text = "Search Master Key"
+    return render_template("masterkey_details.html", current_page =1 , form = masterKeyForm(),previous = previous, next = next, masterkeyData=masterkeyData, num_key= keyData['num_keys'],keyData= keyData['data'],keys = keys ,num_pages= keyData["num_pages"], delete = ConfirmDelete())
+
+@masterkey_views.route('/masterkey/<id>/page/<offset>', methods=['GET'])
+def render_get_masterkey_page_offset(id,offset):
+    offset = int(offset)
+    masterkeyData = get_masterkey_by_id(id)
+    if not masterkeyData:
+        flash('Not found or does not exist')
+        return redirect(url_for('.render_masterkey_page'))
+    
+    keyData = get_key_masterkey_offset(id,offset,3)
+    previous = 1
+    if offset - 1 <= 0:
+        previous = 1
+        offset = 1
+    else:
+        previous = offset - 1
+    if offset + 1 >= keyData["num_pages"]:
+        next = keyData["num_pages"]
+    else:
+        next = offset + 1
+    search = SearchForm()
+    keys = KeyAdd()
+    keys.key_status.choices = get_key_statuses()
+    search.submit.label.text = "Search Master Key"
+    return render_template("masterkey_details.html", current_page = offset, form = masterKeyForm(),previous = previous, next = next, masterkeyData=masterkeyData, num_key= keyData['num_keys'],keyData= keyData['data'],keys = keys ,num_pages= keyData["num_pages"], delete = ConfirmDelete())

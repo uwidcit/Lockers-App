@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     
     try {
-      setInterval(keep_alive_server, 3 * 1000)()
+      setInterval(keep_alive_server, 2 * 1000)()
     } catch (error) {
       // doesn't matter handled by middleware
     }
