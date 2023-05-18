@@ -10,44 +10,31 @@
     <!--Let browser know website is optimized for mobile-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>{% block title %}{% endblock %}</title>
-
   </head>
-  <body class ="indigo lighten-2" style ="height:80vh; display: flexbox; overflow: hidden;">
-    <div>
-      <nav class=" purple darken-4 " >
-        <div class=" nav-wrapper" style="display:inline;position: relative;">
-          <a href="#!" class=" white-text brand-logo left" style="width:300px;">SAC Locker System</a>
-          <div style="margin-left: 50vw; ">
-            <a href="#name" style="padding-right:10px;"><span class="white-text name">User: John Doe</span></a>
-            <a class="red darken-4 btn-small center-align" style="width: 150px;" href="/"><h7 style="padding-left:10px;" >Log Out</h7></a>
-            <h5 href="#!" class="white-text right hide-on-med-and-down" style="padding-right:10px; width:30vw;">{% block page %}{% endblock %}</h5>
-         
-          </div>
-           
-        </div>
-        
-      </nav>
+    <nav class="sidenav-trigger purple darken-4" data-target="slide-out" >
+    <div class="nav-wrapper">
+      <ul>
+        <li><a href="#" ><i class="material-icons  white-text">menu</i></a></li>
+        <li><a href="#" class=" white-text">{% block page %} {% endblock %}</a></li>
+      </ul>
     </div>
-    <div class="row" style="overflow: hidden; max-height: 90vh;">
-
-      <div class="indigo lighten-2 col s2" style="height: 100vh; width: 15vw; margin-top: 40px;"> 
-        <ul id="slide-out" class="side-nav " >
-          
-          <li style="padding: 5px; padding-left: 20px;"><a class="waves-effect black-text text-lighten-4" href="/locker" ><i class="material-icons">assignment</i><h7 style="padding-left:10px;" >Lockers</h7></a></li>
-          <li style="padding: 5px; padding-left: 20px;"><a class="waves-effect black-text text-lighten-4" href="/area"><i class="material-icons">add_location</i><h7 style="padding-left:10px;" >Area</h7></a></li>
-          <li style="padding: 5px; padding-left: 20px;"><a class="waves-effect black-text text-lighten-4" href="/rentType"><i class="material-icons">attach_money</i><h7 style="padding-left:10px;" >Pricing</h7></a></li>
-          <li style="padding: 5px; padding-left: 20px;"><a class="waves-effect black-text text-lighten-4" href="/student"><i class="material-icons">person</i><h7 style="padding-left:10px;" ></h7>Student</a></li>
-          <li><a class="waves-effect black-text text-lighten-4" href="/transactionLog" style="padding: 5px; padding-left: 20px;"><i class="material-icons">book</i><h7 style="padding-left:10px;" >Transaction Log</h7></a></li>
-          <li><a class="waves-effect black-text text-lighten-4" href="/masterkey" style="padding: 5px; padding-left: 20px;"><i class="material-icons">key</i><h7 style="padding-left:10px;" >Master Key</h7></a></li>
-          <li><a class="waves-effect black-text text-lighten-4" href="/key" style="padding: 5px; padding-left: 20px;"><i class="material-icons">list</i><h7 style="padding-left:10px;" >Key</h7></a></li>
-          <li><a class="waves-effect black-text text-lighten-4" href="/export" style="padding: 5px; padding-left: 20px;"><i class="material-icons">cloud_download</i><h7 style="padding-left:10px;" >Import/Export</h7></a></li>
-          <li><a class="waves-effect black-text text-lighten-4" href="/report" style="padding: 5px; padding-left: 20px;"><i class="material-icons">person</i><h7 style="padding-left:10px;" >Reports</h7></a></li>
-          
-          </ul>
-             
-      </div>
-      
-
+  </nav>  
+ 
+  <body style="display: flexbox; overflow-y: hidden;">
+    <ul id="slide-out" class="sidenav sidenav-fixed purple darken-4">
+      <li><a class= "white-text" href="/locker" ><i class="material-icons white-text">assignment</i><h7>Lockers</h7></a></li>
+      <li><a class="white-text" href="/area"><i class="material-icons white-text">add_location</i><h7>Area</h7></a></li>
+      <li><a class="white-text" href="/rentType"><i class="material-icons white-text">attach_money</i><h7>Pricing</h7></a></li>
+      <li ><a class="white-text" href="/student"><i class="material-icons white-text">person</i><h7></h7>Student</a></li>
+      <li><a class="white-text" href="/transactionLog"><i class="material-icons white-text">book</i><h7>Transaction Log</h7></a></li>
+      <li><a class="white-text" href="/masterkey"><i class="material-icons white-text">key</i><h7>Master Key</h7></a></li>
+      <li><a class="white-text" href="/key"><i class="material-icons white-text">list</i><h7>Key</h7></a></li>
+      <li><a class="white-text" href="/export"><i class="material-icons white-text">cloud_download</i><h7>Import/Export</h7></a></li>
+      <li><a class="white-text" href="/report"><i class="material-icons white-text">person</i><h7>Reports</h7></a></li>
+      <li><a class="white-text" href="/"><i class="material-icons white-text">exit_to_app</i><h7>Logout</h7></a></li>
+    </ul>  
+    <div class="row" >
+        
       {% with messages = get_flashed_messages() %}
       {% if messages %}
           {% for message in messages %}
@@ -57,7 +44,7 @@
       {% endwith %}
 
    
-      <div class=" deep-purple lighten-5 col s10" style="padding:10px; height: 90vh; width: 80vw; margin-left:30px; margin-top:10px; border-radius: 25px;overflow-y: hidden; overflow-x: hidden; display: flexbox;" > 
+      <div class="white" > 
         {% block content %}{% endblock %}
       </div>
 
@@ -68,7 +55,19 @@
     <script src="/static/util.js"></script>
     <script src = "/static/keep_alive.js"></script>
     <script type="text/javascript">
-      $(".button-collapse").sideNav();
+      document.addEventListener('DOMContentLoaded', function() {
+      var sideElems = document.querySelectorAll('.sidenav');
+      var sideInstances = M.Sidenav.init(sideElems);
+      var elemsBtn = document.querySelectorAll('.dropdown-trigger');
+      var elemsFxBtn = document.querySelectorAll('.fixed-action-btn');
+      var instancesFxBtn = M.FloatingActionButton.init(elemsFxBtn);
+      var instancesBtn = M.Dropdown.init(elemsBtn,{
+        hover:true,
+        constrainWidth:false
+        });
+      var elems = document.querySelectorAll('.modal');
+      var instances = M.Modal.init(elems);
+      });
 
       function displayMessage(message){
         M.toast({html:message})
@@ -79,6 +78,29 @@
       .indentMenu {
         text-indent: 35px;
       }
+
+      #pag{
+        bottom: 10px;
+        position: fixed;
+        z-index: 997;
+       padding-right: 300px; 
+      }
+
+      header, body, footer {
+      padding-left: 300px;
+      }
+      body{
+        overflow: hidden;
+      }
+
+    @media only screen and (max-width : 992px) {
+      header, body, footer {
+        padding-left: 0;
+      }
+      #pag {
+          padding-right: 0;
+        }
+    }
     </style>
   </body>
 </html>

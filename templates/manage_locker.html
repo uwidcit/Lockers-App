@@ -7,30 +7,23 @@
 {% block content %}
 <div class="row">
       <div class="row">
-        
-          {% if searchMode %}
-          <div class="col s12 m8 offset-m2" style="padding-top: 0.5rem;">
-            <a class="red darken-4 white-text waves-effect waves-light btn" href="/locker">Go Back</a>
-          </div>
-          
-          {% else %}
             <div class="col s12 m8 offset-m7">
-              <form action="/locker/search">
+              <form action="/locker/search" id="search_form">
                 <div class="input-field col s12 m4 offset-m1">
-                 <div class = "row">
+                 <div class = "search-wrapper">
                   <input type="search" name="search_query" placeholder="Enter search query" required/>
+                  <i class="material-icons" style="color:#4a148c; top:1vh; " id="submit_search">search</i>
                  </div>
                 </div>
 
                 <div class="input-field col s2 m2" style="display:inline; padding-left: 0px;" >
-                  <button type="submit" style="padding: 9px 21.5px 37px 21.5px" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons" style="padding: 5px; font-size: 2rem; color:white; ">search</i></button>
+                  <!--<button type="submit" class="purple waves-effect waves-light btn-small"><i class="material-icons" style="color:white; ">search</i></button>-->
                 </div>
               </form>
             </div>
           </div>
-          {% endif %}  
         <div class="col s12 m10 offset-m1" style="height:60vh;">
-          <table  >
+          <table>
             <tr>
                 <th>Locker Code</th>
                 <th>Locker Type </th>
@@ -41,7 +34,7 @@
     
             {% if lockerData %}
             {% for l in lockerData %}
-            <tr>
+            <tr class="deep-purple-text">
                 <td><a href="/locker/{{l.locker_code}}">{{l.locker_code}}</a></td>
                 <td>{{l.locker_type}}</td>
                 <td>{{l.status}}</td>
@@ -73,7 +66,7 @@
             {% endif %}
           </table>
         </div>
-      <div class="col m5 offset-m5">
+      <div id="pag" class="col s12 center-align">
         <ul class="pagination">
 
         {% if current_page == 1  %}
@@ -106,17 +99,15 @@
         <li><a href="#/page{{next}}"><i class="material-icons">chevron_right</i></a></li>
         {% endif %}
       </ul>
-      </div>
-      <div class="col s1 m1 offset-m11" >
-        <div class="floating-action-btn" style="position: absolute; bottom: 8vh;">
+    </div>
+        <div class="fixed-action-btn">
          <a class="btn-floating btn-large waves-effect waves-light purple darken-4 modal-trigger"  href="#new_locker"><i class="material-icons">add </i></a>
-       </div>
-     </div>
+        </div>
       </div>
 
       <div class="row">
 
-        <div class ="modal" id="new_locker" style="max-height: 100%;border-radius: 25px; height: 65vh;">
+        <div class ="modal" id="new_locker" style="max-height: 100%;border-radius: 25px;">
           <div class ="modal-content" id="content">
             <h6 style="font-weight: bold;"> Add Locker </h6>
             <form id="newLocker" class="col s12 m12" method="POST" action="/locker" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
@@ -128,7 +119,7 @@
                   </div>  
                   <div class="col s6">
                     <p>Locker Type</p>
-                    <select id="locker_type" name="locker_type" style="display:inline;">
+                    <select id="locker_type" name="locker_type" style="display:inline;" required>
                       <option value=”” disabled selected>Select a Locker Type</option>
                       {% for subfield in form.locker_type %}
                         {{subfield}}
@@ -140,7 +131,7 @@
                  <div class="input-field col s12 m12">
                   <div class="col s6">
                   <p>Status</p>
-                  <select id="stats" name="status" style="display:inline;">
+                  <select id="stats" name="status" style="display:inline;" required>
                     <option value=”” disabled selected>Select a Status</option>
                     {% for subfield in form.status %}
                      {{subfield}}
@@ -154,7 +145,7 @@
 
                   <div class="col s12 m12">
                     <p>Area</p>
-                  <select id="area" name="area" style="display:inline;">
+                  <select id="area" name="area" style="display:inline;" required>
                     <option value=”” disabled selected>Select a Area Status</option>
                     {% for subfield in form.area %}
                      {{subfield}}
@@ -337,15 +328,6 @@
   autocomplete(document.getElementById('locker_code2'),{{locker_names | safe}})
   autocomplete(document.getElementById('key'),{{keys | safe}})
   autocomplete(document.getElementById('u_l_key'),{{keys | safe}})
-  document.addEventListener('DOMContentLoaded', function() {
-  var elems = document.querySelectorAll('.modal');
-  var elemsBtn = document.querySelectorAll('.dropdown-trigger');
-  var instancesBtn = M.Dropdown.init(elemsBtn,{
-    hover:true,
-    constrainWidth:false
-  });
-  var instances = M.Modal.init(elems);
-  });
 
   var num_pages_notes  = 0
   var current_page = 0
@@ -589,6 +571,12 @@
     instance.open()
   }
 
+   search_execute = document.getElementById('submit_search')
+   search_execute.addEventListener('click', function() {
+    s_form = document.getElementById('search_form')
+    s_form.submit()
+   })
+  
 </script>
 
 {% endblock %}

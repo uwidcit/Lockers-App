@@ -45,7 +45,7 @@
         {% endif %}
       </table>
       </div>
-      <div class="col m5 offset-m5">
+      <div class="col m5 offset-m5" id="pag">
         <ul class="pagination">
 
         {% if current_page == 1  %}
@@ -71,11 +71,10 @@
         {% endif %}
       </ul>
       </div>
-      <div class="col s1 m1 offset-m11" style="padding: 0.75rem">
-         <div class="floating-action-btn" style="position: absolute; bottom: 8vh;">
+     
+         <div class="fixed-action-btn">
           <a class="btn-floating btn-large waves-effect waves-light purple darken-4 modal-trigger" href="#new_area"><i class="material-icons">add </i></a>
         </div>
-      </div>
 
       <div class="modal" id="new_area" style="max-height: 100%;border-radius: 25px; height: 60vh;">
         <div class ="modal-content" id="content">
@@ -153,12 +152,6 @@
      
        
       <script>
-        document.addEventListener('DOMContentLoaded', function() {
-        var elems = document.querySelectorAll('.modal');
-        var instances = M.Modal.init(elems);
-        var elems = document.querySelectorAll('.fixed-action-btn');
-        var instances = M.FloatingActionButton.init(elems);
-  });
 
     function editMode(area){
       form = document.getElementById('editArea')

@@ -50,7 +50,7 @@
         {% endif %}
         </table>
     </div>
-    <div class="col m5 offset-m5">
+    <div class="col m5 offset-m5" id="pag">
         <ul class="pagination">
 
         {% if current_page == 1  %}
@@ -84,10 +84,8 @@
         {% endif %}
       </ul>
       </div>
-      <div class="col s1 m1 offset-m11" >
-        <div class="floating-action-btn" style="position: absolute; bottom: 8vh;">
+        <div class="fixed-action-btn">
          <a class="btn-floating btn-large waves-effect waves-light purple darken-4 modal-trigger"  href="#new_key"><i class="material-icons">add </i></a>
-       </div>
      </div>
     
      <div class="row">
@@ -204,11 +202,6 @@
     autocomplete(document.getElementById('assignBox'),{{lockers| safe}})
     autocomplete(document.getElementById('m_key'),{{masterkeys| safe}})
     autocomplete(document.getElementById('u_m_key'),{{masterkeys| safe}})
-    document.addEventListener('DOMContentLoaded', function() {
-    var elems = document.querySelectorAll('.modal');
-    var instances = M.Modal.init(elems);
-    });
-
     function removeMode(key){
 
     form = document.getElementById('deleteKey')
