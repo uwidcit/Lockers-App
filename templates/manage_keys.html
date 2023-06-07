@@ -6,23 +6,20 @@
 
 {% block content %}
 <div class="row">
-    <div class="row">
-        <div class="col s12 m8 offset-m7">
-          <form action="/key/search">
-            <div class="input-field col s12 m4 offset-m1">
-             <div class = "row">
-              <input type="search" name="search_query" placeholder="Enter search query" required/>
-             </div>
-            </div>
-
-            <div class="input-field col s2 m2" style="display:inline; padding-left: 0px;" >
-              <button type="submit" style="padding: 9px 21.5px 37px 21.5px" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons" style="padding: 5px; font-size: 2rem; color:white; ">search</i></button>
-            </div>
-          </form>
+  <div class="row">
+    <div class="col s12 m8 offset-m7">
+      <form action="/key/search" id="search_form">
+        <div class="input-field col s12 m4 offset-m1">
+         <div class = "search-wrapper">
+          <input type="search" name="search_query" placeholder="Enter search query" required/>
+          <i class="material-icons" style="color:#4a148c; top:1vh; " id="submit_search">search</i>
+         </div>
         </div>
-      </div>
+      </form>
+    </div>
+</div>
 
-      <div class="col s12 m10 offset-m1" style="height:60vh;">
+      <div class="col s12 m10 offset-m1" style="height:80vh;">
         <table>
           <tr>
               <th>KeyID</th>
@@ -50,38 +47,36 @@
         {% endif %}
         </table>
     </div>
-    <div class="col m5 offset-m5" id="pag">
+    <div class="col m12 center-align" id="pag">
         <ul class="pagination">
-
+          {% if query %}
+          {% if current_page == 1  %}
+            <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+            {% else %}
+            <li><a href="/key/search/page/{{previous}}/?search_query={{query}}"><i class="material-icons white-text">chevron_left</i></a></li>
+            {% endif %}
+            <li class="active purple darken-4">{{current_page}}</li>
+            {% if current_page == num_pages %}
+            <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+            {% else %}
+            <li><a href="/key/search/page/{{next}}/?search_query={{query}}"><i class="material-icons white-text">chevron_right</i></a></li>
+            {% endif %}
+        {% else %}
         {% if current_page == 1  %}
         <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
         {% else %}
-        <li><a href="#/page{{previous}}"><i class="material-icons">chevron_left</i></a></li>
+        <li><a href="/key/page/{{previous}}"><i class="material-icons white-text">chevron_left</i></a></li>
         {% endif %}
 
-        {% for n in range(1,num_pages + 1) %}
-        
-        
-        {% if n == current_page %}
-        {% if query %}
-        <li class="active purple darken-4"><a href="/masterkey/search/page/{{n}}/?search_query={{query}}" style="color:white;">{{n}}</a></li>
-        {% else %}
-        <li class="waves effect purple darken-4"><a href="/masterkey/page/{{n}}" style="color:white;">{{n}}</a></li>
-        {% endif %}
-        {% else %}
-        {% if query %}
-        <li class="waves-effect purple darken-4"><a href="/masterkey/search/page/{{n}}/?search_query={{query}}" style="color:white;">{{n}}</a></li>
-        {% else %}
-        <li class="waves-effect purple darken-4"><a href="/masterkey/page/{{n}}" style="color:white;">{{n}}</a></li>
-        {% endif %}
-        {% endif %}
-        {% endfor %}
-
+        <li class="active purple darken-4"><a href="#">{{current_page}}</a></li>
+       
         {% if current_page == num_pages %}
         <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
         {% else %}
-        <li><a href="#/page{{next}}"><i class="material-icons">chevron_right</i></a></li>
+        <li><a href="/masterkey/page/{{next}}"><i class="material-icons white-text">chevron_right</i></a></li>
         {% endif %}
+      {% endif %}
+
       </ul>
       </div>
         <div class="fixed-action-btn">
@@ -89,19 +84,19 @@
      </div>
     
      <div class="row">
-        <div class ="modal" id="new_key" style="max-height: 100%;border-radius: 25px; height: 65vh;">
+        <div class ="modal grey darken-3 white-text" id="new_key">
             <div class ="modal-content" id="content">
               <h6 style="font-weight: bold;"> Add Key </h6>
-              <form id="newKey" class="col s12 m12" method="POST" action="/masterkey/key?callback=key" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
+              <form id="newKey" class="col s12 m12" method="POST" action="/masterkey/key?callback=key" autocomplete="off">
                 {{keys.csrf_token}}
                 <div class="input-field col s12 m12">  
                   <div class="col s6">
                     <p>Key ID</p>
-                    {{ keys.key_id(size=20, class="validate")}}
+                    {{ keys.key_id(size=20, class="validate white-text")}}
                   </div>  
                   <div class="col s6">
                     <p>MasterKey ID</p>
-                    {{ keys.masterkey_id(size=20, class="validate",id="m_key")}}
+                    {{ keys.masterkey_id(size=20, class="validate white-text",id="m_key")}}
                   </div> 
                  </div> 
                  
@@ -117,7 +112,7 @@
                   </div>  
                   <div class="col s6">
                     <p>Date Added</p>
-                    {{ keys.date_added(size=20, class="datepicker")}}
+                    {{ keys.date_added(size=20, class="datepicker white-text")}}
                   </div> 
                  </div> 
                  <div class="input-field col s8 m8 offset-m4" style="display:inline;">
@@ -127,10 +122,10 @@
               </form>
               </div>
               </div>
-              <div class="modal" id="delete_key" style="max-height: 100%;border-radius: 25px; height: 35vh;">
+              <div class="modal grey darken-3" id="delete_key">
                 <div class="modal-content">
                   <h6 style="font-weight: bold;">Delete Locker </h6>
-                  <form id="deleteKey" class="col s12 m12" method="POST" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
+                  <form id="deleteKey" class="col s12 m12" method="POST">
                   {{ delete.csrf_token }}
                   <div class="input-field col s12 m12"> 
                     <h5 id="deleteTitle"></h5>
@@ -142,12 +137,12 @@
                 </form>
               </div>
             </div>
-            <div class ="modal" id="assign_Key" style="max-height: 100%;border-radius: 25px; height: 35vh;">
+            <div class ="modal grey darken-3 white-text" id="assign_Key">
               <div class ="modal-content" id="content">
                 <h6>Assign Key</h6>
-                <form id="assignKey" class="col s12 m12" method="POST" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
+                <form id="assignKey" class="col s12 m12" method="POST">
                   <div class="input-field col s8 m8 offset-m2">
-                    <input type="text" id="assignBox" name="assign">
+                    <input type="text" class="white-text" id="assignBox" name="assign">
                   </div>                  
                   <div class="input-field col s8 m8 offset-m2" style="display:inline;">
                     <input type="submit" value="Assign" class="right purple darken-4 waves-light btn">
@@ -156,19 +151,19 @@
                 </form>
                 </div>
             </div>
-            <div class ="modal" id="edit_key" style="max-height: 100%;border-radius: 25px; height: 65vh;">
+            <div class ="modal grey darken-3 white-text" id="edit_key">
               <div class ="modal-content" id="content">
                 <h6 style="font-weight: bold;"> Edit Key </h6>
-                <form id="editKey" class="col s12 m12" method="POST" action="/key" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
+                <form id="editKey" class="col s12 m12" method="POST" action="/key" autocapitalize="off">
                   {{keys.csrf_token}}
                   <div class="input-field col s12 m12">  
                     <div class="col s6">
                       <p>Key ID</p>
-                      {{ keys.key_id(size=20, class="validate", id='u_key_id')}}
+                      {{ keys.key_id(size=20, class="validate white-text", id='u_key_id')}}
                     </div>  
                     <div class="col s6">
                       <p>MasterKey ID</p>
-                      {{ keys.masterkey_id(size=20, class="validate",id="u_m_key")}}
+                      {{ keys.masterkey_id(size=20, class="validate white-text",id="u_m_key")}}
                     </div> 
                    </div> 
                    
@@ -184,7 +179,7 @@
                     </div>  
                     <div class="col s6">
                       <p>Date Added</p>
-                      {{ keys.date_added(size=20, class="datepicker",id='u_date')}}
+                      {{ keys.date_added(size=20, class="datepicker white-text",id='u_date')}}
                     </div> 
                    </div> 
                    <div class="input-field col s8 m8 offset-m4" style="display:inline;">

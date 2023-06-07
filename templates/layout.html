@@ -6,29 +6,40 @@
      <!--Import Google Icon Font-->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!-- Compiled and minified CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='materialize.css') }}">
     <!--Let browser know website is optimized for mobile-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>{% block title %}{% endblock %}</title>
   </head>
-    <nav class="sidenav-trigger purple darken-4" data-target="slide-out" >
+  <nav class="grey darken-4">
     <div class="nav-wrapper">
       <ul>
-        <li><a href="#" ><i class="material-icons  white-text">menu</i></a></li>
-        <li><a href="#" class=" white-text">{% block page %} {% endblock %}</a></li>
+        <li><a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons white-text">menu</i></a></li>
       </ul>
     </div>
-  </nav>  
+  </nav> 
+
+ 
  
   <body style="display: flexbox; overflow-y: hidden;">
     <ul id="slide-out" class="sidenav sidenav-fixed purple darken-4">
-      <li><a class= "white-text" href="/locker" ><i class="material-icons white-text">assignment</i><h7>Lockers</h7></a></li>
+      <li>
+          <ul class="collapsible">
+          <li><a class="white-text collapsible-header"><i class="material-icons white-text">key</i>Key Management</a>
+          <div class="collapsible-body grey darken-4">
+            <ul>
+            <li><a class="white-text" href="/masterkey"><h7>Master Key</h7></a></li>
+            <li><a class="white-text" href="/key"><h7>Key</h7></a></li>
+            </ul>
+          </div>
+        </li>
+        </ul>
+      </li>
       <li><a class="white-text" href="/area"><i class="material-icons white-text">add_location</i><h7>Area</h7></a></li>
+      <li><a class= "white-text" href="/locker" ><i class="material-icons white-text">assignment</i><h7>Lockers</h7></a></li>
       <li><a class="white-text" href="/rentType"><i class="material-icons white-text">attach_money</i><h7>Pricing</h7></a></li>
       <li ><a class="white-text" href="/student"><i class="material-icons white-text">person</i><h7></h7>Student</a></li>
       <li><a class="white-text" href="/transactionLog"><i class="material-icons white-text">book</i><h7>Transaction Log</h7></a></li>
-      <li><a class="white-text" href="/masterkey"><i class="material-icons white-text">key</i><h7>Master Key</h7></a></li>
-      <li><a class="white-text" href="/key"><i class="material-icons white-text">list</i><h7>Key</h7></a></li>
       <li><a class="white-text" href="/export"><i class="material-icons white-text">cloud_download</i><h7>Import/Export</h7></a></li>
       <li><a class="white-text" href="/report"><i class="material-icons white-text">person</i><h7>Reports</h7></a></li>
       <li><a class="white-text" href="/"><i class="material-icons white-text">exit_to_app</i><h7>Logout</h7></a></li>
@@ -44,7 +55,7 @@
       {% endwith %}
 
    
-      <div class="white" > 
+      <div class="grey darken-4 white-text" >
         {% block content %}{% endblock %}
       </div>
 
@@ -59,6 +70,8 @@
       var sideElems = document.querySelectorAll('.sidenav');
       var sideInstances = M.Sidenav.init(sideElems);
       var elemsBtn = document.querySelectorAll('.dropdown-trigger');
+      var elemsColl = document.querySelectorAll('.collapsible');
+      var instancesColl = M.Collapsible.init(elemsColl);
       var elemsFxBtn = document.querySelectorAll('.fixed-action-btn');
       var instancesFxBtn = M.FloatingActionButton.init(elemsFxBtn);
       var instancesBtn = M.Dropdown.init(elemsBtn,{
@@ -73,10 +86,21 @@
         M.toast({html:message})
       }
 
+      search_execute = document.getElementById('submit_search')
+   search_execute.addEventListener('click', function() {
+    s_form = document.getElementById('search_form')
+    s_form.submit()
+   })
+
     </script>
     <style>
       .indentMenu {
         text-indent: 35px;
+      }
+      .modal{
+        border-radius: 25px;
+        overflow-y: hidden;
+        max-height: 100%;
       }
 
       #pag{
@@ -92,7 +116,12 @@
       body{
         overflow: hidden;
       }
+      table{
+        border-spacing: 0 7.5px;
+        border-collapse: separate;
+      }
 
+      
     @media only screen and (max-width : 992px) {
       header, body, footer {
         padding-left: 0;

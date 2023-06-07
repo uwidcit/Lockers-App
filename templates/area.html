@@ -6,20 +6,19 @@
 
 {% block content %}
 <div class="row">
+  <div class="row">
   <div class="col s12 m8 offset-m7">
-    <form method="get" action="/area/search">
+    <form action="/area/search" id="search_form">
       <div class="input-field col s12 m4 offset-m1">
-        <div class = "row">
-          <input type="search" name="search_query" placeholder="Enter search query" required/>
-         </div>
-      </div>
-
-      <div class="input-field col s2 m2" style="display:inline; padding-left: 0px;">
-        <button type="submit" style="padding: 9px 21.5px 37px 21.5px" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons" style="padding: 5px; font-size: 2rem; color:white; ">search</i></button>
+       <div class = "search-wrapper">
+        <input type="search" name="search_query" placeholder="Enter search query" required/>
+        <i class="material-icons" style="color:#4a148c; top:1vh; " id="submit_search">search</i>
+       </div>
       </div>
     </form>
   </div>
-   <div class="col s12 m10 offset-m1" style="height:60vh;">
+</div>
+   <div class="col s12 m10 offset-m1" style="height:80vh;">
         <table>
         <tr>
             <th>ID</th>
@@ -45,30 +44,36 @@
         {% endif %}
       </table>
       </div>
-      <div class="col m5 offset-m5" id="pag">
+      <div class="col m12 center-align" id="pag">
         <ul class="pagination">
-
+          {% if query %}
+          {% if current_page == 1  %}
+            <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+            {% else %}
+            <li><a href="/area/search/page/{{previous}}/?search_query={{query}}"><i class="material-icons white-text">chevron_left</i></a></li>
+            {% endif %}
+            <li class="active purple darken-4">{{current_page}}</li>
+            {% if current_page == num_pages %}
+            <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+            {% else %}
+            <li><a href="/area/search/page/{{next}}/?search_query={{query}}"><i class="material-icons white-text">chevron_right</i></a></li>
+            {% endif %}
+        {% else %}
         {% if current_page == 1  %}
         <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
         {% else %}
-        <li><a href="/area/page/{{previous}}"><i class="material-icons">chevron_left</i></a></li>
+        <li><a href="/area/page/{{previous}}"><i class="material-icons white-text">chevron_left</i></a></li>
         {% endif %}
 
-        {% for n in range(1,num_pages + 1) %}
-
-        {% if n == current_page %}
-        <li class="active purple darken-4"><a href="/area/page/{{n}}">{{n}}</a></li>
-        {% else %}
-        <li class="purple darken-4 waves-effect"><a href="/area/page/{{n}}">{{n}}</a></li>
-        {% endif %}
-
-        {% endfor %}
-
+        <li class="active purple darken-4"><a href="#">{{current_page}}</a></li>
+       
         {% if current_page == num_pages %}
         <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
         {% else %}
-        <li><a href="/area/page/{{next}}"><i class="material-icons">chevron_right</i></a></li>
+        <li><a href="/area/page/{{next}}"><i class="material-icons white-text">chevron_right</i></a></li>
         {% endif %}
+      {% endif %}
+
       </ul>
       </div>
      
@@ -76,10 +81,10 @@
           <a class="btn-floating btn-large waves-effect waves-light purple darken-4 modal-trigger" href="#new_area"><i class="material-icons">add </i></a>
         </div>
 
-      <div class="modal" id="new_area" style="max-height: 100%;border-radius: 25px; height: 60vh;">
+      <div class="modal grey darken-3 white-text" id="new_area">
         <div class ="modal-content" id="content">
           <h6 style="font-weight: bold;">New Area </h6>
-          <form id="AddArea" class="col s12 m12" method="POST" action="/area" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
+          <form id="AddArea" class="col s12 m12" method="POST" action="/area">
             {{ form.csrf_token }}
             <div class="input-field col s12 m10"> 
               <p>Description</p>
@@ -104,10 +109,10 @@
         </div>
         </div>
 
-        <div class="modal" id="edit_area" style="max-height: 100%;border-radius: 25px; height: 60vh;">
+        <div class="modal grey darken-3 white-text" id="edit_area">
           <div class ="modal-content">
             <h6 style="font-weight: bold;">  Edit Area </h6>
-            <form id="editArea" class="col s12 m12" method="POST" action="/area" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
+            <form id="editArea" class="col s12 m12" method="POST" action="/area">
               {{ form.csrf_token }}
               <div class="input-field col s12 m10"> 
                 <p>Description</p>
@@ -132,10 +137,10 @@
           </div>
         </div>
 
-          <div class="modal" id="delete_area" style="max-height: 100%;border-radius: 25px; height: 40vh;">
+          <div class="modal grey darken-3 white-text" id="delete_area">
             <div class="modal-content">
               <h6 style="font-weight: bold;">Delete Area </h6>
-               <form id="deleteArea" class="col s12 m12" method="POST" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
+               <form id="deleteArea" class="col s12 m12" method="POST">
                 {{ delete.csrf_token }}
                 <div class="input-field col s12 m12"> 
                   <h5 id="deleteTitle"></h5>

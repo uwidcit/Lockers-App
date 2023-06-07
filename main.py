@@ -1,4 +1,5 @@
 import os,sys
+from os import path
 from flask import Flask
 from flask_login import LoginManager, current_user
 from flask_uploads import DOCUMENTS, IMAGES, TEXT, UploadSet, configure_uploads
@@ -54,8 +55,7 @@ def loadConfig(app, config):
     if app.config['ENV'] == "DEVELOPMENT":
         app.config.from_object('config')
         app.config['GIT_ENV'] = ""
-        print(os.path.join(app.root_path,'test_database.db'))
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.root_path,'test_database.db')
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(os.environ.get('LOCALAPPDATA'),'test_database.db')
     else:
         app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
         app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
