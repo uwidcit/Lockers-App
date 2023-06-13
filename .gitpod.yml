@@ -4,7 +4,7 @@ image:
 # List the start up tasks. Learn more: https://www.gitpod.io/docs/configure/workspaces/tasks
 tasks:
   - name: Init workspace
-    init: pip install -r requirements.txt' # runs during prebuild => https://www.gitpod.io/docs/configure/projects/prebuilds
+  - init: pip install -r requirements.txt # runs during prebuild => https://www.gitpod.io/docs/configure/projects/prebuilds
     command: python main.py
 
 # List the ports to expose. Learn more: https://www.gitpod.io/docs/configure/workspaces/ports
