@@ -81,27 +81,51 @@
           <a class="btn-floating btn-large waves-effect waves-light purple darken-4 modal-trigger" href="#new_area"><i class="material-icons">add </i></a>
         </div>
 
+      
+      <div class="modal grey darken-3" id="map_modal">
+           <div class="modal-content">
+            <div id="map" style="height:50vh;width: 50vw;"></div>
+            <div class="col s12">
+              <div class="col s6">
+                <p id="lat_stat"></p>
+              </div>
+              <div class="col s6">
+                <p id="long_stat"></p>
+              </div>
+            </div>
+            <a href="#" class=" purple darken-4 waves-light btn modal-close">Confirm</a>
+            <a href="#" class=" grey darken-4 waves-light btn modal-close">Close</a>
+          </div>
+            
+            
+        </div>    
+     
+
       <div class="modal grey darken-3 white-text" id="new_area">
         <div class ="modal-content" id="content">
           <h6 style="font-weight: bold;">New Area </h6>
-          <form id="AddArea" class="col s12 m12" method="POST" action="/area">
+          <form id="AddArea" class="col s12 m12" method="POST" action="/area" autocomplete="off">
             {{ form.csrf_token }}
-            <div class="input-field col s12 m10"> 
+            <div class="input-field col s10 m10"> 
               <p>Description</p>
-              {{ form.description(size=20, class="validate") }}
+              {{ form.description(size=20, class="validate white-text") }}
             </div>
   
              <div class="input-field col s6 m6"> 
               <p>Longitude</p>
-               {{ form.longitude(size=20, class="validate") }}
+               {{ form.longitude(size=20, class="validate white-text") }}
              </div>   
   
-             <div class="input-field col s6 m6 "> 
+             <div class="input-field col s6 m6"> 
               <p>Latitude</p>
-               {{ form.latitude(size=20, class="validate") }}
-             </div> 
-             
-             <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+               {{ form.latitude(size=20, class="validate white-text") }}
+             </div>
+
+             <div class="input-field col s3 m3">
+              <a class="purple darken-4 waves-light btn" href="#map_modal" onclick="openMap('latitude','longitude')"><i class="material-icons white-text">place</i></a>
+             </div>
+
+             <div class="input-field col s6 m6 offset-m4" style="display:inline;">
               {{form.submit(class=" right purple darken-4 waves-light btn")}}
               <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
             </div> 
@@ -112,22 +136,26 @@
         <div class="modal grey darken-3 white-text" id="edit_area">
           <div class ="modal-content">
             <h6 style="font-weight: bold;">  Edit Area </h6>
-            <form id="editArea" class="col s12 m12" method="POST" action="/area">
+            <form id="editArea" class="col s12 m12" method="POST" action="/area" autocomplete="off">
               {{ form.csrf_token }}
               <div class="input-field col s12 m10"> 
                 <p>Description</p>
-                {{ form.description(size=20, class="validate" ,id="u_description") }}
+                {{ form.description(size=20, class="validate white-text" ,id="u_description") }}
               </div>
     
                <div class="input-field col s6 m6"> 
                 <p>Longitude</p>
-                 {{ form.longitude(size=20, class="validate", id="u_long") }}
+                 {{ form.longitude(size=20, class="validate white-text", id="u_long") }}
                </div>   
     
                <div class="input-field col s6 m6 "> 
                 <p>Latitude</p>
-                 {{ form.latitude(size=20, class="validate", id="u_lat")  }}
-               </div> 
+                 {{ form.latitude(size=20, class="validate white-text", id="u_lat")  }}
+               </div>
+
+               <div class="input-field col s3 m3">
+                <a class="purple darken-4 waves-light btn" href="#map_modal" onclick="openMap('u_lat','u_long')"><i class="material-icons white-text">place</i></a>
+               </div>
                
                <div class="input-field col s8 m8 offset-m4" style="display:inline;">
                 {{form.submit(id="u_submit",class=" right purple darken-4 waves-light btn")}}
@@ -155,7 +183,7 @@
 
       </div>
      
-       
+      <script src="/static/map_init.js"></script>
       <script>
 
     function editMode(area){
@@ -175,6 +203,13 @@
       instance = M.Modal.getInstance(elem)
       instance.open()
     }
+    function openMap(input_field_lat,input_field_long){ 
+      elem = document.getElementById('map_modal');
+      setModal(input_field_lat,input_field_long)
+      instance = M.Modal.getInstance(elem)
+      instance.open();
+      map.invalidateSize();
+    }
 
     function removeMode(area){
     form = document.getElementById('deleteArea')
@@ -185,7 +220,6 @@
     elem = document.getElementById('delete_area');
     instance = M.Modal.getInstance(elem)
     instance.open()
-
   }
       </script>
 

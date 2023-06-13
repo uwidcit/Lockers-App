@@ -30,7 +30,7 @@
     
             {% if lockerData %}
             {% for l in lockerData %}
-            <tr class="deep-purple-text">
+            <tr class="white-text">
                 <td><a href="/locker/{{l.locker_code}}">{{l.locker_code}}</a></td>
                 <td>{{l.locker_type}}</td>
                 <td>{{l.status}}</td>
@@ -39,19 +39,19 @@
                 <div style=" position: relative;display: inline-flex;">
                 <td>
                     <a class="dropdown-trigger btn-floating purple darken-4 waves-effect" data-target="{{l.locker_code}}_dropdown1"><i class="large material-icons">list</i></a>
-                    <ul id='{{l.locker_code}}_dropdown1' class='dropdown-content'>
+                    <ul id='{{l.locker_code}}_dropdown1' class='dropdown-content purple darken-4 white-text'>
                       {% if l.status == "Free" %}
-                      <li><a href="/locker/rent/{{l.locker_code}}/student"><i class="material-icons left">check</i>Rent</a></li>
+                      <li><a href="/locker/rent/{{l.locker_code}}/student" class="white-text"><i class="material-icons left white-text">check</i>Rent</a></li>
                       {% elif l.status == "Rented" %}
-                      <li><a href="#" onclick="loadComments({{l.current_rental.id}},1)"><i class="material-icons left">check</i>Note</a></li>
-                      <li><a href="#" onclick="releaseMode({{l.current_rental}})"><i class="material-icons left">close</i>Release</a></li>
+                      <li><a href="#" onclick="loadComments({{l.current_rental.id}},1)" class="white-text"><i class="material-icons left white-text">check</i>Note</a></li>
+                      <li><a href="#" onclick="releaseMode({{l.current_rental}})" class="white-text"><i class="material-icons left white-text">close</i>Release</a></li>
                       {% elif l.status == "Not Verified" %}
-                      <li><a href="#" onclick="loadComments({{l.current_rental.id}},1)"><i class="material-icons left">check</i>Note</a></li>
-                      <li><a href="/rent/{{l.current_rental.id}}/release/verify"><i class="material-icons left">verified_user</i>Verify</a></li>
+                      <li><a href="#" onclick="loadComments({{l.current_rental.id}},1)" class="white-text"><i class="material-icons left white-text">check</i>Note</a></li>
+                      <li><a href="/rent/{{l.current_rental.id}}/release/verify" class="white-text"><i class="material-icons left white-text">verified_user</i>Verify</a></li>
                       {% endif %}
-                      <li><a href="#edit" onclick="editMode({{l}})"><i class="material-icons left">edit</i>Edit</a></li>
-                      <li><a href="#delete" onclick="removeMode({{l}})"><i class="material-icons left">delete</i>Delete</a></li>
-                      <li><a href="#delete" onclick="OpenswapKey('{{l.locker_code}}')"><i class="material-icons left">swap_horiz</i>Swap</a></li>
+                      <li><a href="#edit" onclick="editMode({{l}})" class="white-text"><i class="material-icons left white-text">edit</i>Edit</a></li>
+                      <li><a href="#delete" onclick="removeMode({{l}})" class="white-text"><i class="material-icons left white-text">delete</i>Delete</a></li>
+                      <li><a href="#delete" onclick="OpenswapKey('{{l.locker_code}}')" class="white-text"><i class="material-icons left white-text">swap_horiz</i>Swap</a></li>
                       </ul>
                     </div>
                   </td>

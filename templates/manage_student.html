@@ -122,18 +122,21 @@
               <p>Email</p>
                {{ form.email(size=20, class="validate white-text") }}
              </div> 
+
+             <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+
+              <div class="col s4 offset-s4">
+                 <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+              </div>
+       
+              <div class="col s4">
+                {{form.submit(class=" right purple darken-4 waves-light btn", value="Add Student")}}
+              </div>
+         </div>
+        </form>
     </div>
-    <div class="modal-footer grey darken-3">
-      <div class="input-field col s8 m8 offset-m4" style="display:inline;">
-
-       <div class="col s4 offset-s4">
-          <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
-       </div>
-
-       <div class="col s4">
-         {{form.submit(class=" right purple darken-4 waves-light btn", value="Add Student")}}
-       </div>
-  </div>
+    </div>
+     
 
   <div class="modal grey darken-3" id="edit_student">
     <div class="modal-content">
@@ -142,31 +145,31 @@
         {{ form.csrf_token }}
         <div class="input-field col s12 m12"> 
          <p>Student ID</p>           
-          {{ form.student_id(size=20, class="validate", id="u_sid") }}
+          {{ form.student_id(size=20, class="validate white-text", id="u_sid") }}
         </div>  
         <div class="input-field col s12 m4"> 
           <p>First Name</p>
-           {{ form.f_name(size=20, class="validate", id="u_fname") }}
+           {{ form.f_name(size=20, class="validate white-text", id="u_fname") }}
          </div> 
 
          <div class="input-field col s12 m4"> 
           <p>Last Name</p>
-           {{ form.l_name(size=20, class="validate", id="u_lname") }}
+           {{ form.l_name(size=20, class="validate white-text", id="u_lname") }}
          </div>
 
          <div class="input-field col s12 m3"> 
           <p>Faculty</p>
-           {{ form.faculty(size=20, class="validate", id="u_fac") }}
+           {{ form.faculty(size=20, class="validate white-text", id="u_fac") }}
          </div> 
 
          <div class="input-field col s12 m6"> 
           <p>Phone Number</p>
-           {{ form.p_no(size=20, class="validate", id="u_phno") }}
+           {{ form.p_no(size=20, class="validate white-text", id="u_phno") }}
          </div> 
 
          <div class="input-field col s12 m6"> 
           <p>Email</p>
-           {{ form.email(size=20, class="validate", id="u_email") }}
+           {{ form.email(size=20, class="validate white-text", id="u_email") }}
          </div> 
          <div class="input-field col s8 m8" style="display:inline;">
           {{form.submit(id="u_submit",class=" right purple darken-4 waves-light btn")}}

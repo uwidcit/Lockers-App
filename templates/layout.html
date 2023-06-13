@@ -1,10 +1,12 @@
 <!doctype html>
 <html>
   <head>
-  
+    <link rel="stylesheet" href="{{ url_for('static', filename='leaflet/leaflet.css') }}">
+    <script src="{{ url_for('static', filename='leaflet/leaflet.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
      <!--Import Google Icon Font-->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
     <!-- Compiled and minified CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='materialize.css') }}">
     <!--Let browser know website is optimized for mobile-->
@@ -62,7 +64,9 @@
     </div>
     
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="{{ url_for('static', filename='materialize.js') }}"></script>
+    
+
     <script src="/static/util.js"></script>
     <script src = "/static/keep_alive.js"></script>
     <script type="text/javascript">
@@ -130,6 +134,10 @@
           padding-right: 0;
         }
     }
+    .dropdown-content li:hover, .dropdown-content li.active{
+      background-color: #424242;
+    }
     </style>
+    
   </body>
 </html>
