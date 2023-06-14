@@ -9,10 +9,10 @@
   <div class="row">
     <div class="col s12 m8 offset-m7">
       <form action="/key/search" id="search_form">
-        <div class="input-field col s12 m4 offset-m1">
+        <div class="input-field col s12 m5 offset-m1">
          <div class = "search-wrapper">
           <input type="search" name="search_query" placeholder="Enter search query" required/>
-          <i class="material-icons" style="color:#4a148c; top:1vh; " id="submit_search">search</i>
+          <i class="material-icons white-text" style="color:#4a148c; top:1vh; " id="submit_search">search</i>
          </div>
         </div>
       </form>
@@ -31,7 +31,7 @@
 
         {% if keyData %}
         {% for k in keyData %}
-        <tr>
+        <tr class="purple darken-4">
             <td><a href="/key/{{k.key_id}}">{{k.key_id}}</a></td>
             <td><a href="/masterkey/{{k.masterkey_id}}">{{k.masterkey_id}}</a></a></td>
             <td>{{k.key_status}} </td>

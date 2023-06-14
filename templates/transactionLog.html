@@ -10,10 +10,10 @@
     <div class="row">
     <div class="col s12 m8 offset-m7">
       <form action="/transactionLog/search" id="search_form">
-        <div class="input-field col s12 m4 offset-m1">
+        <div class="input-field col s12 m5 offset-m1">
          <div class = "search-wrapper">
           <input type="search" name="search_query" placeholder="Enter search query" required/>
-          <i class="material-icons" style="color:#4a148c; top:1vh; " id="submit_search">search</i>
+          <i class="material-icons white-text" style="top:1vh; " id="submit_search">search</i>
          </div>
         </div>
       </form>
@@ -32,7 +32,7 @@
       </tr>
       {% if transaction_data %}
       {% for t in transaction_data %}
-          <tr>
+          <tr class="purple darken-4">
               <td>{{t.id}}</td>
               <td>{{t.rent_id}}</td>
               <td>{{t.currency}}</td>
