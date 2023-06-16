@@ -2,6 +2,7 @@ from flask import Response, Blueprint, send_file, redirect, render_template,json
 from controllers import get_current_user
 report_views = Blueprint('report_views', __name__, template_folder='../templates')
 from fpdf import FPDF
+from flask_login import login_required
 
 from controllers import (
     get_all_lockers,
@@ -10,10 +11,12 @@ from controllers import (
 )
 
 @report_views.route('/report', methods=['GET'])
+@login_required
 def report_page():
     return render_template('report.html')
 
 @report_views.route('/report/transactions', methods=['GET'])
+@login_required
 def transactions_report():
     transactions_data=get_all_transactions()
     pdf = FPDF()
@@ -45,6 +48,7 @@ def transactions_report():
 
 
 @report_views.route('/report/lockers', methods=['GET'])
+@login_required
 def lockers_report():
     lockers_data=get_all_lockers()
     pdf = FPDF()
@@ -70,6 +74,7 @@ def lockers_report():
 
 
 @report_views.route('/report/keys', methods=['GET'])
+@login_required
 def keys_report():
     keys_data=get_all_keys(6,1)
     pdf = FPDF()

@@ -9,12 +9,12 @@ from werkzeug.utils import secure_filename
 from werkzeug.datastructures import  FileStorage
 from datetime import timedelta
 
-
-
 from database import create_db, get_migrate
 
+
 from controllers import (
-    setup_jwt
+    setup_jwt,
+    setup_flask_login
 )
 
 from views import (
@@ -80,6 +80,7 @@ def create_app(config={}):
     add_views(app, views)
     create_db(app)
     setup_jwt(app)
+    setup_flask_login(app)
     app.app_context().push()
     return app
 
@@ -105,7 +106,6 @@ if __name__ == "__main__":
         FlaskUI(app=app,width=1366, height=768, server=start_flask,server_kwargs={
             "app": app,
             "port": 3000,
-            "threaded": True,
         }).run()
 
         

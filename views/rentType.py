@@ -1,5 +1,6 @@
 from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify, url_for,flash
 from datetime import datetime
+from flask_login import login_required
 
 from controllers import (
     get_All_rentType,
@@ -18,6 +19,7 @@ rentType_views = Blueprint('rentType_views', __name__, template_folder='../templ
 
 
 @rentType_views.route('/rentType',methods=['GET'])
+@login_required
 def render_rentType_all():
     data = get_rentType_by_offset(15,1)
     num_pages = data['num_pages']
@@ -26,6 +28,7 @@ def render_rentType_all():
     return render_template('rentType_manage.html', results=data['data'],form = RentTypeAdd(),search=SearchForm(),delete= ConfirmDelete(), previous= previous, next= next, current_page=1,num_pages=num_pages)
 
 @rentType_views.route('/rentType/page/<offset>',methods=['GET'])
+@login_required
 def render_rentType_all_multi(offset):
     int(offset)
     data = get_rentType_by_offset(15,offset)
@@ -43,6 +46,7 @@ def render_rentType_all_multi(offset):
     return render_template('rentType_manage.html', results=data['data'],form = RentTypeAdd(),search=SearchForm(),delete= ConfirmDelete(), previous= previous, next= next, current_page=offset)
 
 @rentType_views.route('/rentType',methods=['POST'])
+@login_required
 def create_new_rentType():
     form = RentTypeAdd()
 
@@ -63,6 +67,7 @@ def create_new_rentType():
         
 
 @rentType_views.route('/rentType/<id>/delete', methods=['GET'])
+@login_required
 def render_confirm_delete(id):
     rentType = get_rentType_by_id(id)
 
@@ -73,6 +78,7 @@ def render_confirm_delete(id):
     return render_template('delete_rentType.html',rentType = rentType, form = ConfirmDelete() )
 
 @rentType_views.route('/rentType/<id>/confirmed', methods=['POST'])
+@login_required
 def remove_area(id):
     form = ConfirmDelete()
     if form.validate_on_submit:
@@ -85,6 +91,7 @@ def remove_area(id):
     return redirect(url_for('.render_rentType_all'))
 
 @rentType_views.route('/rentType/<id>/edit', methods=['GET'])
+@login_required
 def render_edit_pade(id):
     rentType = get_rentType_by_id(id)
 
@@ -100,6 +107,7 @@ def render_edit_pade(id):
     return render_template('rentType.html',updateMode = True, id= id, form = form)
 
 @rentType_views.route('/rentType/<id>/update', methods=['POST'])
+@login_required
 def update_rentType(id):
     form = RentTypeAdd()
     if form.validate_on_submit:
@@ -136,6 +144,7 @@ def update_rentType(id):
     return redirect(url_for('.render_rentType_all'))
 
 @rentType_views.route('/rentType/search',methods=['GET'])
+@login_required
 def search_rentTypes():
     previous = 1
     next = previous + 1
@@ -151,6 +160,7 @@ def search_rentTypes():
     return redirect(url_for('.render_rentType_all'))
 
 @rentType_views.route('/rentType/search/page/<offset>/',methods=['GET'])
+@login_required
 def search_rentTypes_multi(offset):
     offset = int(offset)
 

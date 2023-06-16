@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, jsonify, request, send_from_directory
 from flask_jwt import jwt_required
+from flask_login import login_required
 
 
 from controllers import (
@@ -20,6 +21,7 @@ def upload_file_route():
     return []
 
 @user_views.route('/users', methods=['GET'])
+@login_required
 def get_user_page():
     users = get_all_users()
     return render_template('users.html', users=users)

@@ -1,5 +1,6 @@
 from flask import Blueprint, redirect, render_template, request, url_for, flash
 from datetime import datetime
+from flask_login import login_required
 
 from controllers import(
     get_all_keys,
@@ -19,6 +20,7 @@ from views.forms import SearchForm, ConfirmDelete, KeyAdd
 key_views = Blueprint('key_views',__name__,template_folder='../templates')
 
 @key_views.route('/key',methods=['GET'])
+@login_required
 def render_keys_page():
     keyData = get_all_keys(6,1)
     previous = 1
@@ -30,6 +32,7 @@ def render_keys_page():
     return render_template('manage_keys.html', current_page=1, masterkeys = get_all_masterkeys_no_offset(), lockers= get_all_locker_names(), previous=previous, next = next, search = search, keyData = keyData['data'], num_pages=keyData["num_pages"], delete = ConfirmDelete(), keys = keys)
 
 @key_views.route('/key/page/<offset>',methods=['GET'])
+@login_required
 def render_keys_page_multi(offset):
     offset = int(offset)
     keyData = get_all_keys(6,offset)
@@ -50,6 +53,7 @@ def render_keys_page_multi(offset):
     return render_template('manage_keys.html', current_page=1, masterkeys = get_all_masterkeys_no_offset(), lockers= get_all_locker_names(), previous=previous, next = next, search = search, keyData = keyData['data'], num_pages=keyData["num_pages"], delete = ConfirmDelete(), keys = keys)
 
 @key_views.route('/key/<id>/assign',methods=['POST'])
+@login_required
 def assign_key_locker(id):
     form = KeyAdd()
     if form.validate_on_submit:
@@ -71,6 +75,7 @@ def assign_key_locker(id):
         return redirect(url)
     
 @key_views.route('/key/<id>/update',methods=['POST'])
+@login_required
 def update_key_data(id):
     form = KeyAdd()
     if form.validate_on_submit:
@@ -104,6 +109,7 @@ def update_key_data(id):
     return redirect(url)
 
 @key_views.route('/key/<id>',methods=['GET'])
+@login_required
 def render_keyid_page(id):
     keyData = get_key_by_id(id)
     if not keyData:
