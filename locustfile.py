@@ -7,7 +7,21 @@ class QuickstartUser(HttpUser):
     @task(5)
     def testLocker(self):
         self.client.get("/locker")
-    
+        payload = {
+            "locker_code": "TEST",
+            "locker_type": "Small",
+            "status": "Free",
+            "key": "PASS",
+            "area": "1"
+        }
+
+        headers = {"Content-Type": "form-data;"}
+        response = self.client.post("/locker", data=payload, headers = headers)
+        if response.status_code == 200:
+            print("Form submitted successfully")
+        else:
+            print("Form submission failed")
+        
     @task(1)
     def testArea(self):
         self.client.get("/area")
