@@ -1,4 +1,4 @@
-import time
+import time, uuid, random
 from locust import User, HttpUser, task, between
 
 class QuickstartUser(HttpUser):
@@ -8,15 +8,14 @@ class QuickstartUser(HttpUser):
     def testLocker(self):
         self.client.get("/locker")
         payload = {
-            "locker_code": "TEST",
+            "locker_code": str(uuid.uuid4()).split("-")[0]+"TEST4",
             "locker_type": "Small",
             "status": "Free",
             "key": "PASS",
             "area": "1"
         }
 
-        headers = {"Content-Type": "form-data;"}
-        response = self.client.post("/locker", data=payload, headers = headers)
+        response = self.client.post("/locker", data=payload)
         if response.status_code == 200:
             print("Form submitted successfully")
         else:
@@ -25,6 +24,17 @@ class QuickstartUser(HttpUser):
     @task(1)
     def testArea(self):
         self.client.get("/area")
+        payload = {
+            "description": "ENGEN",
+            "longitude": "10",
+            "latitude": "12"
+        }
+
+        response = self.client.post("/area", data=payload)
+        if response.status_code == 200:
+            print("Form submitted successfully")
+        else:
+            print("Form submission failed")
 
     @task(4)
     def testTransactionLog(self):
@@ -33,6 +43,20 @@ class QuickstartUser(HttpUser):
     @task(3)
     def testStudent(self):
         self.client.get("/student")
+        payload = {
+            "student_id": random.randint(10000000, 99999999),
+            "f_name": "Kristopher",
+            "l_name": "Bholai",
+            "faculty": "FST",
+            "p_no": "2927492",
+            "email": str(uuid.uuid4()).split("-")[0]+"kristopher.bholai@gmail.com"
+        }
+
+        response = self.client.post("/student", data=payload)
+        if response.status_code == 200:
+            print("Form submitted successfully")
+        else:
+            print("Form submission failed")
 
     @task(2)
     def testRentType(self):
