@@ -21,6 +21,7 @@
         <div class="col s12 m10 offset-m1" style="height:80vh;">
           <table>
             <tr>
+                <th></th>
                 <th>Locker Code</th>
                 <th>Locker Type </th>
                 <th>Status</th>
@@ -31,6 +32,10 @@
             {% if lockerData %}
             {% for l in lockerData %}
             <tr class="purple darken-4 white-text">
+                <td><label class = "col s2 center-align">
+                <input type="checkbox" name = "check" class="swapbox" value="{{l.locker_code}}">
+                <Span></Span>
+                </label></td>
                 <td><a href="/locker/{{l.locker_code}}">{{l.locker_code}}</a></td>
                 <td>{{l.locker_type}}</td>
                 <td>{{l.status}}</td>
@@ -619,7 +624,37 @@
     instance.open()
   }
 
-  
+
+  var arr = []
+  function addToList(locker_code, checkbox){
+    if (arr.length < 2){
+    arr.push(locker_code)
+    }
+    else{
+    checkbox.checked = false
+    displayMessage("Only two lockers can be selected")
+    
+    }
+}
+
+function removefromList(locker_code){
+    if (arr[0] == locker_code){
+    arr.shift()
+    }
+    else if (arr[1] == locker_code){
+        arr.pop()
+  }
+}
+check = document.getElementsByClassName("swapbox")
+for(let i=0; i<check.length; i++){
+    check[i].addEventListener("change",e=>{
+  if(e.target.checked)
+    addToList(e.target.value, e.target)
+  else
+    removefromList(e.target.value)
+    console.log(arr)
+    })
+}
 </script>
 
 {% endblock %}
