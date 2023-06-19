@@ -21,7 +21,7 @@
         <div class="col s12 m10 offset-m1" style="height:80vh;">
           <table>
             <tr>
-                <th></th>
+                <th id="submit_button_place"> </th>
                 <th>Locker Code</th>
                 <th>Locker Type </th>
                 <th>Status</th>
@@ -56,7 +56,6 @@
                       {% endif %}
                       <li><a href="#edit" onclick="editMode({{l}})" class="white-text"><i class="material-icons left white-text">edit</i>Edit</a></li>
                       <li><a href="#delete" onclick="removeMode({{l}})" class="white-text"><i class="material-icons left white-text">delete</i>Delete</a></li>
-                      <li><a href="#delete" onclick="OpenswapKey('{{l.locker_code}}')" class="white-text"><i class="material-icons left white-text">swap_horiz</i>Swap</a></li>
                       </ul>
                     </div>
                   </td>
@@ -74,19 +73,19 @@
           {% if current_page == 1  %}
             <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
             {% else %}
-            <li><a href="/locker/search/page/{{previous}}/?search_query={{query}}"><i class="material-icons white-text">chevron_left</i></a></li>
+            <li><a href="/locker/search/page/{{previous}}/?search_query={{query}}" id="previousPage"><i class="material-icons white-text">chevron_left</i></a></li>
             {% endif %}
             <li class="active purple darken-4">{{current_page}}</li>
             {% if current_page == num_pages %}
             <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
             {% else %}
-            <li><a href="/locker/search/page/{{next}}/?search_query={{query}}"><i class="material-icons white-text">chevron_right</i></a></li>
+            <li><a href="/locker/search/page/{{next}}/?search_query={{query}}" id="nextPage"><i class="material-icons white-text">chevron_right</i></a></li>
             {% endif %}
         {% else %}
         {% if current_page == 1  %}
         <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
         {% else %}
-        <li><a href="/locker/page/{{previous}}"><i class="material-icons white-text">chevron_left</i></a></li>
+        <li><a href="/locker/page/{{previous}}" id="previousPage"><i class="material-icons white-text">chevron_left</i></a></li>
         {% endif %}
 
         <li class="active purple darken-4"><a href="#">{{current_page}}</a></li>
@@ -94,7 +93,7 @@
         {% if current_page == num_pages %}
         <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
         {% else %}
-        <li><a href="/locker/page/{{next}}"><i class="material-icons white-text">chevron_right</i></a></li>
+        <li><a href="/locker/page/{{next}}" id="nextPage"><i class="material-icons white-text">chevron_right</i></a></li>
         {% endif %}
       {% endif %}
 
@@ -352,7 +351,7 @@
     <h6>Swap Key</h6>
     <form id="swapKey_form" class="col s12 m12" method="POST">
       <div class="input-field col s8 m8 offset-m2">
-        <input type="text" class = "white-text" name="locker_code2" id="locker_code2">
+        <p id="info"> </p>
       </div>                  
     
       <div class="modal-footer grey darken-3">
@@ -363,7 +362,7 @@
          </div>
 
          <div class="col s4">
-           {{form.submit(class=" right purple darken-4 waves-light btn", value="Assign")}}
+           {{form.submit(class=" right purple darken-4 waves-light btn", value="Swap")}}
          </div>
          
        
@@ -376,14 +375,21 @@
   </div>
 
  <script src="/static/autocomplete.js"></script>  
-
+ 
  <script>
-  autocomplete(document.getElementById('locker_code2'),{{locker_names | safe}})
   autocomplete(document.getElementById('key'),{{keys | safe}})
   autocomplete(document.getElementById('u_l_key'),{{keys | safe}})
 
   var num_pages_notes  = 0
   var current_page = 0
+  var previousElem = document.getElementById("previousPage")
+  var nextElem  = document.getElementById("nextPage")
+  var previousBaseURL;
+  var nextBaseURL;
+  if (previousElem)
+    previousBaseURL = previousElem.href
+  if (nextElem)
+    nextBaseURL = nextElem.href
 
   var form = document.getElementById('new_comment_form')
   form.addEventListener('submit', (e)=>{
@@ -618,8 +624,11 @@
 
   function OpenswapKey(locker_id){
     form = document.getElementById("swapKey_form")
-    form.action = "/locker/" + locker_id + "/key/swap"
+    form.innerHTML += '<input type="hidden" name="locker_code2" value= ' + arr[1] + '>'  
+    form.action = "/locker/" + arr[0] + "/key/swap"
     elem = document.getElementById('swap_key');
+    modalElem = document.getElementById('info');
+    modalElem.innerHTML = "Are you sure you want to swap " + arr[0] + " with " + arr[1]
     instance = M.Modal.getInstance(elem)
     instance.open()
   }
@@ -628,12 +637,32 @@
   var arr = []
   function addToList(locker_code, checkbox){
     if (arr.length < 2){
-    arr.push(locker_code)
+      arr.push(locker_code)
+      try {
+        previousElem.href = previousBaseURL + "?locker1="+arr[0]
+      }catch (error){
+        
+      }
+      try {
+        nextElem.href = nextBaseURL + "?locker1="+arr[0]
+      }catch (error) {
+        
+      }
+    if (arr.length === 2){
+      var button_place = document.getElementById("submit_button_place")
+      button_place.innerHTML = 
+          `<a href ="#" onclick = "OpenswapKey()" class="purple darken-4 waves-light btn">Swap Key</a>`
+          try {
+            previousElem.href = previousBaseURL + "?locker1=" +arr[0] + "&locker2="+arr[1]
+            nextElem.href = nextBaseURL + "?locker1=" +arr[0] + "&locker2="+arr[1]
+          } catch (error){
+            
+          }
+    }
     }
     else{
     checkbox.checked = false
     displayMessage("Only two lockers can be selected")
-    
     }
 }
 
@@ -644,6 +673,10 @@ function removefromList(locker_code){
     else if (arr[1] == locker_code){
         arr.pop()
   }
+    if (arr.length === 1){
+      var button_place = document.getElementById("submit_button_place")
+      button_place.innerHTML = ``
+    }
 }
 check = document.getElementsByClassName("swapbox")
 for(let i=0; i<check.length; i++){

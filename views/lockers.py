@@ -38,8 +38,8 @@ locker_views = Blueprint('locker_views', __name__, template_folder='../templates
 @locker_views.route("/locker", methods=['GET'])
 def manage_locker():
     get_all_rentals()
-    num_pages = get_num_locker_page(6)
-    lockerData = get_lockers_by_offset(6,1)
+    num_pages = get_num_locker_page(1)
+    lockerData = get_lockers_by_offset(1,1)
     previous = 1
     next = previous + 1
     form = LockerAdd()
@@ -49,8 +49,8 @@ def manage_locker():
 @locker_views.route("/locker/page/<offset>", methods=['GET'])
 def manage_locker_mulpages(offset):
     offset = int(offset)
-    num_pages = get_num_locker_page(6)
-    lockerData = get_lockers_by_offset(6,offset)
+    num_pages = get_num_locker_page(1)
+    lockerData = get_lockers_by_offset(1,offset)
 
     if offset - 1 <= 0:
         previous = 1
@@ -63,7 +63,12 @@ def manage_locker_mulpages(offset):
         next = offset + 1
     form = LockerAdd()
     form.area.choices = get_area_choices()
-    return render_template('manage_locker.html', lockerData=lockerData,form = form ,delete=ConfirmDelete(), search=SearchForm(),keys=get_all_keys_id(), num_pages= num_pages,locker_names= get_all_locker_names(), current_page=offset,next= next, previous= previous,trans=TransactionAdd())
+    locker1 = None
+    locker2 = None
+    if request.args:
+            locker1 = request.args.get('locker1')
+            locker2 = request.args.get('locker2')
+    return render_template('manage_locker.html', lockerData=lockerData,form = form ,delete=ConfirmDelete(), search=SearchForm(),keys=get_all_keys_id(), num_pages= num_pages,locker_names= get_all_locker_names(), current_page=offset,next= next, previous= previous,trans=TransactionAdd(), selectData = {locker1, locker2})
 
 
 @locker_views.route('/locker/<id>/delete', methods=['GET'])
