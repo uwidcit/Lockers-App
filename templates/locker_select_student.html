@@ -52,8 +52,7 @@
         <div class="fixed-action-btn">
           <a class="btn-floating btn-large waves-effect waves-light purple darken-4 modal-trigger"  href="#new_student"><i class="material-icons">add </i></a>
         </div>
-  
-  
+      
        <div class="modal grey darken-3" id="new_student">
         <div class="modal-content">
           <h6 style="font-weight: bold;">Add Student </h6>
@@ -186,6 +185,25 @@
       </div>
     </div>
   </div>
+  <div id="pag" class="col s12 center-align">
+    <ul class="pagination">
+  
+    {% if current_page == 1 %}
+    <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+    {% else %}
+    <li><a href="/locker/rent/{{id}}/student/{{previous}}"><i class="material-icons">chevron_left</i></a></li>
+    {% endif %}
+    
+    <li class="waves effect purple darken-4"><a href="#" style="color:white;">{{current_page}}</a></li>
+    
+    {% if current_page == num_pages %}
+    <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+    {% else %}
+    <li><a href="/locker/rent/{{id}}/student/{{previous}}"><i class="material-icons">chevron_right</i></a></li>
+    {% endif %}
+  </ul>
+  </div>
+
 </div>
   <script>
     document.addEventListener('DOMContentLoaded', function() {

@@ -7,7 +7,7 @@
 {% block content %}
 <div class="row">
     <div class="col s6 offset-s3">
-    <div class="card small indigo lighten-2" style="height: 32vh;">
+    <div class="card small purple darken-4" style="height: 32vh;">
     <div class="card-content white-text">
       <span class="card-title">Locker information</span>
       <div class="divider"></div>
@@ -30,7 +30,7 @@
 </div>
 
 <div class="row">
-  <div class="col s12 m10 offset-m1">
+  <div class="col s12 m10 offset-m1" style="height: 80vh;;">
     <h6>Rental History of {{locker[0].locker_code}}</h6>
     <table>
       <thead>
@@ -48,7 +48,7 @@
       <tbody>
         {% if rents %}
         {% for r in rents %}
-        <tr>
+        <tr class="purple darken-4">
           <td><a href="/rent/{{r.id}}">{{r.id}}</a></td>
           <td><a href="/student/{{r.student_id}}">{{r.student_id}}</a></td>
           <td>{{r.rent_type}}</td>
@@ -74,72 +74,79 @@
 <div class="row">
 
 
-<div class ="modal" id="new_transaction" style="max-height: 100%;border-radius: 25px; height: 75vh;">
-  <div class="modal-content">
-    <h6 style="font-weight: bold;">New Transaction </h6>
-    <form id="newTransaction" class="col s12 m12" method="POST" action="" style="padding: 10px; border-color: black;border: 2px; border-style: solid;" >
+  <div class ="modal grey darken-3 white-text" id="new_transaction" >
+    <div class="modal-content">
+      <h6 style="font-weight: bold;">New Transaction </h6>
+      <form id="newTransaction" class="col s12 m12 white-text" method="POST" action="" >
 
-      {{ trans.csrf_token }}
-  
-      <div class="input-field col s12 m4">
-      <p> RentID </p>
-      {{trans.rent_id(size=18, class="validate",id="t_rent_id")}}
-      </div>
-      
-      <div class="input-field col s12 m2 offset-m1">
-      <p> Currency </p>
-      {{trans.currency(size=18, class="validate")}}
-      </div> 
-      
-      <div class="input-field col s12 m4 offset-m1">
-      <p> Amount </p>
-      {{trans.amount(size=18, class="validate", id="t_amount")}}
-      </div>
-  
-      <div class="input-field col s12 m4">
-      <p> Transaction Date </p>
-      {{trans.transaction_date(size=18, class="validate")}}
-      </div>
-  
-  
-      <div class="input-field col s12 m8"> 
-      <p> Description </p>
-      {{trans.description(size=18, class="validate")}}
-      </div>
-  
-      <div class="input-field col s12 m4" style="display:inline;">
-      <p> Transaction Type </p>
-      <select name="t_type" style="display:inline;">
-          <option value=”” disabled selected>Select Transaction Type</option>
-          {% for subfield in trans.t_type %}
-           {{subfield}}
-          {% endfor %}
-        </select>
-      </div>
-  
-      <div class="input-field col s12 m4">
-        <p> Receipt Number </p>
-        {{trans.receipt_number(size=18, class="validate")}}
+        {{ form.csrf_token }}
+    
+        <div class="input-field col s12 m12">
+        <div class="col s4">
+           <p> RentID </p>
+        {{trans.rent_id(size=18, class="validate white-text",id="t_rent_id")}}
         </div>
-  
-        <div class="input-field col s8 m8 offset-m4" style="display:inline;">
-          {{trans.submit(id="t_submit",class="purple darken-4 waves-light btn")}}
-        <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+       
+        <div class="col s4">
+          <p> Currency </p>
+          {{trans.currency(size=18, class="validate white-text")}}
+        </div>
+        <div class="col s4">
+          <p> Amount </p>
+         {{trans.amount(size=18, class="validate white-text", id="t_amount")}}
+        </div>
+       </div>
+        
+        <div class="input-field col s12 m12">
+          <div class="col s6">
+             <p> Transaction Date </p>
+        {{trans.transaction_date(size=18, class="validate white-text")}}
+          </div>
+          <div class="col s6">
+             <p> Description </p>
+            {{trans.description(size=18, class="validate white-text")}}
+          </div>
+      
         </div> 
-          
-      </form> 
-</div>
+    
+        <div class="input-field col s12 m12" style="display:inline;">
+        <div class="col s6">
+            <p> Transaction Type </p>
+        <select name="t_type" style="display:inline;">
+            <option value=”” disabled selected>Select Transaction Type</option>
+            {% for subfield in trans.t_type %}
+             {{subfield}}
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col s6">
+          <p> Receipt Number </p>
+          {{trans.receipt_number(size=18, class="validate white-text")}}
+        </div>
+      </div>
+    </div>
+   <div class="modal-footer grey darken-3">
+    <div class="input-field col s6 m8 offset-m4" style="display:inline;">
+      <div class="col s4 offset-s4">
+        <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+      </div>
+      <div class="col s4">
+        {{trans.submit(class=" right purple darken-4 waves-light btn")}}
+      </div>
+    </div>       
+</form>
+ </div>
 </div>
 
-<div class="modal" id="edit_locker" style="max-height: 100%;border-radius: 25px; height: 75vh; overflow: hidden;">
+<div class="modal grey darken-3 white-text" id="edit_locker" >
   <div class="modal-content" id="content">
     <h6 style="font-weight: bold;"> Edit Locker </h6>
-    <form id="editLocker" class="col s12 m12" method="POST" action="/locker" style="padding: 10px; border-color: black;border: 2px; border-style: solid;" >
+    <form id="editLocker" class="col s12 m12 white-text" method="POST" action="/locker" autocomplete="off">
       {{ form.csrf_token }}
          <div class="input-field col s12 m12">  
           <div class="col s6">
             <p>Locker Code</p>
-          {{ form.locker_code(size=20, class="validate",id="u_locker_code")}}
+          {{ form.locker_code(size=20, class="validate white-text",id="u_locker_code")}}
           </div>  
           <div class="col s6">
             <p>Locker Type</p>
@@ -163,28 +170,37 @@
           </select>
           </div>  
           
-          <div class="input-field col s6">
+          <div class="col s6">
             <p>Key</p>
-            {{ form.key(size=20, class="validate",id="u_l_key")}}
+            {{ form.key(size=20, class="validate white-text",id="u_l_key")}}
           </div>
-
-          <div class="col s12 m12">
-            <p>Area</p>
-          <select id="u_area" name="area" style="display:inline;">
-            <option value=”” disabled selected>Select a Area Status</option>
-            {% for subfield in form.area %}
-             {{subfield}}
-            {% endfor %}
-          </select>
-        </div>  
       </div>
+        <div class="col s12 m12">
+          <p>Area</p>
+        <select id="u_area" name="area" style="display:inline;">
+          <option value=”” disabled selected>Select a Area Status</option>
+          {% for subfield in form.area %}
+            {{subfield}}
+          {% endfor %}
+        </select>
+      </div>  
+    </div>
 
-      <div class="modal-footer col s8 m8 offset-m4" style="display:inline;">
-        {{form.submit(id="u_submit",class="right purple darken-4 waves-light btn")}}
-        <a class="modal-close red darken-4 white-text right waves-light btn">Cancel</a>
-      </div>           
-     </form>
-  </div>     
+      <div class="modal-footer grey darken-3">
+        <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+
+         <div class="col s4 offset-s4">
+            <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+         </div>
+
+         <div class="col s4">
+           {{form.submit(class=" right purple darken-4 waves-light btn",id="u_submit")}}
+         </div>
+         
+       
+        </div>       
+    </form>
+    </div>
 </div>
 
 <div class ="modal" id="swap_key" style="max-height: 100%;border-radius: 25px; height: 35vh;">
@@ -202,45 +218,55 @@
   </div>
   </div>
 
-<div class="modal" id="delete_locker" style="max-height: 100%;border-radius: 25px; height: 35vh;">
-  <div class="modal-content">
-    <h6 style="font-weight: bold;">Delete Locker </h6>
-    <form id="deleteLocker" class="col s12 m12" method="POST" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
-    {{ delete.csrf_token }}
-    <div class="input-field col s12 m12"> 
-      <h5 id="deleteTitle"></h5>
+  <div class="modal grey darken-3 white-text" id="delete_locker" >
+    <div class="modal-content">
+      <h6 style="font-weight: bold;">Delete Locker </h6>
+      <form id="deleteLocker" class="col s12 m12" method="POST">
+      {{ delete.csrf_token }}
+      <div class="input-field col s12 m12"> 
+        <h5 id="deleteTitle"></h5>
+      </div>
     </div>
-  
-  <div class="input-field col s8 m8 offset-m4" style="display:inline;">
-    {{delete.submit(class="right purple darken-4 waves-light btn")}}
-    <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>          </div>
+    <div class="modal-footer grey darken-3">
+      <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+
+       <div class="col s4 offset-s4">
+          <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+       </div>
+
+       <div class="col s4">
+         {{delete.submit(class=" right purple darken-4 waves-light btn")}}
+       </div>
+    
+      </div>       
   </form>
-</div>
+  </div>
+  
 </div>
 
-<div class="modal" id="comment_modal" style="max-height: 100%;border-radius: 25px; height: 75vh;">
+<div class="modal grey darken-3 white-text" id="comment_modal">
   <div class="modal-content">
-    <div class="card">
-      <div class="card-content">
+    <div class="card grey darken-3 white-text">
+      <div class="card-content grey darken-3 white-text">
         <h6>New Comment</h6>
-        <form action="" id="new_comment_form" method="POST">
-          <input class="input-field s10 m10" type="text" id="comment" name="comment">
+        <form action="" id="new_comment_form" method="POST" autocomplete="off">
+          <input class="input-field s10 m10 white-text" type="text" id="comment" name="comment">
           <input type="submit" value="Comment" class="purple darken-4 waves-light btn">
         </form>
       </div>
     </div>
     
-    <div id ="notes_content">
-
+    <div class="grey darken-3 white-text" id ="notes_content">
+        
     </div>
   </div>
-  <div class="modal-footer"  id="notes_foot">
+  <div class="modal-footer grey darken-3 white-text"  id="notes_foot">
 
   </div>
 </div>
 </div>
 
-<div class="col m5 offset-m5">
+<div id="pag" class="col s12 center-align">
   <ul class="pagination">
 
   {% if current_page == 1 %}
@@ -248,23 +274,16 @@
   {% else %}
   <li><a href="/locker/{{locker[0].locker_code}}/page/{{previous}}"><i class="material-icons">chevron_left</i></a></li>
   {% endif %}
-
-  {% for n in range(1,num_pages + 1) %}
   
+  <li class="waves effect purple darken-4"><a href="#" style="color:white;">{{current_page}}</a></li>
   
-  {% if n == current_page %}
-  <li class="waves effect purple darken-4"><a href="/locker/{{locker[0].locker_code}}/page/{{n}}" style="color:white;">{{n}}</a></li>
-  {% else %}
-  <li class="waves-effect purple darken-4"><a href="/locker/{{locker[0].locker_code}}/page/{{n}}" style="color:white;">{{n}}</a></li>
-  {% endif %}
-  {% endfor %}
-
   {% if current_page == num_pages %}
   <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
   {% else %}
   <li><a href="/locker/{{locker[0].locker_code}}/page/{{next}}"><i class="material-icons">chevron_right</i></a></li>
   {% endif %}
 </ul>
+</div>
 
 {% if locker[0].status.value == 'Free' %}
 <div class="fixed-action-btn">

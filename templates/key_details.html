@@ -7,7 +7,7 @@
 {% block content %}
 <div class="row">
   <div class="col s7 offset-s3">
-    <div class="card small indigo lighten-2" style="height: 22vh;">
+    <div class="card small purple darken-4" style="height: 22vh;">
     <div class="card-content white-text">
       <span class="card-title">Key information: {{keyData.key_id}}</span>
       <div class="divider"></div>
@@ -24,7 +24,7 @@
 </div>
 
 <div class="row">
-  <div class="col s12 m10 offset-m1">
+  <div class="col s12 m10 offset-m1" style="height: 80vh;">
     <h6>Key History of {{keyData.key_id}} </h6>
     <table>
       <thead>
@@ -35,7 +35,7 @@
       </thead>
       <tbody>
         {% for k in keyHistory %}
-        <tr>
+        <tr class="purple darken-4">
           <td><a href="/locker/{{k.locker_id}}">{{k.locker_id}}</a></td>
           <td>{{k.date_moved}}</td>
         {% endfor %}
@@ -43,7 +43,7 @@
     </table>
 </div>
 
-<div class="col m5 offset-m5">
+<div id="pag" class="col s12 center-align">
   <ul class="pagination">
   {% if current_page == 1 %}
   <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
@@ -51,13 +51,8 @@
   <li><a href="/key/{{keyData.key_id}}/page/{{previous}}"><i class="material-icons">chevron_left</i></a></li>
   {% endif %}
 
-  {% for n in range(1,num_pages + 1) %}
-  {% if n == current_page %}
-  <li class="waves effect purple darken-4"><a href="/key/{{keyData.key_id}}/page/{{n}}" style="color:white;">{{n}}</a></li>
-  {% else %}
-  <li class="waves-effect purple darken-4"><a href="/masterkey/{{keyData.key_id}}/page/{{n}}" style="color:white;">{{n}}</a></li>
-  {% endif %}
-  {% endfor %}
+  <li class="waves effect purple darken-4"><a href="#" style="color:white;">{{current_page}}</a></li>
+ 
 
   {% if current_page == num_pages %}
   <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>

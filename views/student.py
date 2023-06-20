@@ -160,7 +160,7 @@ def get_student_render(id):
     rentForm.student_id.name = "rent_locker_id"
     rentForm.rent_type.choices = get_all_rentType_current()
     locker_names = get_lockers_available_names()
-    return render_template('release.html',student=result,rent=rent['data'],previous=previous,next=next,current_page=1,num_pages=rent['num_pages'], current_rental = get_student_current_rental(id), trans= TransactionAdd(),rentForm= rentForm,locker_names=locker_names)
+    return render_template('studentDetails.html',student=result,rent=rent['data'],previous=previous,next=next,current_page=1,num_pages=rent['num_pages'], current_rental = get_student_current_rental(id), trans= TransactionAdd(),rentForm= rentForm,locker_names=locker_names)
 
 @student_views.route('/student/<id>/page/<offset>', methods=['GET'])
 def get_student_render_multi(id,offset):
@@ -183,5 +183,5 @@ def get_student_render_multi(id,offset):
     rentForm.student_id.name = "rent_locker_id"
     rentForm.rent_type.choices = get_all_rentType_current()
     locker_names = get_lockers_available_names()
-    return render_template('release.html',student=result,rent=rent['data'],previous=previous,next=next,current_page=offset,num_pages=num_pages, current_rental = get_student_current_rental(id), trans= TransactionAdd(),rentForm= rentForm, locker_names=locker_names)
+    return render_template('studentDetails.html',student=result,rent=rent['data'],previous=previous,next=next,current_page=offset,num_pages=num_pages, current_rental = get_student_current_rental(id), trans= TransactionAdd(),rentForm= rentForm, locker_names=locker_names)
 

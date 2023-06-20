@@ -78,12 +78,35 @@ def render_confirm_delete(id):
 
 @locker_views.route("/locker/rent/<id>/student", methods=["GET"])
 def select_student_page(id):
-    studentData = get_available_student()
+    studentData = get_available_student(8,1)
+    search = SearchForm()
+    rent = RentAdd()
+    previous = 1
+    next = previous + 1
+    rent.rent_type.choices = get_all_rentType_current()
+    search.submit.label.text = "Search Student"
+    return render_template("locker_select_student.html",studentData=studentData['data'],num_pages=studentData["num_pages"], form=StudentAdd(),search=search,rent=rent,id = id,current_page=1, next= next, previous= previous)
+
+@locker_views.route("/locker/rent/<id>/student/<offset>", methods=["GET"])
+def select_student_page_multi(id,offset):
+    offset = int(offset)
+    studentData = get_available_student(8,offset)
+
+    if offset - 1 <= 0:
+        previous = 1
+        offset = 1
+    else:
+        previous = offset - 1
+    if offset + 1 >= studentData['num_pages']:
+        next = studentData['num_pages']
+    else:
+        next = offset + 1
+
     search = SearchForm()
     rent = RentAdd()
     rent.rent_type.choices = get_all_rentType_current()
     search.submit.label.text = "Search Student"
-    return render_template("locker_select_student.html",studentData=studentData,form=StudentAdd(),search=search,rent=rent,id = id)
+    return render_template("locker_select_student.html",studentData=studentData['data'],num_pages=studentData["num_pages"], form=StudentAdd(),search=search,rent=rent,id = id,current_page=offset,next= next, previous= previous)
 
 @locker_views.route("/locker", methods=['POST'])
 def add_locker():
@@ -255,8 +278,8 @@ def render_get_lockers(id):
     form = LockerAdd()
     form.area.choices = get_area_choices()
     if rents:
-        return render_template('remove.html', locker = locker, rents = rents['data'], previous= previous,current_page=1,next=next, locker_names= get_all_locker_names(), num_pages=rents['num_pages'],keys=get_all_keys_id(),trans=TransactionAdd(),current_rental= current_rental, form = form,delete=ConfirmDelete())
-    return render_template('remove.html', locker = locker, rents = None, previous= previous,current_page=1,next=next,num_pages=1, locker_names= get_all_locker_names(),keys=get_all_keys_id(),trans=TransactionAdd(),current_rental= current_rental,form = form, delete=ConfirmDelete())
+        return render_template('lockerDetails.html', locker = locker, rents = rents['data'], previous= previous,current_page=1,next=next, locker_names= get_all_locker_names(), num_pages=rents['num_pages'],keys=get_all_keys_id(),trans=TransactionAdd(),current_rental= current_rental, form = form,delete=ConfirmDelete())
+    return render_template('lockerDetails.html', locker = locker, rents = None, previous= previous,current_page=1,next=next,num_pages=1, locker_names= get_all_locker_names(),keys=get_all_keys_id(),trans=TransactionAdd(),current_rental= current_rental,form = form, delete=ConfirmDelete())
 
 @locker_views.route("/locker/<id>/page/<offset>", methods=["GET"])
 def render_get_lockers_multi(id,offset):
