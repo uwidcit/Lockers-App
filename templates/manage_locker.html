@@ -392,8 +392,11 @@
         l.checked = true
         addToList(switchLockerData[i].value, l)
       }
-      addToList(switchLockerData[i].value, null)
+      else{ 
+        addToList(switchLockerData[i].value, null)
+      }
     }
+    console.log(arr)
   })
   var num_pages_notes  = 0
   var current_page = 0
@@ -662,6 +665,7 @@
 }
 
 function removefromList(locker_code){
+  console.log(arr)
     if (arr[0] == locker_code){
     arr.shift()
     updateLinks()
@@ -687,15 +691,31 @@ for(let i=0; i<check.length; i++){
 }
 function updateLinks(){
     if (arr.length < 2){
-      previousElem.href = previousBaseURL + "?locker1="+arr[0]
+    try {
+        previousElem.href = previousBaseURL + "?locker1="+arr[0]
+    } catch (error) {
+        
+      }
+    try {
       nextElem.href = nextBaseURL + "?locker1="+arr[0]
+    } catch (error) {
+      
+    }
     }
     if (arr.length === 2){
+      try {
+          previousElem.href = previousBaseURL + "?locker1=" +arr[0] + "&locker2="+arr[1]
+      } catch (error) {
+        
+      }
+      try {
+          nextElem.href = nextBaseURL + "?locker1=" +arr[0] + "&locker2="+arr[1]
+      } catch (error) {
+         
+      }
       var button_place = document.getElementById("submit_button_place")
       button_place.innerHTML = 
           `<a href ="#" onclick = "OpenswapKey()" class="purple darken-4 waves-light btn">Swap Key</a>`
-            previousElem.href = previousBaseURL + "?locker1=" +arr[0] + "&locker2="+arr[1]
-            nextElem.href = nextBaseURL + "?locker1=" +arr[0] + "&locker2="+arr[1]
     }
 }
 </script>
