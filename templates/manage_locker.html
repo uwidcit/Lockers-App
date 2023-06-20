@@ -5,6 +5,11 @@
 {{ super() }}
 
 {% block content %}
+{% if selectData %}
+{% for S in selectData %}
+<input type="hidden" value={{S}} class="switchData"> 
+{% endfor %}
+{% endif %}
 <div class="row">
       <div class="row">
             <div class="col s12 m8 offset-m7">
@@ -33,7 +38,7 @@
             {% for l in lockerData %}
             <tr class="purple darken-4 white-text">
                 <td><label class = "col s2 center-align">
-                <input type="checkbox" name = "check" class="swapbox" value="{{l.locker_code}}">
+                <input id="l_{{l.locker_code}}" type="checkbox" name = "check" class="swapbox" value="{{l.locker_code}}">
                 <Span></Span>
                 </label></td>
                 <td><a href="/locker/{{l.locker_code}}">{{l.locker_code}}</a></td>
@@ -379,7 +384,17 @@
  <script>
   autocomplete(document.getElementById('key'),{{keys | safe}})
   autocomplete(document.getElementById('u_l_key'),{{keys | safe}})
-
+  document.addEventListener('DOMContentLoaded', function() {
+    switchLockerData = document.getElementsByClassName("switchData")
+    for(i=0; i<switchLockerData.length; i++){
+      l = document.getElementById("l_" +switchLockerData[i].value)
+      if (l){
+        l.checked = true
+        addToList(switchLockerData[i].value, l)
+      }
+      addToList(switchLockerData[i].value, null)
+    }
+  })
   var num_pages_notes  = 0
   var current_page = 0
   var previousElem = document.getElementById("previousPage")
@@ -638,40 +653,22 @@
   function addToList(locker_code, checkbox){
     if (arr.length < 2){
       arr.push(locker_code)
-      try {
-        previousElem.href = previousBaseURL + "?locker1="+arr[0]
-      }catch (error){
-        
-      }
-      try {
-        nextElem.href = nextBaseURL + "?locker1="+arr[0]
-      }catch (error) {
-        
-      }
-    if (arr.length === 2){
-      var button_place = document.getElementById("submit_button_place")
-      button_place.innerHTML = 
-          `<a href ="#" onclick = "OpenswapKey()" class="purple darken-4 waves-light btn">Swap Key</a>`
-          try {
-            previousElem.href = previousBaseURL + "?locker1=" +arr[0] + "&locker2="+arr[1]
-            nextElem.href = nextBaseURL + "?locker1=" +arr[0] + "&locker2="+arr[1]
-          } catch (error){
-            
-          }
-    }
+      updateLinks()
     }
     else{
-    checkbox.checked = false
-    displayMessage("Only two lockers can be selected")
+      checkbox.checked = false
+      displayMessage("Only two lockers can be selected")
     }
 }
 
 function removefromList(locker_code){
     if (arr[0] == locker_code){
     arr.shift()
+    updateLinks()
     }
     else if (arr[1] == locker_code){
         arr.pop()
+        updateLinks()
   }
     if (arr.length === 1){
       var button_place = document.getElementById("submit_button_place")
@@ -687,6 +684,19 @@ for(let i=0; i<check.length; i++){
     removefromList(e.target.value)
     console.log(arr)
     })
+}
+function updateLinks(){
+    if (arr.length < 2){
+      previousElem.href = previousBaseURL + "?locker1="+arr[0]
+      nextElem.href = nextBaseURL + "?locker1="+arr[0]
+    }
+    if (arr.length === 2){
+      var button_place = document.getElementById("submit_button_place")
+      button_place.innerHTML = 
+          `<a href ="#" onclick = "OpenswapKey()" class="purple darken-4 waves-light btn">Swap Key</a>`
+            previousElem.href = previousBaseURL + "?locker1=" +arr[0] + "&locker2="+arr[1]
+            nextElem.href = nextBaseURL + "?locker1=" +arr[0] + "&locker2="+arr[1]
+    }
 }
 </script>
 
