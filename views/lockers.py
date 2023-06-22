@@ -38,8 +38,8 @@ locker_views = Blueprint('locker_views', __name__, template_folder='../templates
 @locker_views.route("/locker", methods=['GET'])
 def manage_locker():
     get_all_rentals()
-    num_pages = get_num_locker_page(1)
-    lockerData = get_lockers_by_offset(1,1)
+    num_pages = get_num_locker_page(6)
+    lockerData = get_lockers_by_offset(6,1)
     previous = 1
     next = previous + 1
     form = LockerAdd()
@@ -49,8 +49,8 @@ def manage_locker():
 @locker_views.route("/locker/page/<offset>", methods=['GET'])
 def manage_locker_mulpages(offset):
     offset = int(offset)
-    num_pages = get_num_locker_page(1)
-    lockerData = get_lockers_by_offset(1,offset)
+    num_pages = get_num_locker_page(6)
+    lockerData = get_lockers_by_offset(6,offset)
 
     if offset - 1 <= 0:
         previous = 1
