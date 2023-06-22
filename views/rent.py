@@ -38,7 +38,7 @@ def rent_search():
         else:
             flash('Record doesn''t exist')
             return redirect(url_for('.rent_page'))
-@rent_views.route('/rent/add', methods=['POST'])
+@rent_views.route('/api/locker/rent', methods=['POST'])
 def create_new_rent():
     s_id = request.json.get('student_id')
     locker_id = request.json.get('locker_id')

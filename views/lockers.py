@@ -315,3 +315,7 @@ def switch_key(id):
             return redirect(url_for('.manage_locker'))
     flash("Failure")
     return redirect(url_for('.manage_locker'))
+
+@locker_views.route('/api/locker', methods=['GET'])
+def locker_api():
+    return jsonify(get_all_lockers())

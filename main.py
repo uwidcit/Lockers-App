@@ -55,8 +55,8 @@ def loadConfig(app, config):
     app.config['ENV'] = os.environ.get('ENV', 'DEVELOPMENT')
     if app.config['ENV'] == "DEVELOPMENT":
         app.config.from_object('config')
-        app.config['GIT_ENV'] = ""
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(os.environ.get('LOCALAPPDATA'),'test_database.db')
+        app.config['GIT_ENV'] = "GITPOD"
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + 'test_database.db'
     else:
         app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
         app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
