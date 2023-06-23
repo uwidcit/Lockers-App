@@ -180,7 +180,8 @@ def remove_area(id):
     return redirect(url_for('.manage_locker'))
 
 
-@locker_views.route("/locker/<id>/update", methods=['POST'])
+#@locker_views.route("/locker/<id>/update", methods=['POST'])
+@locker_views.route("/api/locker/<id>/update", methods=['POST'])
 def update_lockers(id):
     locker = get_locker_id_locker(id)
 

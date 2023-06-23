@@ -23,7 +23,8 @@ from views.forms import StudentAdd, SearchForm, TransactionAdd,RentAdd
 
 student_views = Blueprint('student_views', __name__, template_folder='../templates')
 
-@student_views.route('/student', methods=['POST'])
+#@student_views.route('/student', methods=['POST'])
+@student_views.route('/api/student/available', methods=['GET'])
 def add_student():
     form = StudentAdd()
     if form.validate_on_submit:
