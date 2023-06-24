@@ -17,14 +17,14 @@ from controllers import (
     update_student_phone_number,
     update_student_email,
     update_student_faculty,
+    get_all_available_student
 
     )
 from views.forms import StudentAdd, SearchForm, TransactionAdd,RentAdd
 
 student_views = Blueprint('student_views', __name__, template_folder='../templates')
 
-#@student_views.route('/student', methods=['POST'])
-@student_views.route('/api/student/available', methods=['GET'])
+@student_views.route('/student', methods=['POST'])
 def add_student():
     form = StudentAdd()
     if form.validate_on_submit:
@@ -186,3 +186,6 @@ def get_student_render_multi(id,offset):
     locker_names = get_lockers_available_names()
     return render_template('studentDetails.html',student=result,rent=rent['data'],previous=previous,next=next,current_page=offset,num_pages=num_pages, current_rental = get_student_current_rental(id), trans= TransactionAdd(),rentForm= rentForm, locker_names=locker_names)
 
+@student_views.route('/api/student/available', methods=['GET'])
+def get_students_api():
+    return jsonify(get_all_available_student())

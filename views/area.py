@@ -21,8 +21,7 @@ from views.forms import AreaAdd,ConfirmDelete,SearchForm,LockerAdd
 
 area_views = Blueprint('area_views', __name__, template_folder='../templates')
 
-#@area_views.route('/area', methods=['POST'])
-@area_views.route('/api/area/', methods=['POST'])
+@area_views.route('/area', methods=['POST'])
 def create_new_area():
     form = AreaAdd()
     if form.validate_on_submit:
@@ -158,7 +157,7 @@ def remove_area(id):
     return redirect(url_for('.render_area_page'))
 
 
-@area_views.route('/areas', methods=['GET'])
+@area_views.route('/api/area/', methods=['GET'])
 def get_all_areas():
     return jsonify(get_area_all()),200
 

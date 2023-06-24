@@ -285,3 +285,8 @@ def get_rental_student(id,size,offset):
 
     return {"num_pages":num_pages,"data":r_list}
     
+def get_all_available_student():
+    students = Student.query.filter_by(rentStanding = RentStanding.GOOD).all()
+    if not students:
+        return {}
+    return [S.toJSON() for S in students]

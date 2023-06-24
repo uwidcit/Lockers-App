@@ -320,3 +320,11 @@ def switch_key(id):
 @locker_views.route('/api/locker', methods=['GET'])
 def locker_api():
     return jsonify(get_all_lockers())
+
+@locker_views.route('/api/locker', methods=['POST'])
+def create_new_locker_api():
+    data = request.json     #get data from JSON 
+    new_locker = add_new_locker(locker_code=data['locker_code'], locker_type=data['locker_type'], status=data['status'], key_id=data['key'],area=data['area'])
+    if not new_locker:
+        return jsonify({"message":"Locker already exist or some error has occurred"}),400
+    return jsonify(new_locker.toJSON()),201
