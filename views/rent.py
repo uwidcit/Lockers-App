@@ -19,6 +19,7 @@ from controllers import (
     verify_rental
     )
 from views.forms import  RentAdd, TransactionAdd
+from flask_login import login_required
 
 rent_views = Blueprint('rent_views', __name__, template_folder='../templates')
 
@@ -39,6 +40,7 @@ def rent_search():
             flash('Record doesn''t exist')
             return redirect(url_for('.rent_page'))
 @rent_views.route('/api/locker/rent', methods=['POST'])
+@login_required
 def create_new_rent():
     s_id = request.json.get('student_id')
     locker_id = request.json.get('locker_id')
@@ -54,6 +56,7 @@ def create_new_rent():
     return jsonify(rental.toJSON()),201
 
 @rent_views.route('/rent/<id>', methods=['GET'])
+@login_required
 def get_rent_id(id):
     rental = update_rent(id)
     transaction = get_transactions(id,5,1)
@@ -66,6 +69,7 @@ def get_rent_id(id):
     return render_template('addrent.html', rent = rental,transaction=transaction['data'], current_page=1,next=next,previous=previous,num_pages=transaction['num_pages'],trans = TransactionAdd())
 
 @rent_views.route('/rent/<id>/page/<offset>', methods=['GET'])
+@login_required
 def get_rent_id_multi(id,offset):
     offset = int(offset)
     rental = update_rent(id)
@@ -88,10 +92,12 @@ def get_rent_id_multi(id,offset):
     return render_template('addrent.html', rent = rental,transaction=transaction['data'], current_page=offset,next=next,previous=previous,num_pages=transaction['num_pages'])
 
 @rent_views.route('/rent/all', methods=['GET'])
+@login_required
 def get_all_rent():
     return jsonify(get_all_rentals()),200
 
 @rent_views.route('/rent/<id>/release', methods=['GET'])
+@login_required
 def release_locker(id):
     rental = update_rent(id)
     url = url_for('locker_views.manage_locker')
@@ -119,6 +125,7 @@ def release_locker(id):
     return redirect(url)
 
 @rent_views.route('/rent/<id>/release/verify', methods=['GET'])
+@login_required
 def return_locker_to_pool(id):
     rental = update_rent(id)
 
@@ -151,18 +158,21 @@ def return_locker_to_pool(id):
             return redirect(url)
 
 @rent_views.route('/rent/<id>/notes',methods=['GET'])
+@login_required
 def notes_api(id):
     notes = get_comments_offset(id,3,1)
     return jsonify(notes),200
 
 
 @rent_views.route('/rent/<id>/notes/<offset>',methods=['GET'])
+@login_required
 def notes_api_multi(id,offset):
     offset = int(offset)
     notes = get_comments_offset(id,3,offset)
     return jsonify(notes),200
 
 @rent_views.route('/rent/<id>/notes',methods=['POST'])
+@login_required
 def new_note_api(id):
     data = request.json
     new_comment = create_comment(id,data['comment'],datetime.now().date())
@@ -173,6 +183,7 @@ def new_note_api(id):
     return jsonify({'error':'Not created'}),400
 
 @rent_views.route('/makerent/<id>', methods=['GET'])
+@login_required
 def render(id):
     form = RentAdd()
     rentType_list = get_All_rentType()
@@ -182,6 +193,7 @@ def render(id):
     return render_template('addrent.html', form=form, id = id)
 
 @rent_views.route('/makerent/<id>', methods=['POST'])
+@login_required
 def rent_locker(id):
     form = RentAdd() 
     
@@ -203,6 +215,7 @@ def rent_locker(id):
 
 
 @rent_views.route('/makerent/student/<student_id>', methods=['POST'])
+@login_required
 def rent_locker_student(student_id):
     form = RentAdd() 
     if form.validate_on_submit:

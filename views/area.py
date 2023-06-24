@@ -1,4 +1,5 @@
 from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify,url_for,flash
+from flask_login import login_required
 
 from controllers import (
     get_area_all,
@@ -22,6 +23,7 @@ from views.forms import AreaAdd,ConfirmDelete,SearchForm,LockerAdd
 area_views = Blueprint('area_views', __name__, template_folder='../templates')
 
 @area_views.route('/area', methods=['POST'])
+@login_required
 def create_new_area():
     form = AreaAdd()
     if form.validate_on_submit:
@@ -37,7 +39,9 @@ def create_new_area():
         flash("Area created")
         return redirect(url_for('.render_area_page'))
 
+
 @area_views.route('/area',methods=['GET'])
+@login_required
 def render_area_page():
     num_pages = get_num_area_page(15)
     areaData = get_area_by_offset(15,1)
@@ -48,6 +52,7 @@ def render_area_page():
     return render_template('area.html', areaData = areaData,form=AreaAdd(),delete= delete,search=search,num_pages= num_pages,current_page=1, next= next, previous= previous)
 
 @area_views.route('/area/page/<offset>',methods=['GET'])
+@login_required
 def render_area_page_offset(offset):
     offset = int(offset)
     num_pages = get_num_area_page(15)
@@ -68,6 +73,7 @@ def render_area_page_offset(offset):
     return render_template('area.html', areaData = areaData,form=AreaAdd(),delete=delete,search=search,num_pages= num_pages,current_page=offset, next= next, previous= previous)
 
 @area_views.route('/area/search/',methods=['GET'])
+@login_required
 def render_search_area_page():
     previous = 1
     next = previous + 1
@@ -83,6 +89,7 @@ def render_search_area_page():
         return redirect(url_for('.render_area_page'))
 
 @area_views.route('/area/search/page/<offset>',methods=['GET'])
+@login_required
 def render_search_area_page_multi(offset):
     offset = int(offset)
 
@@ -107,6 +114,7 @@ def render_search_area_page_multi(offset):
         return redirect(url_for('.render_area_page'))
 
 @area_views.route('/area/<id>/update', methods=['POST'])
+@login_required
 def update_area(id):
 
     area = get_area_by_id(id)
@@ -135,6 +143,7 @@ def update_area(id):
 
 
 @area_views.route('/area/<id>/delete', methods=['GET'])
+@login_required
 def render_confirm_delete(id):
     area = get_area_by_id(id)
 
@@ -145,6 +154,7 @@ def render_confirm_delete(id):
     return render_template('delete_area.html',area = area, form = ConfirmDelete() )
 
 @area_views.route('/area/<id>/confirmed', methods=['POST'])
+@login_required
 def remove_area(id):
     form = ConfirmDelete()
     if form.validate_on_submit:
@@ -162,6 +172,7 @@ def get_all_areas():
     return jsonify(get_area_all()),200
 
 @area_views.route('/area/<id>', methods=['GET'])
+@login_required
 def get_area_id(id):
     area = get_area_by_id(id)
     locker = return_lockers(id,3,1)
@@ -177,6 +188,7 @@ def get_area_id(id):
 
 
 @area_views.route('/area/<id>/page/<offset>', methods=['GET'])
+@login_required
 def get_area_id_multi(id,offset):
     offset = int(offset)
     area = get_area_by_id(id)

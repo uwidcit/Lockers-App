@@ -21,10 +21,12 @@ from controllers import (
 
     )
 from views.forms import StudentAdd, SearchForm, TransactionAdd,RentAdd
+from flask_login import login_required
 
 student_views = Blueprint('student_views', __name__, template_folder='../templates')
 
 @student_views.route('/student', methods=['POST'])
+@login_required
 def add_student():
     form = StudentAdd()
     if form.validate_on_submit:
@@ -40,6 +42,7 @@ def add_student():
         return redirect(url_for('.render_manage_student'))
 
 @student_views.route('/student',methods=['GET'])
+@login_required
 def render_manage_student():
     studentData = get_students_by_offset(15,1)
     previous = 1
@@ -49,6 +52,7 @@ def render_manage_student():
     return render_template("manage_student.html",studentData=studentData["data"],num_pages= studentData["num_pages"], current_page =1 ,previous = previous, next = next , form=StudentAdd(),search=search)
 
 @student_views.route('/student/page/<offset>',methods=['GET'])
+@login_required
 def render_manage_student_multi():
     offset = int(offset)
     query = request.args.get('search_query')
@@ -67,6 +71,7 @@ def render_manage_student_multi():
     return render_template("manage_student.html",studentData=studentData["data"],num_pages= studentData["num_pages"], current_page =offset ,previous = previous, next = next , form=StudentAdd(),search=search,query=query)
 
 @student_views.route("/student/search/",methods=['GET'])
+@login_required
 def search_student_page():
     search = SearchForm()
     if search.validate_on_submit:
@@ -80,6 +85,7 @@ def search_student_page():
         return redirect(url_for(".render_manage_student"))
 
 @student_views.route("/student/search/page/<offset>",methods=['GET'])
+@login_required
 def search_student_page_multi(offset):
     offset = int(offset)
     search = SearchForm()
@@ -101,6 +107,7 @@ def search_student_page_multi(offset):
         return redirect(url_for(".render_manage_student"))
 
 @student_views.route("/student/<id>/update", methods=['POST'])
+@login_required
 def update_student_info(id):
     student = get_student_by_id(id)
 
@@ -149,6 +156,7 @@ def update_student_info(id):
         return redirect(url_for('.render_manage_student'))
 
 @student_views.route('/student/<id>', methods=['GET'])
+@login_required
 def get_student_render(id):
     result = get_student_by_id_json(id)
     
@@ -164,6 +172,7 @@ def get_student_render(id):
     return render_template('studentDetails.html',student=result,rent=rent['data'],previous=previous,next=next,current_page=1,num_pages=rent['num_pages'], current_rental = get_student_current_rental(id), trans= TransactionAdd(),rentForm= rentForm,locker_names=locker_names)
 
 @student_views.route('/student/<id>/page/<offset>', methods=['GET'])
+@login_required
 def get_student_render_multi(id,offset):
     offset = int(offset)
     result = get_student_by_id_json(id)
