@@ -1,5 +1,6 @@
 from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify,flash,url_for
 from views.forms import TransactionAdd,SearchForm
+from flask_login import login_required
 from datetime import datetime
 from controllers import (
   add_new_transaction,
@@ -17,6 +18,7 @@ transactionLog_views = Blueprint('transactionLog_views', __name__, template_fold
 page_size = 6
 
 @transactionLog_views.route('/transactionLog/sID=<id>', methods=['GET'])
+@login_required
 def render_transaction_page_student(id):
     student = get_student_by_id(id)
     if not student:
@@ -36,6 +38,7 @@ def render_transaction_page_student(id):
     return render_template('transactionLog.html', form = form)
 
 @transactionLog_views.route('/transactionLog', methods=['POST'])
+@login_required
 def create_new_transaction():
     form = TransactionAdd()
     if form.validate_on_submit:
@@ -62,6 +65,7 @@ def return_all_transactions():
     return jsonify(get_all_transactions()),200
 
 @transactionLog_views.route('/transactionLog/<id>', methods=['GET'])
+@login_required
 def get_transaction(id):
     transaction = get_transaction_id(id)
 
@@ -70,6 +74,7 @@ def get_transaction(id):
     return jsonify(transaction.toJSON()),200
 
 @transactionLog_views.route('/transactionLog', methods=['GET'])
+@login_required
 def manage_transaction():
     num_pages = get_num_transactions_page(page_size)
     transaction_data = get_transactions_by_offset(page_size, 1)
@@ -79,6 +84,7 @@ def manage_transaction():
     return render_template('transactionLog.html', transaction_data = transaction_data, form = TransactionAdd(), search=SearchForm(),searchMode=False, num_pages= num_pages,current_page=1, next=next, previous= previous)
 
 @transactionLog_views.route('/transactionLog/page/<offset>', methods=['GET'])
+@login_required
 def manage_transaction_pages_multi(offset):
     offset = int(offset)
     num_pages = get_num_transactions_page(page_size)
@@ -96,6 +102,7 @@ def manage_transaction_pages_multi(offset):
     return render_template('transactionLog.html', transaction_data = transaction_data, form = TransactionAdd(), search=SearchForm(),searchMode=False, num_pages= num_pages,current_page=1, next=next, previous= previous)
 
 @transactionLog_views.route('/transactionLog/search/', methods=['GET'])
+@login_required
 def search_transaction_page():
     form = SearchForm()
     if form.validate_on_submit:
@@ -109,6 +116,7 @@ def search_transaction_page():
         return redirect(url_for('.manage_transaction'))
 
 @transactionLog_views.route('/transactionLog/search/page/<offset>', methods=['GET'])
+@login_required
 def search_transaction_page_multi(offset):
     offset = int(offset)
     form = SearchForm()
