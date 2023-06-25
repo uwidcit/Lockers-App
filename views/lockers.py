@@ -334,13 +334,36 @@ def switch_key(id):
     return redirect(url_for('.manage_locker'))
 
 @locker_views.route('/api/locker', methods=['GET'])
+@login_required
 def locker_api():
     return jsonify(get_all_lockers())
 
 @locker_views.route('/api/locker', methods=['POST'])
+@login_required
 def create_new_locker_api():
     data = request.json     #get data from JSON 
     new_locker = add_new_locker(locker_code=data['locker_code'], locker_type=data['locker_type'], status=data['status'], key_id=data['key'],area=data['area'])
     if not new_locker:
         return jsonify({"message":"Locker already exist or some error has occurred"}),400
     return jsonify(new_locker.toJSON()),201
+
+@locker_views.route('/api/locker', methods=['PUT'])
+@login_required
+def update_locker_api():
+    data = request.json 
+    locker = get_locker_id_locker(data['locker_code'])
+    if not locker:
+        return jsonify({"message": "Locker does not exist"}),404
+    id = data['locker_code']
+    if locker.locker_type != data['locker_type'] and data['locker_type']  is not None:
+        if not update_locker_type(id,data['locker_type']):
+            return jsonify({"message": "Error updating locker type"}),500
+    
+    if locker.status != data['status'] and data['status'] is not None:
+        if not update_locker_status(id,data['status']):
+            return jsonify({"message": "Error updating status"}),500
+
+    if locker.key != data['key'] and data['key'] is not None:
+        if not update_key(id,data['key']):
+            return jsonify({"message": "Error updating key"}),500
+    return jsonify(locker.toJSON()),200

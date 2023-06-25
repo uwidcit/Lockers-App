@@ -168,6 +168,7 @@ def remove_area(id):
 
 
 @area_views.route('/api/area/', methods=['GET'])
+@login_required
 def get_all_areas():
     return jsonify(get_area_all()),200
 
