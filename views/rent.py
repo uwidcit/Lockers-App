@@ -45,11 +45,9 @@ def create_new_rent():
     s_id = request.json.get('student_id')
     locker_id = request.json.get('locker_id')
     rentType = request.json.get('rentType')
-    r_date_f = request.json.get('rent_date_from')
-    r_date_t = request.json.get('rent_date_to')
-    d_returned = request.json.get('date_returned')
-
-    rental = create_rent(s_id,locker_id,rentType,r_date_f,r_date_t,d_returned)
+    r_date_f = datetime.strptime(request.json.get('rent_date_from'),'%Y-%m-%dT%H:%M')
+    r_date_t = datetime.strptime(request.json.get('rent_date_to'),'%Y-%m-%dT%H:%M')
+    rental = create_rent(s_id,locker_id,rentType,r_date_f,r_date_t)
 
     if not rental:
         return jsonify({"Message": "Rental not created"}),400

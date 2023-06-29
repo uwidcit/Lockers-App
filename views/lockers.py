@@ -52,6 +52,7 @@ def manage_locker():
 @login_required
 def manage_locker_mulpages(offset):
     offset = int(offset)
+    get_all_rentals()
     num_pages = get_num_locker_page(6)
     lockerData = get_lockers_by_offset(6,offset)
 
@@ -367,3 +368,8 @@ def update_locker_api():
         if not update_key(id,data['key']):
             return jsonify({"message": "Error updating key"}),500
     return jsonify(locker.toJSON()),200
+
+@locker_views.route('/locker/offline', methods=['GET'])
+def return_offline_page():
+    get_all_rentals()
+    return send_from_directory('static', 'manage_locker_offline.html')

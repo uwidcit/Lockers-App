@@ -1,8 +1,8 @@
 module.exports = {
 	globDirectory: 'static/',
 	globPatterns: [
-		'**/*.{js,png,css,html}'
+		'**/*.{js,png,css,html,mjs}'
 	],
 	swDest: 'static/sw.js',
-	swSrc: 'static/sw.js'
+	
 };
