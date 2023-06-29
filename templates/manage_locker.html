@@ -41,6 +41,7 @@
                 <input id="l_{{l.locker_code}}" type="checkbox" name = "check" class="swapbox" value="{{l.locker_code}}">
                 <Span></Span>
                 </label></td>
+
                 <td><a href="/locker/{{l.locker_code}}">{{l.locker_code}}</a></td>
                 <td>{{l.locker_type}}</td>
                 <td>{{l.status}}</td>
@@ -78,19 +79,25 @@
           {% if current_page == 1  %}
             <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
             {% else %}
+
             <li><a href="/locker/search/page/{{previous}}/?search_query={{query}}" id="previousPage"><i class="material-icons white-text">chevron_left</i></a></li>
+
             {% endif %}
             <li class="active purple darken-4">{{current_page}}</li>
             {% if current_page == num_pages %}
             <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
             {% else %}
+
             <li><a href="/locker/search/page/{{next}}/?search_query={{query}}" id="nextPage"><i class="material-icons white-text">chevron_right</i></a></li>
+
             {% endif %}
         {% else %}
         {% if current_page == 1  %}
         <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
         {% else %}
+
         <li><a href="/locker/page/{{previous}}" id="previousPage"><i class="material-icons white-text">chevron_left</i></a></li>
+
         {% endif %}
 
         <li class="active purple darken-4"><a href="#">{{current_page}}</a></li>
@@ -98,7 +105,9 @@
         {% if current_page == num_pages %}
         <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
         {% else %}
+
         <li><a href="/locker/page/{{next}}" id="nextPage"><i class="material-icons white-text">chevron_right</i></a></li>
+
         {% endif %}
       {% endif %}
 
@@ -356,7 +365,9 @@
     <h6>Swap Key</h6>
     <form id="swapKey_form" class="col s12 m12" method="POST">
       <div class="input-field col s8 m8 offset-m2">
+
         <p id="info"> </p>
+
       </div>                  
     
       <div class="modal-footer grey darken-3">
@@ -367,7 +378,9 @@
          </div>
 
          <div class="col s4">
+
            {{form.submit(class=" right purple darken-4 waves-light btn", value="Swap")}}
+
          </div>
          
        
@@ -384,6 +397,7 @@
  <script>
   autocomplete(document.getElementById('key'),{{keys | safe}})
   autocomplete(document.getElementById('u_l_key'),{{keys | safe}})
+
   document.addEventListener('DOMContentLoaded', function() {
     switchLockerData = document.getElementsByClassName("switchData")
     for(i=0; i<switchLockerData.length; i++){
@@ -398,6 +412,7 @@
     }
     console.log(arr)
   })
+
   var num_pages_notes  = 0
   var current_page = 0
   var previousElem = document.getElementById("previousPage")
@@ -718,6 +733,7 @@ function updateLinks(){
           `<a href ="#" onclick = "OpenswapKey()" class="purple darken-4 waves-light btn">Swap Key</a>`
     }
 }
+
 </script>
 
 {% endblock %}
