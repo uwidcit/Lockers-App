@@ -1,4 +1,5 @@
 import os,sys
+from os import path
 from flask import Flask
 from flask_login import LoginManager, current_user
 from flask_uploads import DOCUMENTS, IMAGES, TEXT, UploadSet, configure_uploads
@@ -7,6 +8,7 @@ from flaskwebgui import FlaskUI
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import  FileStorage
 from datetime import timedelta
+
 
 
 from database import create_db, get_migrate
@@ -54,7 +56,7 @@ def loadConfig(app, config):
     if app.config['ENV'] == "DEVELOPMENT":
         app.config.from_object('config')
         app.config['GIT_ENV'] = ""
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.root_path,'test_database.db')
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + 'test_database.db'
     else:
         app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
         app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
@@ -81,12 +83,29 @@ def create_app(config={}):
     app.app_context().push()
     return app
 
+def start_flask(**server_kwargs):
+
+    app = server_kwargs.pop("app", None)
+    server_kwargs.pop("debug", None)
+
+    try:
+        import waitress
+
+        waitress.serve(app, **server_kwargs)
+    except:
+        app.run(**server_kwargs)
+
 app = create_app()
 migrate = get_migrate(app)
-ui = FlaskUI(app, width=1366, height=768, start_server='flask')
 
 if __name__ == "__main__":
     if app.config['GIT_ENV'] == "GITPOD" or app.config['ENV'].upper() == "PRODUCTION":
         app.run()
-    else:
-        ui.run()
+    else: 
+        FlaskUI(app=app,width=1366, height=768, server=start_flask,server_kwargs={
+            "app": app,
+            "port": 3000,
+            "threaded": True,
+        }).run()
+
+        

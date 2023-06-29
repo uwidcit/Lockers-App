@@ -62,7 +62,7 @@ def get_locker_by_area_id_toJSON(id):
     lockers = get_locker_by_area_id(id)
 
     if not lockers:
-        return None
+        return {}
     return [l.toJSON() for l in lockers]
 
 

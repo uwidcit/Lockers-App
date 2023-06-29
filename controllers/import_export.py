@@ -155,6 +155,8 @@ def import_transactionLog(uploaded_file):
     reader = pd.read_excel(uploaded_file,"transaction_log")
     tLog_json = reader.to_dict('records')
     for tL in tLog_json:
+        if type(tL['transaction_date']) is not datetime:
+            tL['transaction_date'] = datetime.strptime(tL['transaction_date'],'%Y-%m-%d')
         add_new_transaction(tL['rent_id'], tL['currency'],tL['transaction_date'], tL['amount'], tL['description'], tL['type'], tL['receipt_number'])
     return True
 

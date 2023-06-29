@@ -6,21 +6,19 @@
 
 {% block content %}
 <div class = "row">
-  <div class="col s12 ">
-            <div class="col s12 m8 offset-m7">
-              <form method="get" action="/rentType/search">
-                <div class="input-field col s12 m4 offset-m1">
-                  <div class = "row">
-                    <input type="search" name="search_query" placeholder="Enter search query" required/>
-                  </div>
-                </div>
-                <div class="input-field col s2 m2" style="display:inline; padding-left: 0px;" >
-                  <button type="submit" style="padding: 9px 21.5px 37px 21.5px" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons" style="padding: 5px; font-size: 2rem; color:white; ">search</i></button>
-                </div>
-              </form>
-            </div>
-       </div>
-        <div class="row" style="height:60vh;">
+  <div class="row">
+    <div class="col s12 m8 offset-m7">
+      <form action="/rentType/search" id="search_form">
+        <div class="input-field col s12 m5 offset-m1">
+         <div class = "search-wrapper">
+          <input type="search" name="search_query" placeholder="Enter search query" required/>
+          <i class="material-icons white-text" style="top:1vh; " id="submit_search">search</i>
+         </div>
+        </div>
+      </form>
+    </div>
+  </div>
+        <div class="row" style="height:80vh;">
           <table class="col s12 m10 offset-m1" >
             <tr>
                 <th>ID</th>
@@ -32,7 +30,7 @@
     
             {% if results %}
             {% for r in results %}
-            <tr>
+            <tr class="purple darken-4">
                 <td>{{r.id}}</td>
                 <td>{{r.period_from}}</td>
                 <td>{{r.period_to}}</td>
@@ -47,65 +45,70 @@
             <tr><td> No Price Models </td></tr>
             {% endif %}
           </table>
-        </div>
-      <div class="col s1 m1 offset-m11" style="padding: 0.75rem">
-        <div class="floating-action-btn" style="position: absolute; bottom: 8vh;">
-         <a class="btn-floating btn-large waves-effect waves-light purple darken-4 modal-trigger" href="#new_rType"><i class="material-icons">add </i></a>
-       </div>
+        </div> 
      </div>
-     
-     <div class="col m5 offset-m5">
-      <ul class="pagination">
 
+
+     <div class="col m12 center-align" id="pag">
+      <ul class="pagination">
+        {% if query %}
+        {% if current_page == 1  %}
+          <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+          {% else %}
+          <li><a href="/rentType/search/page/{{previous}}/?search_query={{query}}"><i class="material-icons white-text">chevron_left</i></a></li>
+          {% endif %}
+          <li class="active purple darken-4">{{current_page}}</li>
+          {% if current_page == num_pages %}
+          <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+          {% else %}
+          <li><a href="/rentType/search/page/{{next}}/?search_query={{query}}"><i class="material-icons white-text">chevron_right</i></a></li>
+          {% endif %}
+      {% else %}
       {% if current_page == 1  %}
       <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
       {% else %}
-      <li><a href="#/page{{previous}}"><i class="material-icons">chevron_left</i></a></li>
+      <li><a href="/rentType/page/{{previous}}"><i class="material-icons white-text">chevron_left</i></a></li>
       {% endif %}
 
-      {% for n in range(1,num_pages + 1) %}
-      
-      
-      {% if n == current_page %}
-      {% if query %}
-      <li class="active purple darken-4"><a href="/rentType/search/page/{{n}}/?search_query={{query}}" style="color:white;">{{n}}</a></li>
-      {% else %}
-      <li class="waves effect purple darken-4"><a href="/rentType/page/{{n}}" style="color:white;">{{n}}</a></li>
-      {% endif %}
-      {% else %}
-      {% if query %}
-      <li class="waves-effect purple darken-4"><a href="/rentType/search/page/{{n}}/?search_query={{query}}" style="color:white;">{{n}}</a></li>
-      {% else %}
-      <li class="waves-effect purple darken-4"><a href="/rentType/page/{{n}}" style="color:white;">{{n}}</a></li>
-      {% endif %}
-      {% endif %}
-      {% endfor %}
-
+      <li class="active purple darken-4"><a href="#">{{current_page}}</a></li>
+     
       {% if current_page == num_pages %}
       <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
       {% else %}
-      <li><a href="#/page{{next}}"><i class="material-icons">chevron_right</i></a></li>
+      <li><a href="/rentType/page/{{next}}"><i class="material-icons white-text">chevron_right</i></a></li>
       {% endif %}
+    {% endif %}
+
     </ul>
     </div>
 
-      <div class="modal" id="new_rType" style="max-height: 100%;border-radius: 25px; height: 53vh;">
+    <div class="fixed-action-btn">
+      <a class="btn-floating btn-large waves-effect waves-light purple darken-4 modal-trigger" href="#new_rType"><i class="material-icons">add </i></a>
+  </div>
+
+
+      <div class="modal grey darken-3" id="new_rType">
         <div class="modal-content">
           <h6 style="font-weight: bold;"> Add Price Model</h6>
-            <form id="new_rentType" class="col s12 m12" method="POST" action="/rentType" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
+            <form id="new_rentType" class="col s12 m12" method="POST" action="/rentType" autocomplete="off">
             {{ form.csrf_token }}
-            <div class="input-field col s12 m6">
+            <div class="input-field col s12 m4">
             <p> Period From</p>
-            {{form.period_from(size=20,class="validate")}}
+            {{form.period_from(size=20,class="validate white-text")}}
             </div>
         
-            <div class="input-field col s12 m6">
+            <div class="input-field col s12 m4">
               <p> Period To</p>
-              {{form.period_to(size=20,class="validate")}}
-              </div>
+              {{form.period_to(size=20,class="validate white-text")}}
+            </div>
+
+            
+            <div class="input-field col s12 m4">
+              <p> Price </p>
+              {{form.price (size=20,class="validate white-text")}}
+             </div>
           
-        
-            <div class="input-field col s12 m7">
+            <div class="input-field col s12 m6">
             <p> Type </p>
             
             <select name="type" style="display:inline;">
@@ -116,10 +119,6 @@
             </select>
             </div>
         
-            <div class="input-field col s12 m5">
-            <p> Price </p>
-            {{form.price (size=20,class="validate")}}
-            </div>
             <div class="input-field col s8 m8 offset-m4" style="display:inline;">
               {{form.submit(class=" right purple darken-4 waves-light btn")}}
               <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
@@ -128,23 +127,28 @@
         </div>
         </div>
 
-        <div class="modal" id="edit_rType" style="max-height: 100%;border-radius: 25px; height: 53vh;">
+        <div class="modal grey darken-3" id="edit_rType">
           <div class="modal-content">
             <h6 style="font-weight: bold;"> Add Price Model</h6>
-              <form id="edit_rentType" class="col s12 m12" method="POST" action="/rentType" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
+              <form id="edit_rentType" class="col s12 m12" method="POST" action="/rentType" autocomplete="off">
               {{ form.csrf_token }}
-              <div class="input-field col s12 m6">
+              <div class="input-field col s12 m4">
               <p> Period From</p>
-              {{form.period_from(size=20,class="validate",id="u_period_f")}}
+              {{form.period_from(size=20,class="validate white-text",id="u_period_f")}}
               </div>
           
-              <div class="input-field col s12 m6">
+              <div class="input-field col s12 m4">
                 <p> Period To</p>
-                {{form.period_to(size=20,class="validate",id="u_period_t")}}
+                {{form.period_to(size=20,class="validate white-text",id="u_period_t")}}
                 </div>
+
+                <div class="input-field col s12 m4">
+                  <p> Price </p>
+                  {{form.price (size=20,class="validate", id="u_price")}}
+                 </div>
             
           
-              <div class="input-field col s12 m7">
+              <div class="input-field col s12 m6">
               <p> Type </p>
               
               <select name="type" id="u_type"style="display:inline;">
@@ -155,10 +159,7 @@
               </select>
               </div>
           
-              <div class="input-field col s12 m5">
-              <p> Price </p>
-              {{form.price (size=20,class="validate", id="u_price")}}
-              </div>
+             
               <div class="input-field col s8 m8 offset-m4" style="display:inline;">
                 {{form.submit(class=" right purple darken-4 waves-light btn", id="u_submit")}}
                 <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
@@ -167,10 +168,10 @@
           </div>
           </div>
 
-          <div class="modal" id="delete_price" style="max-height: 100%;border-radius: 25px; height: 35vh;">
+          <div class="modal grey darken-3" id="delete_price">
             <div class="modal-content">
               <h6 style="font-weight: bold;">Delete Price Modal </h6>
-              <form id="deletePrice" class="col s12 m12" method="POST" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
+              <form id="deletePrice" class="col s12 m12" method="POST">
               {{ delete.csrf_token }}
               <div class="input-field col s12 m12"> 
                 <h5 id="deleteTitle"></h5>

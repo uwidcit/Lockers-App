@@ -9,20 +9,18 @@
 <div class = "row" >
     <div class="row">
           <div class="col s12 m8 offset-m7">
-            <form action="/masterkey/search">
-              <div class="input-field col s12 m4 offset-m1">
-               <div class = "row">
-                <input type="search" name="search_query" placeholder="Enter search query" required/>
-               </div>
-              </div>
-
-              <div class="input-field col s2 m2" style="display:inline; padding-left: 0px;" >
-                <button type="submit" style="padding: 9px 21.5px 37px 21.5px" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons" style="padding: 5px; font-size: 2rem; color:white; ">search</i></button>
+            <div class="input-field col s12 m5 offset-m1">
+              <form action="/masterkey/search" id="search_form">
+              <div class="search-wrapper">
+                <input type="search" name="search_query"  placeholder="Enter search query" required/>
+                <i class="material-icons white-text" style="top:1vh; " id="submit_search">search</i>
               </div>
             </form>
           </div>
+            
+          </div>
         </div>
-        <div class="col s12 m10 offset-m1" style="height:60vh;">
+        <div class="col s12 m10 offset-m1" style="height:80vh;">
             <table>
               <tr>
                   <th>Code</th>
@@ -33,7 +31,7 @@
 
             {% if masterkeyData %}
             {% for m in masterkeyData %}
-            <tr>
+            <tr class="purple darken-4">
                 <td><a href="/masterkey/{{m.masterkey_id}}">{{m.masterkey_id}}</a></td>
                 <td>{{m.series}}</td>
                 <td>{{m.date_added}} </td>
@@ -50,70 +48,69 @@
             {% endif %}
             </table>
         </div>
-        <div class="col m5 offset-m5">
+        <div class="col s12 center-align" id="pag">
             <ul class="pagination">
-    
+            
+            {% if query %}
+              {% if current_page == 1  %}
+                <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+                {% else %}
+                <li><a href="/masterkey/search/page/{{previous}}/?search_query={{query}}"><i class="material-icons white-text">chevron_left</i></a></li>
+                {% endif %}
+                <li class="active purple darken-4">{{current_page}}</li>
+                {% if current_page == num_pages %}
+                <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+                {% else %}
+                <li><a href="/masterkey/search/page/{{next}}/?search_query={{query}}"><i class="material-icons white-text">chevron_right</i></a></li>
+                {% endif %}
+            {% else %}
             {% if current_page == 1  %}
             <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
             {% else %}
-            <li><a href="#/page{{previous}}"><i class="material-icons">chevron_left</i></a></li>
+            <li><a href="/masterkey/page/{{previous}}"><i class="material-icons white-text">chevron_left</i></a></li>
             {% endif %}
     
-            {% for n in range(1,num_pages + 1) %}
-            
-            
-            {% if n == current_page %}
-            {% if query %}
-            <li class="active purple darken-4"><a href="/masterkey/search/page/{{n}}/?search_query={{query}}" style="color:white;">{{n}}</a></li>
-            {% else %}
-            <li class="waves effect purple darken-4"><a href="/masterkey/page/{{n}}" style="color:white;">{{n}}</a></li>
-            {% endif %}
-            {% else %}
-            {% if query %}
-            <li class="waves-effect purple darken-4"><a href="/masterkey/search/page/{{n}}/?search_query={{query}}" style="color:white;">{{n}}</a></li>
-            {% else %}
-            <li class="waves-effect purple darken-4"><a href="/masterkey/page/{{n}}" style="color:white;">{{n}}</a></li>
-            {% endif %}
-            {% endif %}
-            {% endfor %}
-    
+            <li class="active purple darken-4"><a href="#">{{current_page}}</a></li>
+           
             {% if current_page == num_pages %}
             <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
             {% else %}
-            <li><a href="#/page{{next}}"><i class="material-icons">chevron_right</i></a></li>
+            <li><a href="/masterkey/page/{{next}}"><i class="material-icons white-text">chevron_right</i></a></li>
             {% endif %}
+          {% endif %}
+
+            
           </ul>
           </div>
-          <div class="col s1 m1 offset-m11" >
-            <div class="floating-action-btn" style="position: absolute; bottom: 8vh;">
+          
+            <div class="fixed-action-btn">
              <a class="btn-floating btn-large waves-effect waves-light purple darken-4 modal-trigger"  href="#new_masterkey"><i class="material-icons">add </i></a>
            </div>
-         </div>
 
          <div class="row">
-            <div class ="modal" id="new_masterkey" style="max-height: 100%;border-radius: 25px; height: 65vh;">
+            <div class ="modal grey darken-3 white-text" id="new_masterkey">
                 <div class ="modal-content" id="content">
                   <h6 style="font-weight: bold;"> Add Master Key </h6>
-                  <form id="newMasterkey" class="col s12 m12" method="POST" action="/masterkey" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
+                  <form id="newMasterkey" class="col s12 m12 white-text" method="POST" action="/masterkey" autocomplete="off">
                        {{ form.csrf_token }}
                        <div class="input-field col s12 m12">  
                         <div class="col s6">
                           <p>Code</p>
-                        {{ form.masterkey_id(size=20, class="validate")}}
+                        {{ form.masterkey_id(size=20, class="validate white-text")}}
                         </div>  
                         <div class="col s6">
                           <p>Series</p>
-                          {{ form.series(size=20, class="validate")}}
+                          {{ form.series(size=20, class="validate white-text")}}
                         </div> 
                        </div>   
               
-                       <div class="input-field col s12 m12">
+                       <div class="input-field col s12 m12 white-text">
                         <div class="col s6">
                         <p>Date Added</p>
-                        {{form.date_added(class='datepicker')}} 
+                        {{form.date_added(class='datepicker white-text')}} 
                         </div>  
                         
-                        <div class="col s12 m12">
+                        <div class="col s6">
                           <p>Type</p>
                         <select id="key_type" name="key_type" style="display:inline;">
                           <option value=”” disabled selected>Select a Master Key Type</option>
@@ -123,52 +120,74 @@
                         </select>
                       </div>  
                     </div>
+                  </div> 
+
+                <div class="modal-footer grey darken-3">
                        <div class="input-field col s8 m8 offset-m4" style="display:inline;">
-                         {{form.submit(class=" right purple darken-4 waves-light btn")}}
-                         <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+
+                        <div class="col s4 offset-s4">
+                           <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+                        </div>
+
+                        <div class="col s4">
+                          {{form.submit(class=" right purple darken-4 waves-light btn")}}
+                        </div>
+                        
+                      
                        </div>       
                    </form>
-                </div>     
+                   </div>
+                    
               </div>
-              <div class="modal" id="delete_masterkey" style="max-height: 100%;border-radius: 25px; height: 35vh;">
+              <div class="modal grey darken-3 white-text" id="delete_masterkey" style="border-radius: 30px;">
                 <div class="modal-content">
                   <h6 style="font-weight: bold;">Delete Master Key </h6>
-                  <form id="deleteMasterkey" class="col s12 m12" method="POST" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
+                  <form id="deleteMasterkey" class="col s12 m12 white-text">
                   {{ delete.csrf_token }}
                   <div class="input-field col s12 m12"> 
                     <h5 id="deleteTitle"></h5>
                   </div>
-                
-                <div class="input-field col s8 m8 offset-m4" style="display:inline;">
-                  {{delete.submit(class="right purple darken-4 waves-light btn")}}
-                  <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>          
                 </div>
-                </form>
+                <div class="modal-footer grey darken-3">
+                  <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+
+                   <div class="col s4 offset-s4">
+                      <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+                   </div>
+
+                   <div class="col s4">
+                     {{form.submit(class=" right purple darken-4 waves-light btn")}}
+                   </div>
+                  </div>       
+              </form>
+              </div>
+                
+                
               </div>
             </div>
-            <div class ="modal" id="edit_masterkey" style="max-height: 100%;border-radius: 25px; height: 65vh;">
+            <div class ="modal grey darken-3 white-text" id="edit_masterkey" style="border-radius: 30px;">
               <div class ="modal-content" id="content">
                 <h6 style="font-weight: bold;"> Edit Master Key </h6>
-                <form id="editMasterkey" class="col s12 m12" method="POST" action="/masterkey" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
+                <form id="editMasterkey" class="col s12 m12 white-text" method="POST" action="/masterkey" autocomplete="off">
                      {{ form.csrf_token }}
                      <div class="input-field col s12 m12">  
                       <div class="col s6">
                         <p>Code</p>
-                      {{ form.masterkey_id(size=20, class="validate", id = "u_masterkey_id")}}
+                      {{ form.masterkey_id(size=20, class="validate white-text", id = "u_masterkey_id")}}
                       </div>  
                       <div class="col s6">
                         <p>Series</p>
-                        {{ form.series(size=20, class="validate", id = "u_masterkey_series")}}
+                        {{ form.series(size=20, class="validate white-text", id = "u_masterkey_series")}}
                       </div> 
                      </div>   
             
-                     <div class="input-field col s12 m12">
+                     <div class="input-field col s12 m12 white-text">
                       <div class="col s6">
                       <p>Date Added</p>
-                      {{form.date_added(class='datepicker', id = "u_date")}} 
+                      {{form.date_added(class='datepicker white-text', id = "u_date")}} 
                       </div>  
                       
-                      <div class="col s12 m12">
+                      <div class="col s6">
                         <p>Type</p>
                       <select id="u_type" name="key_type" style="display:inline;">
                         <option value=”” disabled selected>Select a Master Key Type</option>
@@ -178,27 +197,36 @@
                       </select>
                     </div>  
                   </div>
-                     <div class="input-field col s8 m8 offset-m4" style="display:inline;">
-                       {{form.submit(class=" right purple darken-4 waves-light btn", id = "u_submit")}}
-                       <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
-                     </div>       
-                 </form>
-              </div>     
-            </div>
+                </div>
+              <div class="modal-footer grey darken-3">
+                <div class="input-field col s8 m8 offset-m4" style="display:inline;">
 
-            <div class ="modal" id="new_key" style="max-height: 100%;border-radius: 25px; height: 65vh;">
+                 <div class="col s4 offset-s4">
+                    <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+                 </div>
+
+                 <div class="col s4">
+                   {{form.submit(class=" right purple darken-4 waves-light btn", id="u_submit")}}
+                 </div>
+                </div>       
+            </form>
+            </div>
+          </div>     
+      </div>
+
+            <div class ="modal grey darken-3 white-text" id="new_key" style="border-radius: 30px;" >
               <div class ="modal-content" id="content">
-                <h6 style="font-weight: bold;"> Add Master Key </h6>
-                <form id="newKey" class="col s12 m12" method="POST" action="/masterkey/key" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
+                <h6 style="font-weight: bold;"> Add Key to Masterkey </h6>
+                <form id="newKey" class="col s12 m12" method="POST" action="/masterkey/key" autocomplete="off">
                   {{keys.csrf_token}}
                   <div class="input-field col s12 m12">  
                     <div class="col s6">
                       <p>Key ID</p>
-                      {{ keys.key_id(size=20, class="validate")}}
+                      {{ keys.key_id(size=20, class="validate white-text")}}
                     </div>  
                     <div class="col s6">
                       <p>MasterKey ID</p>
-                      {{ keys.masterkey_id(size=20, class="validate",id="u_m_key")}}
+                      {{ keys.masterkey_id(size=20, class="validate white-text",id="u_m_key")}}
                     </div> 
                    </div> 
                    
@@ -214,15 +242,23 @@
                     </div>  
                     <div class="col s6">
                       <p>Date Added</p>
-                      {{ keys.date_added(size=20, class="datepicker")}}
+                      {{ keys.date_added(size=20, class="datepicker white-text")}}
                     </div> 
                    </div> 
-                   <div class="input-field col s8 m8 offset-m4" style="display:inline;">
-                    {{keys.submit(class=" right purple darken-4 waves-light btn")}}
-                    <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
-                  </div> 
-                </form>
                 </div>
+                <div class="modal-footer grey darken-3">
+                  <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+  
+                   <div class="col s5 offset-s4">
+                      <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+                   </div>
+  
+                   <div class="col s3">
+                     {{keys.submit(class=" right purple darken-4 waves-light btn")}}
+                   </div>
+                  </div>       
+              </form>
+              </div>
                 </div>
 
 

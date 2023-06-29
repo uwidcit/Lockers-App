@@ -7,30 +7,19 @@
 {% block content %}
 <div class="row">
       <div class="row">
-        
-          {% if searchMode %}
-          <div class="col s12 m8 offset-m2" style="padding-top: 0.5rem;">
-            <a class="red darken-4 white-text waves-effect waves-light btn" href="/locker">Go Back</a>
-          </div>
-          
-          {% else %}
             <div class="col s12 m8 offset-m7">
-              <form action="/locker/search">
-                <div class="input-field col s12 m4 offset-m1">
-                 <div class = "row">
+              <form action="/locker/search" id="search_form">
+                <div class="input-field col s12 m5 offset-m1">
+                 <div class = "search-wrapper">
                   <input type="search" name="search_query" placeholder="Enter search query" required/>
+                  <i class="material-icons white-text" style="color:#4a148c; top:1vh; " id="submit_search">search</i>
                  </div>
-                </div>
-
-                <div class="input-field col s2 m2" style="display:inline; padding-left: 0px;" >
-                  <button type="submit" style="padding: 9px 21.5px 37px 21.5px" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons" style="padding: 5px; font-size: 2rem; color:white; ">search</i></button>
                 </div>
               </form>
             </div>
           </div>
-          {% endif %}  
-        <div class="col s12 m10 offset-m1" style="height:60vh;">
-          <table  >
+        <div class="col s12 m10 offset-m1" style="height:80vh;">
+          <table>
             <tr>
                 <th>Locker Code</th>
                 <th>Locker Type </th>
@@ -41,28 +30,28 @@
     
             {% if lockerData %}
             {% for l in lockerData %}
-            <tr>
+            <tr class="purple darken-4 white-text">
                 <td><a href="/locker/{{l.locker_code}}">{{l.locker_code}}</a></td>
                 <td>{{l.locker_type}}</td>
                 <td>{{l.status}}</td>
-                <td>{{l.key}} </td>
+                <td><a href="/key/{{l.key}}">{{l.key}}</a></td>
                 <td><a href="/area/{{l.area}}">{{l.area_description}}</a></td>
                 <div style=" position: relative;display: inline-flex;">
                 <td>
                     <a class="dropdown-trigger btn-floating purple darken-4 waves-effect" data-target="{{l.locker_code}}_dropdown1"><i class="large material-icons">list</i></a>
-                    <ul id='{{l.locker_code}}_dropdown1' class='dropdown-content'>
+                    <ul id='{{l.locker_code}}_dropdown1' class='dropdown-content purple darken-4 white-text'>
                       {% if l.status == "Free" %}
-                      <li><a href="/locker/rent/{{l.locker_code}}/student"><i class="material-icons left">check</i>Rent</a></li>
+                      <li><a href="/locker/rent/{{l.locker_code}}/student" class="white-text"><i class="material-icons left white-text">check</i>Rent</a></li>
                       {% elif l.status == "Rented" %}
-                      <li><a href="#" onclick="loadComments({{l.current_rental.id}},1)"><i class="material-icons left">check</i>Note</a></li>
-                      <li><a href="#" onclick="releaseMode({{l.current_rental}})"><i class="material-icons left">close</i>Release</a></li>
+                      <li><a href="#" onclick="loadComments({{l.current_rental.id}},1)" class="white-text"><i class="material-icons left white-text">check</i>Note</a></li>
+                      <li><a href="#" onclick="releaseMode({{l.current_rental}})" class="white-text"><i class="material-icons left white-text">close</i>Release</a></li>
                       {% elif l.status == "Not Verified" %}
-                      <li><a href="#" onclick="loadComments({{l.current_rental.id}},1)"><i class="material-icons left">check</i>Note</a></li>
-                      <li><a href="/rent/{{l.current_rental.id}}/release/verify"><i class="material-icons left">verified_user</i>Verify</a></li>
+                      <li><a href="#" onclick="loadComments({{l.current_rental.id}},1)" class="white-text"><i class="material-icons left white-text">check</i>Note</a></li>
+                      <li><a href="/rent/{{l.current_rental.id}}/release/verify" class="white-text"><i class="material-icons left white-text">verified_user</i>Verify</a></li>
                       {% endif %}
-                      <li><a href="#edit" onclick="editMode({{l}})"><i class="material-icons left">edit</i>Edit</a></li>
-                      <li><a href="#delete" onclick="removeMode({{l}})"><i class="material-icons left">delete</i>Delete</a></li>
-                      <li><a href="#delete" onclick="OpenswapKey('{{l.locker_code}}')"><i class="material-icons left">swap_horiz</i>Swap</a></li>
+                      <li><a href="#edit" onclick="editMode({{l}})" class="white-text"><i class="material-icons left white-text">edit</i>Edit</a></li>
+                      <li><a href="#delete" onclick="removeMode({{l}})" class="white-text"><i class="material-icons left white-text">delete</i>Delete</a></li>
+                      <li><a href="#delete" onclick="OpenswapKey('{{l.locker_code}}')" class="white-text"><i class="material-icons left white-text">swap_horiz</i>Swap</a></li>
                       </ul>
                     </div>
                   </td>
@@ -73,62 +62,59 @@
             {% endif %}
           </table>
         </div>
-      <div class="col m5 offset-m5">
+      <div id="pag" class="col s12 center-align">
         <ul class="pagination">
 
+          {% if query %}
+          {% if current_page == 1  %}
+            <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+            {% else %}
+            <li><a href="/locker/search/page/{{previous}}/?search_query={{query}}"><i class="material-icons white-text">chevron_left</i></a></li>
+            {% endif %}
+            <li class="active purple darken-4">{{current_page}}</li>
+            {% if current_page == num_pages %}
+            <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+            {% else %}
+            <li><a href="/locker/search/page/{{next}}/?search_query={{query}}"><i class="material-icons white-text">chevron_right</i></a></li>
+            {% endif %}
+        {% else %}
         {% if current_page == 1  %}
         <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
         {% else %}
-        <li><a href="#/page{{previous}}"><i class="material-icons">chevron_left</i></a></li>
+        <li><a href="/locker/page/{{previous}}"><i class="material-icons white-text">chevron_left</i></a></li>
         {% endif %}
 
-        {% for n in range(1,num_pages + 1) %}
-        
-        
-        {% if n == current_page %}
-        {% if query %}
-        <li class="active purple darken-4"><a href="/locker/search/page/{{n}}/?search_query={{query}}" style="color:white;">{{n}}</a></li>
-        {% else %}
-        <li class="waves effect purple darken-4"><a href="/locker/page/{{n}}" style="color:white;">{{n}}</a></li>
-        {% endif %}
-        {% else %}
-        {% if query %}
-        <li class="waves-effect purple darken-4"><a href="/locker/search/page/{{n}}/?search_query={{query}}" style="color:white;">{{n}}</a></li>
-        {% else %}
-        <li class="waves-effect purple darken-4"><a href="/locker/page/{{n}}" style="color:white;">{{n}}</a></li>
-        {% endif %}
-        {% endif %}
-        {% endfor %}
-
+        <li class="active purple darken-4"><a href="#">{{current_page}}</a></li>
+       
         {% if current_page == num_pages %}
         <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
         {% else %}
-        <li><a href="#/page{{next}}"><i class="material-icons">chevron_right</i></a></li>
+        <li><a href="/locker/page/{{next}}"><i class="material-icons white-text">chevron_right</i></a></li>
         {% endif %}
+      {% endif %}
+
       </ul>
-      </div>
-      <div class="col s1 m1 offset-m11" >
-        <div class="floating-action-btn" style="position: absolute; bottom: 8vh;">
+    </div>
+        <div class="fixed-action-btn">
          <a class="btn-floating btn-large waves-effect waves-light purple darken-4 modal-trigger"  href="#new_locker"><i class="material-icons">add </i></a>
-       </div>
-     </div>
+        </div>
       </div>
 
       <div class="row">
 
-        <div class ="modal" id="new_locker" style="max-height: 100%;border-radius: 25px; height: 65vh;">
+        <div class ="modal grey darken-3 white-text" id="new_locker">
           <div class ="modal-content" id="content">
             <h6 style="font-weight: bold;"> Add Locker </h6>
-            <form id="newLocker" class="col s12 m12" method="POST" action="/locker" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
+            <form id="newLocker" class="col s12 m12 white-text" method="POST" action="/locker" autocomplete="off">
                  {{ form.csrf_token }}
                  <div class="input-field col s12 m12">  
                   <div class="col s6">
                     <p>Locker Code</p>
-                  {{ form.locker_code(size=20, class="validate")}}
+                  {{ form.locker_code(size=20, class="validate white-text")}}
                   </div>  
                   <div class="col s6">
                     <p>Locker Type</p>
-                    <select id="locker_type" name="locker_type" style="display:inline;">
+                    <select id="locker_type" name="locker_type" style="display:inline;" required>
                       <option value=”” disabled selected>Select a Locker Type</option>
                       {% for subfield in form.locker_type %}
                         {{subfield}}
@@ -140,62 +126,83 @@
                  <div class="input-field col s12 m12">
                   <div class="col s6">
                   <p>Status</p>
-                  <select id="stats" name="status" style="display:inline;">
+                  <select id="stats" name="status" style="display:inline;" required>
                     <option value=”” disabled selected>Select a Status</option>
                     {% for subfield in form.status %}
                      {{subfield}}
                     {% endfor %}
                   </select>
                   </div>  
-                  <p>Key</p>
-                  <div class="input-field col s6">
-                    {{ form.key(size=18, class="validate")}}
+                  <div class="col s6">
+                    <p>Key</p>
+                    {{ form.key(size=18, class="validate white-text")}}
                   </div>
+                </div>
 
                   <div class="col s12 m12">
                     <p>Area</p>
-                  <select id="area" name="area" style="display:inline;">
+                  <select id="area" name="area" style="display:inline;" required>
                     <option value=”” disabled selected>Select a Area Status</option>
                     {% for subfield in form.area %}
                      {{subfield}}
                     {% endfor %}
                   </select>
                 </div>  
-              </div>
-                 <div class="input-field col s8 m8 offset-m4" style="display:inline;">
-                   {{form.submit(class=" right purple darken-4 waves-light btn")}}
-                   <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
-                 </div>       
-             </form>
-          </div>     
+              
+          </div> 
+          <div class="modal-footer grey darken-3">
+            <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+
+             <div class="col s4 offset-s4">
+                <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+             </div>
+
+             <div class="col s4">
+               {{form.submit(class=" right purple darken-4 waves-light btn")}}
+             </div>
+             
+           
+            </div>       
+        </form>
+        </div>    
         </div>
 
-        <div class="modal" id="delete_locker" style="max-height: 100%;border-radius: 25px; height: 35vh;">
+        <div class="modal grey darken-3 white-text" id="delete_locker" >
           <div class="modal-content">
             <h6 style="font-weight: bold;">Delete Locker </h6>
-            <form id="deleteLocker" class="col s12 m12" method="POST" style="padding: 10px; border-color: black;border: 2px; border-style: solid;">
+            <form id="deleteLocker" class="col s12 m12" method="POST">
             {{ delete.csrf_token }}
             <div class="input-field col s12 m12"> 
               <h5 id="deleteTitle"></h5>
             </div>
+          </div>
+          <div class="modal-footer grey darken-3">
+            <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+
+             <div class="col s4 offset-s4">
+                <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+             </div>
+
+             <div class="col s4">
+               {{delete.submit(class=" right purple darken-4 waves-light btn")}}
+             </div>
           
-          <div class="input-field col s8 m8 offset-m4" style="display:inline;">
-            {{delete.submit(class="right purple darken-4 waves-light btn")}}
-            <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>          </div>
-          </form>
+            </div>       
+        </form>
         </div>
+        
       </div>
 
       
-      <div class="modal" id="edit_locker" style="max-height: 100%;border-radius: 25px; height: 65vh; overflow: hidden;">
+      <div class="modal grey darken-3 white-text" id="edit_locker" >
         <div class="modal-content" id="content">
           <h6 style="font-weight: bold;"> Edit Locker </h6>
-          <form id="editLocker" class="col s12 m12" method="POST" action="/locker" style="padding: 10px; border-color: black;border: 2px; border-style: solid;" >
+          <form id="editLocker" class="col s12 m12 white-text" method="POST" action="/locker" autocomplete="off">
             {{ form.csrf_token }}
                <div class="input-field col s12 m12">  
                 <div class="col s6">
                   <p>Locker Code</p>
-                {{ form.locker_code(size=20, class="validate",id="u_locker_code")}}
+                {{ form.locker_code(size=20, class="validate white-text",id="u_locker_code")}}
                 </div>  
                 <div class="col s6">
                   <p>Locker Type</p>
@@ -219,86 +226,97 @@
                 </select>
                 </div>  
                 
-                <div class="input-field col s6">
+                <div class="col s6">
                   <p>Key</p>
-                  {{ form.key(size=20, class="validate",id="u_l_key")}}
+                  {{ form.key(size=20, class="validate white-text",id="u_l_key")}}
                 </div>
-
-                <div class="col s12 m12">
-                  <p>Area</p>
-                <select id="u_area" name="area" style="display:inline;">
-                  <option value=”” disabled selected>Select a Area Status</option>
-                  {% for subfield in form.area %}
-                   {{subfield}}
-                  {% endfor %}
-                </select>
-              </div>  
             </div>
+              <div class="col s12 m12">
+                <p>Area</p>
+              <select id="u_area" name="area" style="display:inline;">
+                <option value=”” disabled selected>Select a Area Status</option>
+                {% for subfield in form.area %}
+                  {{subfield}}
+                {% endfor %}
+              </select>
+            </div>  
+          </div>
 
-            <div class="modal-footer col s8 m8 offset-m4" style="display:inline;">
-              {{form.submit(id="u_submit",class="right purple darken-4 waves-light btn")}}
-              <a class="modal-close red darken-4 white-text right waves-light btn">Cancel</a>
-            </div> 
-                     
-           </form>
-        </div>     
+            <div class="modal-footer grey darken-3">
+              <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+
+               <div class="col s4 offset-s4">
+                  <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+               </div>
+
+               <div class="col s4">
+                 {{form.submit(class=" right purple darken-4 waves-light btn",id="u_submit")}}
+               </div>
+               
+             
+              </div>       
+          </form>
+          </div>
       </div>
 
-      <div class="modal" id="comment_modal" style="max-height: 100%;border-radius: 25px; height: 82vh;">
+      <div class="modal grey darken-3 white-text" id="comment_modal">
         <div class="modal-content">
-          <div class="card">
-            <div class="card-content">
+          <div class="card grey darken-3 white-text">
+            <div class="card-content grey darken-3 white-text">
               <h6>New Comment</h6>
-              <form action="" id="new_comment_form" method="POST">
-                <input class="input-field s10 m10" type="text" id="comment" name="comment">
+              <form action="" id="new_comment_form" method="POST" autocomplete="off">
+                <input class="input-field s10 m10 white-text" type="text" id="comment" name="comment">
                 <input type="submit" value="Comment" class="purple darken-4 waves-light btn">
               </form>
             </div>
           </div>
           
-          <div id ="notes_content">
-
+          <div class="grey darken-3 white-text" id ="notes_content">
+              
           </div>
         </div>
-        <div class="modal-footer"  id="notes_foot">
+        <div class="modal-footer grey darken-3 white-text"  id="notes_foot">
 
         </div>
       </div>
-      <div class ="modal" id="new_transaction" style="max-height: 100%;border-radius: 25px; height: 65vh;">
+      <div class ="modal grey darken-3 white-text" id="new_transaction" >
         <div class="modal-content">
           <h6 style="font-weight: bold;">New Transaction </h6>
-          <form id="newTransaction" class="col s12 m12" method="POST" action="" style="padding: 10px; border-color: black;border: 2px; border-style: solid;" >
+          <form id="newTransaction" class="col s12 m12 white-text" method="POST" action="" >
     
             {{ form.csrf_token }}
         
-            <div class="input-field col s12 m4">
-            <p> RentID </p>
-            {{trans.rent_id(size=18, class="validate",id="t_rent_id")}}
+            <div class="input-field col s12 m12">
+            <div class="col s4">
+               <p> RentID </p>
+            {{trans.rent_id(size=18, class="validate white-text",id="t_rent_id")}}
             </div>
+           
+            <div class="col s4">
+              <p> Currency </p>
+              {{trans.currency(size=18, class="validate white-text")}}
+            </div>
+            <div class="col s4">
+              <p> Amount </p>
+             {{trans.amount(size=18, class="validate white-text", id="t_amount")}}
+            </div>
+           </div>
             
-            <div class="input-field col s12 m2 offset-m1">
-            <p> Currency </p>
-            {{trans.currency(size=18, class="validate")}}
+            <div class="input-field col s12 m12">
+              <div class="col s6">
+                 <p> Transaction Date </p>
+            {{trans.transaction_date(size=18, class="validate white-text")}}
+              </div>
+              <div class="col s6">
+                 <p> Description </p>
+                {{trans.description(size=18, class="validate white-text")}}
+              </div>
+          
             </div> 
-            
-            <div class="input-field col s12 m4 offset-m1">
-            <p> Amount </p>
-            {{trans.amount(size=18, class="validate", id="t_amount")}}
-            </div>
         
-            <div class="input-field col s12 m4">
-            <p> Transaction Date </p>
-            {{trans.transaction_date(size=18, class="validate")}}
-            </div>
-        
-        
-            <div class="input-field col s12 m8"> 
-            <p> Description </p>
-            {{trans.description(size=18, class="validate")}}
-            </div>
-        
-            <div class="input-field col s12 m4" style="display:inline;">
-            <p> Transaction Type </p>
+            <div class="input-field col s12 m12" style="display:inline;">
+            <div class="col s6">
+                <p> Transaction Type </p>
             <select name="t_type" style="display:inline;">
                 <option value=”” disabled selected>Select Transaction Type</option>
                 {% for subfield in trans.t_type %}
@@ -306,28 +324,49 @@
                 {% endfor %}
               </select>
             </div>
-        
-            <div class="input-field col s12 m4">
+            <div class="col s6">
               <p> Receipt Number </p>
-              {{trans.receipt_number(size=18, class="validate")}}
-              </div>
-        
-              <div class="input-field col s8 m8 offset-m4" style="display:inline;">
-                {{trans.submit(id="t_submit",class="purple darken-4 waves-light btn")}}
-              <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
-              </div> 
-                
-            </form> 
-      </div>
-      </div>
+              {{trans.receipt_number(size=18, class="validate white-text")}}
+            </div>
+          </div>
+        </div>
+       <div class="modal-footer grey darken-3">
+        <div class="input-field col s6 m8 offset-m4" style="display:inline;">
+          <div class="col s4 offset-s4">
+            <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+          </div>
+          <div class="col s4">
+            {{trans.submit(class=" right purple darken-4 waves-light btn")}}
+          </div>
+        </div>       
+    </form>
+     </div>
+</div>
+<div class ="modal grey darken-3 white-text" id="swap_key">
+  <div class ="modal-content" id="content">
+    <h6>Swap Key</h6>
+    <form id="swapKey_form" class="col s12 m12" method="POST">
+      <div class="input-field col s8 m8 offset-m2">
+        <input type="text" class = "white-text" name="locker_code2" id="locker_code2">
+      </div>                  
+    
+      <div class="modal-footer grey darken-3">
+        <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+
+         <div class="col s4 offset-s4">
+            <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+         </div>
+
+         <div class="col s4">
+           {{form.submit(class=" right purple darken-4 waves-light btn", value="Assign")}}
+         </div>
+         
+       
+        </div>       
+    </form>
     </div>
-    <div class ="modal" id="swap_key" style="max-height: 100%;border-radius: 25px; height: 35vh;">
-      <div class ="modal-content" id="content">
-        <form id="swapKey_form" action="" method="post" > 
-        <div class = "input-field col s6 m2 offset-m1"> <input type="text" name="locker_code2" id="locker_code2"></div>
-        <input type="submit"></form>
-      </div>
-      </div>
+    </div>
+  </div>
   </div>
   </div>
 
@@ -337,15 +376,6 @@
   autocomplete(document.getElementById('locker_code2'),{{locker_names | safe}})
   autocomplete(document.getElementById('key'),{{keys | safe}})
   autocomplete(document.getElementById('u_l_key'),{{keys | safe}})
-  document.addEventListener('DOMContentLoaded', function() {
-  var elems = document.querySelectorAll('.modal');
-  var elemsBtn = document.querySelectorAll('.dropdown-trigger');
-  var instancesBtn = M.Dropdown.init(elemsBtn,{
-    hover:true,
-    constrainWidth:false
-  });
-  var instances = M.Modal.init(elems);
-  });
 
   var num_pages_notes  = 0
   var current_page = 0
@@ -381,7 +411,7 @@
         footer = document.getElementById('notes_foot')
         form.action = window.origin+'/rent/'+id+'/notes'
         if (data['data'].length == 0){
-          notes.innerHTML = `<div class="card small" style="height: 10vh;">
+          notes.innerHTML = `<div class="card small grey darken-3 white-text" style="height: 10vh;">
                   <div class="card-content">
                     <div class="col s6">
                     <p> No comments on this rental </p>
@@ -393,7 +423,7 @@
           results = ``
             for (d in data['data']){
                 results += `
-                <div class="card small" style="height: 10vh;">
+                <div class="card small grey darken-3 white-text" style="height: 10vh;">
                   <div class="card-content">
                     <div class="col s6">
                     <p> ${data['data'][d].comment} </p>
@@ -589,6 +619,7 @@
     instance.open()
   }
 
+  
 </script>
 
 {% endblock %}

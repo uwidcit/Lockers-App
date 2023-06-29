@@ -5,14 +5,14 @@
 {{ super() }}
 
 {% block content %}
-<div class="row">
+<div class="row" style="height: 100vh;">
   <div class="row">
 
     <form id="newLocker" class="col s12 m8 offset-m1" method="POST" action="/import" enctype="multipart/form-data">
       <h6>Import Data</h6>
       <div class="col s12 m12" style="padding: 10px;" >
         <div class="col s12">
-          <input type="file" name="backup" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
+          <input type="file" name="backup" style="background:white; color:black" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
           <input type="submit" value="upload" class="purple darken-4 waves-light btn">
          </div>
       </div>
