@@ -137,3 +137,21 @@ def search_transaction_page_multi(offset):
         form = TransactionAdd()
         return render_template('transactionLog.html', transaction_data = transaction_data['data'], form = TransactionAdd(), search=SearchForm(),searchMode=False, num_pages= transaction_data['num_pages'],current_page=offset, next=next, previous= previous)
     return redirect(url_for('.manage_transaction'))
+
+@transactionLog_views.route('/api/transactionLog', methods=['POST'])
+@login_required
+def create_new_transaction_api():
+        rent_id = request.json.get('rent_id')
+        currency = request.json.get('currency')
+        transaction_date = datetime.strptime(request.json.get('transaction_date'),'%Y-%m-%dT%H:%M')
+        amount = request.json.get('amount')
+        description = request.json.get('description')
+        t_type =request.json.get('t_type')
+        receipt_number = request.json.get('receipt_number')
+        
+        newTransaction = add_new_transaction (rent_id,currency,transaction_date,amount,description, t_type, receipt_number)
+        
+        if not newTransaction:
+            return jsonify({"error": "Rental not created"}),400
+        
+        return jsonify(newTransaction.toJSON()),201

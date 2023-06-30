@@ -51,6 +51,7 @@ def manage_locker():
 @locker_views.route("/locker/page/<offset>", methods=['GET'])
 @login_required
 def manage_locker_mulpages(offset):
+    get_all_rentals()
     offset = int(offset)
     num_pages = get_num_locker_page(6)
     lockerData = get_lockers_by_offset(6,offset)
@@ -345,7 +346,16 @@ def create_new_locker_api():
     new_locker = add_new_locker(locker_code=data['locker_code'], locker_type=data['locker_type'], status=data['status'], key_id=data['key'],area=data['area'])
     if not new_locker:
         return jsonify({"message":"Locker already exist or some error has occurred"}),400
-    return jsonify(new_locker.toJSON()),201
+    locker = get_locker_id(data['locker_code'])
+    data={
+        'locker_code': locker[0].locker_code,
+        'locker_type':locker[0].locker_type.value,
+        'status': locker[0].status.value,
+        'key':locker[0].key,
+        'area': locker[0].area,
+        'area_description':locker[1].description
+        }
+    return jsonify(data),201
 
 @locker_views.route('/api/locker', methods=['PUT'])
 @login_required
@@ -366,4 +376,19 @@ def update_locker_api():
     if locker.key != data['key'] and data['key'] is not None:
         if not update_key(id,data['key']):
             return jsonify({"message": "Error updating key"}),500
-    return jsonify(locker.toJSON()),200
+    locker = get_locker_id(data['locker_code'])
+    locker_json={
+        'locker_code': locker[0].locker_code,
+        'locker_type':locker[0].locker_type.value,
+        'status': locker[0].status.value,
+        'key':locker[0].key,
+        'area': locker[0].area,
+        'area_description':locker[1].description
+        }
+    return jsonify(locker_json),200
+    
+
+@locker_views.route('/locker/offline', methods=['GET'])
+def return_offline_page():
+    get_all_rentals()
+    return send_from_directory('static', 'manage_locker_offline.html')
