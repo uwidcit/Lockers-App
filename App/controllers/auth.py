@@ -1,5 +1,4 @@
 import flask_login
-from flask_jwt import JWT
 from flask_login import LoginManager
 from App.models import User
 
@@ -10,9 +9,6 @@ def authenticate(username, password):
         return user
     return None
 
-# Payload is a dictionary which is passed to the function by Flask JWT
-def identity(payload):
-    return User.query.get(payload['identity'])
 
 def login(username, password):
     user = User.query.filter_by(username=username).first()
@@ -34,5 +30,3 @@ def setup_flask_login(app):
 def logout_user():
     flask_login.logout_user()
 
-def setup_jwt(app):
-    return JWT(app, authenticate, identity)

@@ -12,7 +12,25 @@
     <!--Let browser know website is optimized for mobile-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Lockers Offline</title>
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#3367D6">
   </head>
+
+  <script src='/static/materialize.js'></script>
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+  <script src="https://cdn.datatables.net/select/1.6.2/js/dataTables.select.min.js"></script>
+
+  <script type="module">
+    import {Workbox} from 'https://storage.googleapis.com/workbox-cdn/releases/6.4.1/workbox-window.prod.mjs';
+  
+    if ('serviceWorker' in navigator) {
+      const wb = new Workbox('/static/sw.js');
+  
+      wb.register();
+    }
+  </script>
+
   <nav class="grey darken-4">
     <div class="nav-wrapper">
       <ul>
