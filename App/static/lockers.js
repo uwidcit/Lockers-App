@@ -390,4 +390,5 @@ function createRent(studentID,locker_code){
 document.addEventListener('DOMContentLoaded',getLockers)
 document.addEventListener('DOMContentLoaded',getAllAreas)
 document.addEventListener('DOMContentLoaded',getAllRentTypes)
+document.addEventListener('DOMContentLoaded',getAllStudents)
 document.getElementById('newLocker').addEventListener('submit',addLocker)

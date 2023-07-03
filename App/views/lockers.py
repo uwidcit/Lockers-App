@@ -388,7 +388,7 @@ def update_locker_api():
     return jsonify(locker_json),200
     
 
-@locker_views.route('/locker/offline', methods=['GET'])
+@locker_views.route('/static/manage_locker_offline.html', methods=['GET'])
 def return_offline_page():
     get_all_rentals()
     return send_from_directory('static', 'manage_locker_offline.html')

@@ -35,6 +35,10 @@ def client_app():
 def static_user_page():
   return send_from_directory('static', 'static-user.html')
 
+@user_views.route('/sw.js')
+def sw_pwa():
+  return send_from_directory('static', 'sw.js')
+
 
 @user_views.route('/loginpage',methods=['GET'])
 def login_page():
