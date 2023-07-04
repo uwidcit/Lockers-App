@@ -11,7 +11,7 @@ from flask import flash
 from sqlalchemy import or_,and_
 from sqlalchemy.exc import SQLAlchemyError
 
-def add_new_locker(locker_code,locker_type,status,key_id,area,):
+def add_new_locker(locker_code,locker_type,status,key_id,area):
     try:
         locker = Locker(locker_code,locker_type,status,key_id,area)
         db.session.add(locker)
