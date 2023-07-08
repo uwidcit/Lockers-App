@@ -55,7 +55,6 @@
       </li>
       <li><a class="white-text" href="/area"><i class="material-icons white-text">add_location</i><h7>Area</h7></a></li>
       <li><a class= "white-text" href="/locker" ><i class="material-icons white-text">assignment</i><h7>Lockers</h7></a></li>
-      <li><a class= "white-text" href="/static/manage_locker_offline.html" ><i class="material-icons white-text">assignment</i><h7>Lockers Offline</h7></a></li>
       <li><a class="white-text" href="/rentType"><i class="material-icons white-text">attach_money</i><h7>Pricing</h7></a></li>
       <li ><a class="white-text" href="/student"><i class="material-icons white-text">person</i><h7></h7>Student</a></li>
       <li><a class="white-text" href="/transactionLog"><i class="material-icons white-text">book</i><h7>Transaction Log</h7></a></li>
@@ -304,8 +303,9 @@
       import {Workbox} from 'https://storage.googleapis.com/workbox-cdn/releases/6.2.0/workbox-window.prod.mjs';
 
       if ('serviceWorker' in navigator) {
-        const wb = new Workbox('/static/sw.js');
+        const wb = new Workbox('/static/sw.js', {scope:'/'});
         wb.register();
+        console.log(wb)
     }
     </script>
     <script src='/static/materialize.js'></script>

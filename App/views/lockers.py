@@ -1,5 +1,5 @@
 
-from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify,url_for,flash
+from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify,url_for,flash,make_response
 
 from App.views.forms import  ConfirmDelete,SearchForm,LockerAdd,RentAdd,StudentAdd,TransactionAdd
 
@@ -36,8 +36,9 @@ from App.controllers import (
 
 locker_views = Blueprint('locker_views', __name__, template_folder='../templates')
 
-@locker_views.route("/locker", methods=['GET'])
-@login_required
+#deprecated
+#@locker_views.route("/locker", methods=['GET'])
+#@login_required
 def manage_locker():
     get_all_rentals()
     num_pages = get_num_locker_page(6)
@@ -48,8 +49,9 @@ def manage_locker():
     form.area.choices = get_area_choices()
     return render_template('manage_locker.html', lockerData=lockerData,form = form ,delete=ConfirmDelete(), search=SearchForm(),keys=get_all_keys_id(), num_pages= num_pages, locker_names= get_all_locker_names(), current_page=1, next= next, previous= previous,trans=TransactionAdd())
 
-@locker_views.route("/locker/page/<offset>", methods=['GET'])
-@login_required
+#deprecated
+#@locker_views.route("/locker/page/<offset>", methods=['GET'])
+#@login_required
 def manage_locker_mulpages(offset):
     get_all_rentals()
     offset = int(offset)
@@ -69,9 +71,9 @@ def manage_locker_mulpages(offset):
     form.area.choices = get_area_choices()
     return render_template('manage_locker.html', lockerData=lockerData,form = form ,delete=ConfirmDelete(), search=SearchForm(),keys=get_all_keys_id(), num_pages= num_pages,locker_names= get_all_locker_names(), current_page=offset,next= next, previous= previous,trans=TransactionAdd())
 
-
-@locker_views.route('/locker/<id>/delete', methods=['GET'])
-@login_required
+#deprecated
+#@locker_views.route('/locker/<id>/delete', methods=['GET'])
+#@login_required
 def render_confirm_delete(id):
     locker = get_locker_id(id)
 
@@ -81,8 +83,9 @@ def render_confirm_delete(id):
     
     return render_template('delete_locker.html',locker = locker, form = ConfirmDelete())
 
-@locker_views.route("/locker/rent/<id>/student", methods=["GET"])
-@login_required
+#deprecated
+#@locker_views.route("/locker/rent/<id>/student", methods=["GET"])
+#@login_required
 def select_student_page(id):
     studentData = get_available_student(8,1)
     search = SearchForm()
@@ -93,7 +96,8 @@ def select_student_page(id):
     search.submit.label.text = "Search Student"
     return render_template("locker_select_student.html",studentData=studentData['data'],num_pages=studentData["num_pages"], form=StudentAdd(),search=search,rent=rent,id = id,current_page=1, next= next, previous= previous)
 
-@locker_views.route("/locker/rent/<id>/student/<offset>", methods=["GET"])
+#deprecated
+#@locker_views.route("/locker/rent/<id>/student/<offset>", methods=["GET"])
 def select_student_page_multi(id,offset):
     offset = int(offset)
     studentData = get_available_student(8,offset)
@@ -114,8 +118,9 @@ def select_student_page_multi(id,offset):
     search.submit.label.text = "Search Student"
     return render_template("locker_select_student.html",studentData=studentData['data'],num_pages=studentData["num_pages"], form=StudentAdd(),search=search,rent=rent,id = id,current_page=offset,next= next, previous= previous)
 
-@locker_views.route("/locker", methods=['POST'])
-@login_required
+#deprecated
+#@locker_views.route("/locker", methods=['POST'])
+#@login_required
 def add_locker():
     form = LockerAdd() # create form object
     if form.validate_on_submit:
@@ -135,8 +140,9 @@ def add_locker():
     return redirect(url)
     #jsonify({"data":new_locker.toJSON()}),201
 
-@locker_views.route('/locker/search/',methods=['GET'])
-@login_required
+#deprecated
+#@locker_views.route('/locker/search/',methods=['GET'])
+#@login_required
 def locker_search():
     previous = 1
     next = previous + 1
@@ -152,9 +158,9 @@ def locker_search():
         else:
             flash('Record doesn''t exist')
             return redirect(url_for('.manage_locker'))
-
-@locker_views.route('/locker/search/page/<offset>/',methods=['GET'])
-@login_required
+#deprecated
+#@locker_views.route('/locker/search/page/<offset>/',methods=['GET'])
+#@login_required
 def locker_search_multi(offset):
     offset = int(offset)
     form = SearchForm()
@@ -177,8 +183,9 @@ def locker_search_multi(offset):
         flash('Record doesn''t exist')
         return redirect(url_for('.manage_locker'))
 
-@locker_views.route('/locker/<id>/confirmed', methods=['POST'])
-@login_required
+#deprecated
+#@locker_views.route('/locker/<id>/confirmed', methods=['POST'])
+#@login_required
 def remove_area(id):
     form = ConfirmDelete()
     if form.validate_on_submit:
@@ -189,9 +196,9 @@ def remove_area(id):
         flash('Locker deleted !')
     return redirect(url_for('.manage_locker'))
 
-
-@locker_views.route("/locker/<id>/update", methods=['POST'])
-@login_required
+#deprecated
+#@locker_views.route("/locker/<id>/update", methods=['POST'])
+#@login_required
 def update_lockers(id):
     locker = get_locker_id_locker(id)
 
@@ -242,8 +249,9 @@ def get_id_locker(id):
 
     return jsonify({"data":locker.toJSON()}),200
 
-@locker_views.route('/locker/<id>/transaction', methods=['POST'])
-@login_required
+#deprecated
+#@locker_views.route('/locker/<id>/transaction', methods=['POST'])
+#@login_required
 def create_new_transaction(id):
     form = TransactionAdd()
     if form.validate_on_submit:
@@ -276,15 +284,17 @@ def create_new_transaction(id):
         flash('Success')
         return redirect(url)
 
-@locker_views.route("/locker/<id>/rent", methods=["GET"])
-@login_required
+#deprecated
+#@locker_views.route("/locker/<id>/rent", methods=["GET"])
+#@login_required
 def render_lockers_rent(id):
     form = RentAdd()
     form.rent_type.choices = get_All_rentType()
     return render_template("addrent.html", form=form,id=id)
 
-@locker_views.route("/locker/<id>", methods=["GET"])
-@login_required
+#deprecated
+#@locker_views.route("/locker/<id>", methods=["GET"])
+#@login_required
 def render_get_lockers(id):
     previous = 1 
     next = previous + 1
@@ -296,9 +306,9 @@ def render_get_lockers(id):
     if rents:
         return render_template('lockerDetails.html', locker = locker, rents = rents['data'], previous= previous,current_page=1,next=next, locker_names= get_all_locker_names(), num_pages=rents['num_pages'],keys=get_all_keys_id(),trans=TransactionAdd(),current_rental= current_rental, form = form,delete=ConfirmDelete())
     return render_template('lockerDetails.html', locker = locker, rents = None, previous= previous,current_page=1,next=next,num_pages=1, locker_names= get_all_locker_names(),keys=get_all_keys_id(),trans=TransactionAdd(),current_rental= current_rental,form = form, delete=ConfirmDelete())
-
-@locker_views.route("/locker/<id>/page/<offset>", methods=["GET"])
-@login_required
+#deprecated
+#@locker_views.route("/locker/<id>/page/<offset>", methods=["GET"])
+#@login_required
 def render_get_lockers_multi(id,offset):
     offset= int(offset)
     locker = get_locker_id(id)
@@ -320,8 +330,8 @@ def render_get_lockers_multi(id,offset):
             next = offset + 1
     return render_template('remove.html', locker = locker, rents = rents['data'], num_pages=num_pages, current_page=offset, locker_names= get_all_locker_names(), previous=previous, next=next,keys=get_all_keys_id(),current_rental= current_rental, form = form,delete=ConfirmDelete())
 
-@locker_views.route('/locker/<id>/key/swap', methods=['POST'])
-@login_required
+#@locker_views.route('/locker/<id>/key/swap', methods=['POST'])
+#@login_required
 def switch_key(id):
     form = LockerAdd()
     if form.validate_on_submit:
@@ -388,7 +398,8 @@ def update_locker_api():
     return jsonify(locker_json),200
     
 
-@locker_views.route('/static/manage_locker_offline.html', methods=['GET'])
+@locker_views.route('/locker', methods=['GET'])
 def return_offline_page():
     get_all_rentals()
     return send_from_directory('static', 'manage_locker_offline.html')
+     
