@@ -297,6 +297,16 @@
         </form>
       </div>
     </div>
+    <div class ="modal grey darken-3 white-text" id="swap_key">
+      <div class ="modal-content" id="content">
+        <h6>Swap Key</h6>
+        <form id="swapKey_form" class="col s12 m12" method="POST">
+          <div class="input-field col s8 m8 offset-m2">
+          </div>                  
+          <div class="modal-footer grey darken-3">     
+        </form>
+        </div>
+        </div>
 </div>
 
      <script type="module" >
@@ -549,14 +559,6 @@
       window.location.href = "/rent/"+rent.id+"/release";
     }
     
-  }
-
-  function OpenswapKey(locker_id){
-    form = document.getElementById("swapKey_form")
-    form.action = "/locker/" + locker_id + "/key/swap"
-    elem = document.getElementById('swap_key');
-    instance = M.Modal.getInstance(elem)
-    instance.open()
   }
 
   
