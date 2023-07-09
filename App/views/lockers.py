@@ -330,19 +330,15 @@ def render_get_lockers_multi(id,offset):
             next = offset + 1
     return render_template('remove.html', locker = locker, rents = rents['data'], num_pages=num_pages, current_page=offset, locker_names= get_all_locker_names(), previous=previous, next=next,keys=get_all_keys_id(),current_rental= current_rental, form = form,delete=ConfirmDelete())
 
-#@locker_views.route('/locker/<id>/key/swap', methods=['POST'])
-#@login_required
-def switch_key(id):
-    form = LockerAdd()
-    if form.validate_on_submit:
-        locker2 = request.form.get("locker_code2")
-        print (locker2)
+@locker_views.route('/api/locker/swap', methods=['PUT'])
+@login_required
+def switch_key():
+        locker2 = request.json.get("locker_code2")
+        id = request.json.get("locker_code1")
         locker1 = swap_key(id, locker2)
         if locker1:
-            flash("Success!")
-            return redirect(url_for('.manage_locker'))
-    flash("Failure")
-    return redirect(url_for('.manage_locker'))
+            return jsonify(locker1.toJSON()),200
+        return jsonify({"message":"error swapping keys"}),400
 
 @locker_views.route('/api/locker', methods=['GET'])
 @login_required

@@ -73,7 +73,6 @@ async function getAllLockers(){
     }
     else{ 
         for (let d of result){
-            console.log("?")
             html += 
             `<tr class="purple darken-4 white-text" id="td_${d.locker_code}"> 
             <td><a href="/locker/${d.locker_code}"> ${d.locker_code} </a> </td>
@@ -189,6 +188,7 @@ function editMode(locker){
 var student_list = []
 var locker_list = []
 var rentType_list = []
+var lockerRow_list = []
 var row_id = 0
 
 async function getAllStudents(){
@@ -217,7 +217,7 @@ async function getAllRentTypes(){
 function initTable(data){
     let table = new DataTable('#lockerTable',{
         "responsive":true,
-        select:true,
+        select:"multi",
         data:data,
         "columns":[
             {"data":"locker_code"},
@@ -231,14 +231,42 @@ function initTable(data){
         if ( type === 'row' ) {
             var data = table.rows( indexes ).data();
             row_id = indexes
-            enableOptions(data[0])
+            if (lockerRow_list.length < 2){
+                lockerRow_list.push(indexes[0])
+                if(lockerRow_list.length == 2){
+                    enableOptionsSwap(table.rows(lockerRow_list).data())
+                }
+                else{
+                    enableOptions(data[0])
+                }
+            }
+            else{
+                p = lockerRow_list.shift()
+                table.rows(p).deselect()
+                lockerRow_list.push(indexes[0])
+                enableOptionsSwap(table.rows(lockerRow_list).data())
+            }
         }
     } );
 
     table.on( 'deselect', function ( e, dt, type, indexes ) {
         if ( type === 'row' ) {
             var data = table.rows( indexes ).data();
-            disableOptions()
+            if (lockerRow_list.length == 1){
+                if(lockerRow_list[0] == indexes[0]){
+                    lockerRow_list.shift()
+                    disableOptions()
+                }
+            }
+            else{
+                if (lockerRow_list[0] === indexes[0]){
+                    lockerRow_list.shift()
+                }
+                else if(lockerRow_list[1] == indexes[0]){
+                    lockerRow_list.pop()
+                }
+                enableOptions(table.rows(lockerRow_list).data())
+            }
         }
     } );
 }
@@ -263,8 +291,7 @@ function enableOptions(d){
     }
     html +=`
         <li><a href="#edit" onclick="editMode({'locker_code':'${d.locker_code}','locker_type':'${d.locker_type}','area':${d.area},'key':'${d.key}','status':'${d.status}'})" class="white-text"><i class="material-icons left white-text">edit</i>Edit</a></li>
-        <li><a href="#delete" onclick="removeMode({'locker_code':'${d.locker_code}','locker_type':'${d.locker_type}','area':${d.area},'key':'${d.key}','status':'${d.status}'})" class="white-text"><i class="material-icons left white-text">delete</i>Delete</a></li>
-        <li><a href="#delete" onclick="OpenswapKey({})" class="white-text"><i class="material-icons left white-text">swap_horiz</i>Swap</a></li>`
+        <li><a href="#delete" onclick="removeMode({'locker_code':'${d.locker_code}','locker_type':'${d.locker_type}','area':${d.area},'key':'${d.key}','status':'${d.status}'})" class="white-text"><i class="material-icons left white-text">delete</i>Delete</a></li>`
     data_dropdown.innerHTML = html
       var elemsBtn = document.querySelectorAll('.dropdown-trigger');
       var instancesBtn = M.Dropdown.init(elemsBtn,{
@@ -385,6 +412,69 @@ function createRent(studentID,locker_code){
    instance.open()
   }
 
+  async function swapKey(event){
+    event.preventDefault()
+
+    let form = event.target
+    let fields = event.target.elements
+
+    let data = {
+        locker_code1: fields['locker_code1'].value,
+        locker_code2: fields['locker_code2'].value,
+    }
+    
+    elem = document.getElementById('swap_key');
+    instance = M.Modal.getInstance(elem)
+    instance.close()
+    form.reset()
+
+    let result = await sendRequest('/api/locker/swap','PUT', data)
+
+    if('error' in result){
+        toast("Updating locker failed"+result['error']);
+      }else{
+        toast("Success");
+      }
+}
+
+function enableOptionsSwap(d){
+    console.log(d)
+    btn = document.querySelector('#options_btn')
+    btn.className="dropdown-trigger btn purple darken-4 waves-effect"
+    btn.dataset.target ="locker_dropdown1"
+    data_dropdown = document.querySelector('#locker_dropdown1')
+    html= ``
+    if(d[0].status === "Free" && d[1].status === "Free"){
+        html += `<li><a href="#" onclick="OpenSwapKey('${d[0].locker_code}','${d[1].locker_code}')" class="white-text"><i class="material-icons left white-text">swap_horiz</i>Swap</a></li>`
+    }
+    else{
+        html += `<li><a href="#" class="white-text">Can't edit locker while rented</a></li>`
+    }
+    data_dropdown.innerHTML = html
+      var elemsBtn = document.querySelectorAll('.dropdown-trigger');
+      var instancesBtn = M.Dropdown.init(elemsBtn,{
+        hover:true,
+        constrainWidth:false
+        });
+}
+
+function OpenSwapKey(locker1, locker2){
+    form = document.getElementById("swapKey_form")
+    form.innerHTML = `<p> Do you want to swap ${locker1} with ${locker2} <p>
+    <input type = "hidden" value = ${locker1} name = locker_code1>
+    <input type = "hidden" value = ${locker2} name = locker_code2>
+    <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+        <div class="col s4 offset-s4">
+        <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+        </div>
+        <div class="col s4">
+        <input type="submit" class="right purple darken-4 waves-light btn" value="Assign">
+        </div>
+    </div>`
+    elem = document.getElementById('swap_key');
+    instance = M.Modal.getInstance(elem)
+    instance.open()
+  }
 
 //Add event listener to object later
 document.addEventListener('DOMContentLoaded',getLockers)
@@ -392,3 +482,4 @@ document.addEventListener('DOMContentLoaded',getAllAreas)
 document.addEventListener('DOMContentLoaded',getAllRentTypes)
 document.addEventListener('DOMContentLoaded',getAllStudents)
 document.getElementById('newLocker').addEventListener('submit',addLocker)
+document.getElementById('swapKey_form').addEventListener('submit',swapKey)

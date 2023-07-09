@@ -46,7 +46,7 @@ def user_authen():
     if user:
         flask_login.login_user(user,True)
         flash('Success')
-        return redirect(url_for("locker_views.manage_locker"))
+        return redirect(url_for("locker_views.return_offline_page"))
     flash('Error in credentials')
     return render_template('index.html')
 
