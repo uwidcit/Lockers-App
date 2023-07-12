@@ -1,5 +1,6 @@
 from flask import Blueprint, redirect, render_template, request, url_for, flash
 from datetime import datetime
+from flask_login import login_required
 
 from controllers import (
     get_all_masterkeys,
@@ -20,6 +21,7 @@ masterkey_views = Blueprint('masterkey_views', __name__, template_folder='../tem
 page_size = 6
 
 @masterkey_views.route('/masterkey', methods=['GET'])
+@login_required
 def render_masterkey_page():
     masterkeyData = get_all_masterkeys(page_size,1)
     previous = 1
@@ -31,6 +33,7 @@ def render_masterkey_page():
     return render_template("manage_masterkey.html", current_page =1 ,previous = previous, next = next, search=search, masterkeyData=masterkeyData["data"], keys = keys ,num_pages= masterkeyData["num_pages"], form = masterKeyForm(), delete = ConfirmDelete())
 
 @masterkey_views.route('/masterkey', methods=['POST'])
+@login_required
 def create_new_masterkey():
     form = masterKeyForm()
     if form.validate_on_submit():
@@ -44,6 +47,7 @@ def create_new_masterkey():
         return redirect(url_for(".render_masterkey_page"))
 
 @masterkey_views.route('/masterkey/<masterkey_id>/confirmed', methods=['POST'])
+@login_required
 def remove_master_key(masterkey_id):
     form = ConfirmDelete()
     if form.validate_on_submit:
@@ -55,6 +59,7 @@ def remove_master_key(masterkey_id):
     return redirect(url_for('.render_masterkey_page'))
 
 @masterkey_views.route("/masterkey/<masterkey_id>/update", methods=['POST'])
+@login_required
 def update_masterkey(masterkey_id):
     masterkey = get_masterkey_by_id(masterkey_id)
 
@@ -85,6 +90,7 @@ def update_masterkey(masterkey_id):
     return redirect(url_for('.render_masterkey_page'))
 
 @masterkey_views.route('/masterkey/page/<offset>', methods=['GET'])
+@login_required
 def render_masterkey_mulpages(offset):
     offset = int(offset)
     masterkeyData = get_all_masterkeys(page_size,offset)
@@ -104,6 +110,7 @@ def render_masterkey_mulpages(offset):
     return render_template("manage_masterkey.html", current_page =offset ,previous = previous, next = next, search=search, keys= keys, masterkeyData=masterkeyData["data"], num_pages= masterkeyData["num_pages"], form = masterKeyForm(), delete = ConfirmDelete())
 
 @masterkey_views.route('/masterkey/search/',methods=['GET'])
+@login_required
 def masterkey_search():
     previous = 1
     next = previous + 1
@@ -123,6 +130,7 @@ def masterkey_search():
             return redirect(url_for('.render_masterkey_page'))
 
 @masterkey_views.route('/masterkey/search/page/<offset>',methods=['GET'])
+@login_required
 def masterkey_search_multi(offset):
     offset = int(offset)
     form = SearchForm()
@@ -148,6 +156,7 @@ def masterkey_search_multi(offset):
             return redirect(url_for('.render_masterkey_page'))
 
 @masterkey_views.route('/masterkey/key',methods=['POST'])
+@login_required
 def create_key():
     form = KeyAdd()
     if form.validate_on_submit:
@@ -177,6 +186,7 @@ def create_key():
     return redirect(url)
 
 @masterkey_views.route('/masterkey/<id>', methods=['GET'])
+@login_required
 def render_get_masterkey_page(id):
     masterkeyData = get_masterkey_by_id(id)
 
@@ -194,6 +204,7 @@ def render_get_masterkey_page(id):
     return render_template("masterkey_details.html", current_page =1 , form = masterKeyForm(),previous = previous, next = next, masterkeyData=masterkeyData, num_key= keyData['num_keys'],keyData= keyData['data'],keys = keys ,num_pages= keyData["num_pages"], delete = ConfirmDelete())
 
 @masterkey_views.route('/masterkey/<id>/page/<offset>', methods=['GET'])
+@login_required
 def render_get_masterkey_page_offset(id,offset):
     offset = int(offset)
     masterkeyData = get_masterkey_by_id(id)

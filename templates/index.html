@@ -9,13 +9,22 @@
        <div class="center">
       <h1 class = "yellow-text black">SAC</h1>
     </div>      
-    <form action="/locker" method="get">
+    <form action="/login" method="post">
       <div class='row'>
           <div class='input-field col s12 black-text'>
             <input type="text" id="username" name="username" required class="black-text center-align" value="username">
             <span></span>
             <label>Enter Username</label>
           </div>
+        </div>
+        <div class="row">
+          {% with messages = get_flashed_messages() %}
+          {% if messages %}
+              {% for message in messages %}
+                <body onload="M.toast({html:'{{message}}'})"></body>
+              {% endfor %}
+          {% endif %}
+          {% endwith %}
         </div>
         <div class='row'>
           <div class='input-field col m12 black-text'>

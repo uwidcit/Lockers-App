@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, jsonify, request, send_from_directory
 from flask_jwt import jwt_required
+from flask_login import login_required, current_user
 
 
 from controllers import (
@@ -20,6 +21,7 @@ def upload_file_route():
     return []
 
 @user_views.route('/users', methods=['GET'])
+@login_required
 def get_user_page():
     users = get_all_users()
     return render_template('users.html', users=users)
@@ -43,3 +45,8 @@ def login_page():
 def remove_page():
   return render_template('remove.html')
 
+@user_views.route('/api/identify',methods=['GET'])  
+def identify():
+  if not current_user.is_anonymous:
+        return jsonify(current_user.toJSON())
+  return {}

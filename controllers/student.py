@@ -156,12 +156,17 @@ def update_student_status(id,status):
         db.session.rollback()
         return None
 
-def get_available_student():
-    students = Student.query.filter_by(rentStanding = RentStanding.GOOD)
+def get_available_student(size,offset):
+    s_offset = (offset *size) - size
+
+    students = Student.query.filter_by(rentStanding = RentStanding.GOOD).limit(size).offset(s_offset)
 
     if not students:
-        return None
-    return [s.toJSON() for s in students]
+        return {"num_pages":1,"data":[]}
+    s_list = []
+    for s in students:
+        s_list.append(s.toJSON())
+    return {"num_pages":len(s_list), "data":s_list}
 
 def get_all_students():
     students = Student.query.all()
@@ -191,7 +196,7 @@ def get_students_by_offset(size,offset):
     students = Student.query.limit(size).offset(l_offset)
 
     if not students:
-        return None
+        return {"num_pages":1,"data":[]}
     
     s_list = []
 
@@ -205,7 +210,7 @@ def search_student(query,size,offset):
     data = Student.query.filter(or_(Student.student_id.like(query), Student.first_name.like(query), Student.last_name.like(query), Student.faculty.like(query), Student.rentStanding.like(query))).all()
     
     if not data:
-        return None
+        return {"num_pages":1,"data":[]}
     
     length_student = len(data)
     if length_student == 0:
@@ -280,3 +285,8 @@ def get_rental_student(id,size,offset):
 
     return {"num_pages":num_pages,"data":r_list}
     
+def get_all_available_student():
+    students = Student.query.filter_by(rentStanding = RentStanding.GOOD).all()
+    if not students:
+        return {}
+    return [S.toJSON() for S in students]
