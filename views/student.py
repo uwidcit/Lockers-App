@@ -196,5 +196,6 @@ def get_student_render_multi(id,offset):
     return render_template('studentDetails.html',student=result,rent=rent['data'],previous=previous,next=next,current_page=offset,num_pages=num_pages, current_rental = get_student_current_rental(id), trans= TransactionAdd(),rentForm= rentForm, locker_names=locker_names)
 
 @student_views.route('/api/student/available', methods=['GET'])
+@login_required
 def get_students_api():
     return jsonify(get_all_available_student())
