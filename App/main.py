@@ -13,7 +13,6 @@ from App.database import create_db, get_migrate
 from App.config import config
 
 from App.controllers import (
-    setup_jwt,
     setup_flask_login
 )
 
@@ -69,7 +68,6 @@ def create_app(config_overrides={}):
     configure_uploads(app, photos)
     add_views(app, views)
     create_db(app)
-    setup_jwt(app)
     setup_flask_login(app)
     app.app_context().push()
     return app

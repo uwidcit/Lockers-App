@@ -1,0 +1,620 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href='/static/style.css'>
+     <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css"/>
+    <link rel="stylesheet" href="https://cdn.datatables.net/select/1.6.2/css/select.dataTables.min.css">
+    
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href='/static/materialize.css'>
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Lockers Offline</title>
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#3367D6">
+  </head>
+
+  <script src='/static/materialize.js'></script>
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+  <script src="https://cdn.datatables.net/select/1.6.2/js/dataTables.select.min.js"></script>
+
+  <script type="module">
+    import {Workbox} from 'https://storage.googleapis.com/workbox-cdn/releases/6.4.1/workbox-window.prod.mjs';
+  
+    if ('serviceWorker' in navigator) {
+      const wb = new Workbox('/static/sw.js');
+  
+      wb.register();
+    }
+  </script>
+
+  <nav class="grey darken-4">
+    <div class="nav-wrapper">
+      <ul>
+        <li><a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons white-text">menu</i></a></li>
+      </ul>
+    </div>
+  </nav> 
+ 
+  <body style="display: flexbox; overflow-y: hidden;">
+    <ul id="slide-out" class="sidenav sidenav-fixed purple darken-4">
+      <li>
+          <ul class="collapsible">
+          <li><a class="white-text collapsible-header"><i class="material-icons white-text">key</i>Key Management</a>
+          <div class="collapsible-body grey darken-4">
+            <ul>
+            <li><a class="white-text" href="/masterkey"><h7>Master Key</h7></a></li>
+            <li><a class="white-text" href="/key"><h7>Key</h7></a></li>
+            </ul>
+          </div>
+        </li>
+        </ul>
+      </li>
+      <li><a class="white-text" href="/area"><i class="material-icons white-text">add_location</i><h7>Area</h7></a></li>
+      <li><a class= "white-text" href="/locker" ><i class="material-icons white-text">assignment</i><h7>Lockers</h7></a></li>
+      <li><a class="white-text" href="/rentType"><i class="material-icons white-text">attach_money</i><h7>Pricing</h7></a></li>
+      <li ><a class="white-text" href="/student"><i class="material-icons white-text">person</i><h7></h7>Student</a></li>
+      <li><a class="white-text" href="/transactionLog"><i class="material-icons white-text">book</i><h7>Transaction Log</h7></a></li>
+      <li><a class="white-text" href="/export"><i class="material-icons white-text">cloud_download</i><h7>Import/Export</h7></a></li>
+      <li><a class="white-text" href="/report"><i class="material-icons white-text">person</i><h7>Reports</h7></a></li>
+      <li><a class="white-text" href="/"><i class="material-icons white-text">exit_to_app</i><h7>Logout</h7></a></li>
+    </ul>  
+    <div class="row" >   
+      <div class="grey darken-4 white-text" >
+        <div class="row">
+            <div class="col s12 m10 offset-m1 white-text" style="height:100vh;" >
+              <div >
+                  <a id="options_btn" class="btn disabled center-align" >Options<i class="large material-icons center-align">arrow_drop_down</i> </a>
+                  <ul id='locker_dropdown1' class='dropdown-content purple darken-4 white-text'>
+
+                  </ul>
+              </div>
+              
+              <table id="lockerTable" class="purple darken-4 white-text">
+                <thead>
+                  <th>Locker Code</th>
+                  <th>Locker Type</th>
+                  <th>Status</th>
+                  <th>Key</th>
+                  <th>Area</th>
+                </thead>
+
+                </table>
+            </div>
+        </div>
+      </div>
+      <div class="fixed-action-btn">
+        <a class="btn-floating btn-large waves-effect waves-light purple darken-4 modal-trigger"  href="#new_locker"><i class="material-icons">add </i></a>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class ="modal grey darken-3 white-text" id="new_locker">
+        <div class ="modal-content" id="content">
+          <h6 style="font-weight: bold;"> Add Locker </h6>
+          <form id="newLocker" class="col s12 m12 white-text" method="POST" autocomplete="off">
+              
+               <div class="input-field col s12 m12">  
+                <div class="col s6">
+                  <p>Locker Code</p>
+                  <input type="text" class="validate white-text" name="locker_code" id="locker_code">
+                </div>  
+                <div class="col s6">
+                  <p>Locker Type</p>
+                  <select id="locker_type" name="locker_type" style="display:inline;" required>
+                    <option value=”” disabled selected>Select a Locker Type</option>
+                    <option value="Small">Small</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Combination">Combination</option>
+                  </select>
+                </div> 
+               </div>   
+      
+               <div class="input-field col s12 m12">
+                <div class="col s6">
+                <p>Status</p>
+                <select id="stats" name="status" style="display:inline;" required>
+                  <option value=”” disabled selected>Select a Status</option>
+                  <option value="Free">Free</option>
+                  <option value="Repair">Repair</option>
+                </select>
+                </div>  
+                <div class="col s6">
+                  <p>Key</p>
+                  <input type="text" name="key" id="key" class="validate white-text">
+                </div>
+              </div>
+
+                <div class="col s12 m12">
+                  <p>Area</p>
+                <select id="area" name="area" style="display:inline;" required>
+                  <option value=”” disabled selected>Select a Area Status</option>
+                </select>
+              </div>      
+        </div> 
+        <div class="modal-footer grey darken-3">
+          <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+
+           <div class="col s4 offset-s4">
+              <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+           </div>
+
+           <div class="col s4">
+            <input type="submit" class="right purple darken-4 waves-light btn" id="l_submit" value="Add Locker">
+           </div>
+          </div>       
+      </form>
+    </div>
+  </div>
+  
+  <div class="modal grey darken-3 white-text" id="rent_modal">
+    <div class="modal-content" id="rent_content">
+      <table id="studentTable" class="purple darken-4 white-text">
+        <a id="studentConfirm_btn" class="btn disabled center-align" >Confirm</a>
+      </table>
+    </div>
+  </div>
+
+
+
+    <div class="modal grey darken-3 white-text" id="delete_locker" >
+      <div class="modal-content">
+        <h6 style="font-weight: bold;">Delete Locker </h6>
+        <form id="deleteLocker" class="col s12 m12" method="POST">
+        <div class="input-field col s12 m12"> 
+          <h5 id="deleteTitle"></h5>
+        </div>
+      </div>
+      <div class="modal-footer grey darken-3">
+        <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+
+         <div class="col s4 offset-s4">
+            <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+         </div>
+
+         <div class="col s4">
+          <input type="submit" name="" id="submit" class="right purple darken-4 waves-light btn">
+         </div>
+      
+        </div>       
+    </form>
+    </div>   
+  </div>
+
+  <div class="modal grey darken-3 white-text" id="comment_modal">
+    <div class="modal-content">
+      <div class="card grey darken-3 white-text">
+        <div class="card-content grey darken-3 white-text">
+          <h6>New Comment</h6>
+          <form action="" id="new_comment_form" method="POST" autocomplete="off">
+            <input class="input-field s10 m10 white-text" type="text" id="comment" name="comment">
+            <input type="submit" value="Comment" class="purple darken-4 waves-light btn">
+          </form>
+        </div>
+      </div>
+      
+      <div class="grey darken-3 white-text" id ="notes_content">
+          
+      </div>
+    </div>
+    <div class="modal-footer grey darken-3 white-text"  id="notes_foot">
+
+    </div>
+  </div>
+
+  <div class ="modal grey darken-3 white-text" id="new_transaction" >
+    <div class="modal-content">
+      <h6 style="font-weight: bold;">New Transaction </h6>
+      <form id="newTransaction" class="col s12 m12 white-text" method="POST" action="" >
+    
+        <div class="input-field col s12 m12">
+        <div class="col s4">
+           <p> RentID </p>
+           <input type="text" class="validate white-text" id="t_rent_id" name="rent_id"/>
+        </div>
+       
+        <div class="col s4">
+          <p> Currency </p>
+          <input type="text" class="validate white-text" name="currency">
+        </div>
+        <div class="col s4">
+          <p> Amount </p>
+          <input type="number" class="validate white-text" id="t_amount" name="amount">
+        </div>
+       </div>
+        
+        <div class="input-field col s12 m12">
+          <div class="col s6">
+             <p> Transaction Date </p>
+             <input type="datetime-local" class="validate white-text" id="transaction_date">
+          </div>
+          <div class="col s6">
+             <p> Description </p>
+             <input type="text" class="validate white-text" id="t_description" name="description">
+          </div>
+      
+        </div> 
+    
+        <div class="input-field col s12 m12" style="display:inline;">
+        <div class="col s6">
+            <p> Transaction Type </p>
+        <select name="t_type" style="display:inline;">
+            <option value=”” disabled selected>Select Transaction Type</option>
+            <option value="debit">debit</option>
+            <option value="credit">credit</option>
+          </select>
+        </div>
+        <div class="col s6">
+          <p> Receipt Number </p>
+          <input type="number" class="validate white-text" id="t_receipt" name="receipt_number">
+        </div>
+        <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+          <input type="submit" class="right purple darken-4 waves-light btn">
+          <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+        </div>  
+      </form>
+      </div>
+    </div>
+  </div>
+
+    <div class="modal grey darken-3 white-text" id="new_Rent">
+      <div class="modal-content">
+        <h6 style="font-weight: bold;">New Rent</h6>
+        <form id="rentalForm" class="col s12 m12" method="POST" autocomplete="off">
+          <div class="input-field col s12 m12"> 
+            <div class="col s6">
+              <p>Student ID</p>
+              <input type="text" class="validate white-text", id="rent_student_id" name="student_id">
+            </div>
+            <input type="hidden" name="locker_code" id="locker_code_rent" value="">
+            <div class="col s6">
+              <p>Rent Type</p>
+              <select name="rent_type" style="display:inline;" id="rent_type">
+               
+              </select>
+            </div>
+          </div>  
+          
+          <div class="input-field col s12 m12">
+            <div class="col s6">  
+              <p>Rent From</p>
+              <input type="datetime-local" class="white-text" name="rent_date_from">
+            </div> 
+
+            <div class="col s6">
+            <p>Rent To</p>
+            <input type="datetime-local" class="white-text" name="rent_date_to">
+            </div>
+          </div> 
+
+          <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+            <input type="submit" class="right purple darken-4 waves-light btn">
+            <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+          </div>      
+        </form>
+      </div>
+    </div>
+    <div class ="modal grey darken-3 white-text" id="swap_key">
+      <div class ="modal-content" id="content">
+        <h6>Swap Key</h6>
+        <form id="swapKey_form" class="col s12 m12" method="POST">
+          <div class="input-field col s8 m8 offset-m2">
+          </div>                  
+          <div class="modal-footer grey darken-3">     
+        </form>
+        </div>
+        </div>
+</div>
+
+     <script type="module" >
+      import {Workbox} from 'https://storage.googleapis.com/workbox-cdn/releases/6.2.0/workbox-window.prod.mjs';
+
+      if ('serviceWorker' in navigator) {
+        const wb = new Workbox('/static/sw.js', {scope:'/'});
+        wb.register();
+        console.log(wb)
+    }
+    </script>
+    <script src='/static/materialize.js'></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+    <script src="https://cdn.datatables.net/select/1.6.2/js/dataTables.select.min.js"></script>
+    <script src="/static/util.js"></script>
+    <script src="/static/lockers.js"></script>
+    <script type="text/javascript">
+      document.addEventListener('DOMContentLoaded', function() {
+      var sideElems = document.querySelectorAll('.sidenav');
+      var sideInstances = M.Sidenav.init(sideElems);
+      var elemsColl = document.querySelectorAll('.collapsible');
+      var instancesColl = M.Collapsible.init(elemsColl);
+      var elemsFxBtn = document.querySelectorAll('.fixed-action-btn');
+      var instancesFxBtn = M.FloatingActionButton.init(elemsFxBtn);
+      
+      var elems = document.querySelectorAll('.modal');
+      var instances = M.Modal.init(elems);
+      });
+
+      function displayMessage(message){
+        M.toast({html:message})
+      }
+  </script>
+
+<script>
+  var num_pages_notes  = 0
+  var current_page = 0
+
+  var form = document.getElementById('new_comment_form')
+  form.addEventListener('submit', (e)=>{
+    e.preventDefault()
+    text = form.elements[0].value
+    data = {
+      'comment':text
+    }
+    fetch(form.action,{
+      method:'POST',
+      body:JSON.stringify(data),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8"
+      }}).then((response) => response.json())
+      .then(data =>{
+        console.log(data)
+        elem = document.getElementById('comment_modal');
+        instance = M.Modal.getInstance(elem)
+        instance.close()
+        loadComments(data[0]['rent_id'],1)
+      })
+  })
+
+
+  function loadComments(id,num){
+    fetch(window.origin+'/rent/'+id+'/notes').then((response) => response.json())
+    .then(data => {
+        notes = document.getElementById('notes_content')
+        form = document.getElementById('new_comment_form')
+        footer = document.getElementById('notes_foot')
+        form.action = window.origin+'/rent/'+id+'/notes'
+        if (data['data'].length == 0){
+          notes.innerHTML = `<div class="card small grey darken-3 white-text" style="height: 10vh;">
+                  <div class="card-content">
+                    <div class="col s6">
+                    <p> No comments on this rental </p>
+                   </div>
+                  </div>
+                </div>`
+        }
+        else{
+          results = ``
+            for (d in data['data']){
+                results += `
+                <div class="card small grey darken-3 white-text" style="height: 10vh;">
+                  <div class="card-content">
+                    <div class="col s6">
+                    <p> ${data['data'][d].comment} </p>
+                   </div>
+                   <div class="col s6 ">
+                    <p> Created on :${data['data'][d].date_created} </p>
+                    </div>
+                  </div>
+                </div>
+                `
+            } 
+               notes.innerHTML = results
+        }
+        num_pages_notes = data['num_pages']
+        current_page = 1
+
+        if(num_pages_notes <= 1){
+          pagination = `
+          <div class="col s6 push-s1">
+          <ul class="pagination">
+          <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+          <li class="waves-effect purple darken-4"><a href="#" style="color:white;">${current_page}</a></li>
+          <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+          </ul>
+          </div>
+          `  
+        }
+        else{
+          pagination = `
+          <div class="col s6 push-s1">
+          <ul class="pagination">
+          <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+          <li class="waves-effect purple darken-4"><a href="#" style="color:white;">${current_page}</a></li>
+          <li><a href="#!" onclick="iterateNotes(${id},1)"><i class="material-icons">chevron_right</i></a></li>
+          </ul>
+          </div>
+          `
+        }
+        footer.innerHTML = pagination
+        
+        elem = document.getElementById('comment_modal');
+        instance = M.Modal.getInstance(elem)
+        instance.open()
+    })
+  }
+
+  function iterateNotes(id,number){
+    footer = document.getElementById('notes_foot')
+    if (current_page + number <= num_pages_notes && current_page + num_pages_notes > 0){
+        current_page = current_page + number
+    }
+
+    if (current_page === 1){
+      pagination = `
+          <div class="col s6 push-s1">
+          <ul class="pagination">
+          <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+          <li class="waves-effect purple darken-4"><a href="#" style="color:white;">${current_page}</a></li>
+          <li><a href="#!" onclick="iterateNotes(${id},1)"><i class="material-icons">chevron_right</i></a></li>
+          </ul>
+          </div>
+          `
+    }
+
+    else if(current_page == num_pages_notes){
+      pagination = `
+          <div class="col s6 push-s1">
+          <ul class="pagination">
+          <li><a href="#!" onclick="iterateNotes(${id},-1)"><i class="material-icons">chevron_left</i></a></li>
+          <li class="waves-effect purple darken-4"><a href="#" style="color:white;">${current_page}</a></li>
+          <li class="disabled"><a href="#!")"><i class="material-icons">chevron_right</i></a></li>
+          </ul>
+          </div>
+          `
+    }
+    else{
+       pagination = `
+          <div class="col s6 push-s1">
+          <ul class="pagination">
+          <li><a href="#!" onclick="iterateNotes(${id},-1)"><i class="material-icons">chevron_left</i></a></li>
+          <li class="waves-effect purple darken-4"><a href="#" style="color:white;">${current_page}</a></li>
+          <li><a href="#!"  onclick="iterateNotes(${id},1)"><i class="material-icons">chevron_right</i></a></li>
+          </ul>
+          </div>
+          `
+    }
+    footer.innerHTML = pagination
+    
+    notes = document.getElementById('notes_content')
+    
+    fetch(window.origin+'/rent/'+id+'/notes/'+current_page).then((response) => response.json())
+    .then(data => {
+      results = ``
+            for (d in data['data']){
+                results += `
+                <div class="card small" style="height: 10vh;">
+                  <div class="card-content">
+                    <div class="col s6">
+                    <p> Created on :${data['data'][d].date_created} </p>
+                    <p> ${data['data'][d].comment} </p>
+                   </div>
+                  </div>
+                </div>
+                `
+            } 
+            notes.innerHTML = results
+    })
+  }
+
+  
+
+  function removeMode(locker){
+    
+    form = document.getElementById('deleteLocker')
+    title = document.getElementById('deleteTitle')
+    title.innerHTML = "Are you sure you want to delete "+locker.locker_code+"! This action cannot be undone"
+    form.action = "/locker/"+locker.locker_code+"/confirmed"
+
+   elem = document.getElementById('delete_locker');
+   instance = M.Modal.getInstance(elem) 
+   instance.open()
+  }
+
+
+
+  function releaseMode(rent){
+
+    if (rent.amount_owed != 0){
+      rent_id = document.getElementById('t_rent_id')
+      amount = document.getElementById('t_amount')
+      form = document.getElementById("newTransaction")
+      form.addEventListener('submit', async (event)=>{
+        event.preventDefault()
+        let form = event.target
+        let fields = event.target.elements
+    
+        let data = {
+            rent_id: fields['rent_id'].value,
+            currency: fields['currency'].value,
+            transaction_date: fields['transaction_date'].value,
+            amount: fields['amount'].value,
+            description:fields['description'].value,
+            t_type:fields['t_type'].value,
+            receipt_number:fields['receipt_number'].value,
+        }
+        elem = document.getElementById('new_transaction');
+        instance = M.Modal.getInstance(elem)
+        instance.close()
+        form.reset()
+        let result = await sendRequest('/api/transactionLog','POST', data)
+
+        if('error' in result){
+            toast("Transaction failed"+result['error']);
+        }else{
+            toast("Success");
+        }
+      })
+
+      rent_id.value = rent.id
+      amount.value = rent.amount_owed
+
+      elem = document.getElementById('new_transaction');
+      instance = M.Modal.getInstance(elem)
+      instance.open()
+    }
+    else{
+      window.location.href = "/rent/"+rent.id+"/release";
+    }
+    
+  }
+
+  
+</script>
+
+    <style>
+      .indentMenu {
+        text-indent: 35px;
+      }
+      .modal{
+        border-radius: 25px;
+        overflow-y: hidden;
+        max-height: 100%;
+      }
+      input[type=search]{
+          color:white !important
+      }
+
+      #pag{
+        bottom: 10px;
+        position: fixed;
+        z-index: 997;
+       padding-right: 300px; 
+      }
+
+      header, body, footer {
+      padding-left: 300px;
+      }
+      body{
+        overflow: hidden;
+      }
+      table{
+        border-spacing: 0 7.5px;
+        border-collapse: separate;
+      }
+      select{
+        display: inline;
+      }
+      .dataTables_length select{
+        color: white;
+        background-color: #212121 !important;
+      }
+
+      
+    @media only screen and (max-width : 992px) {
+      header, body, footer {
+        padding-left: 0;
+      }
+      #pag {
+          padding-right: 0;
+        }
+    }
+    .dropdown-content li:hover, .dropdown-content li.active{
+      background-color: #424242;
+    }
+    </style>
+    
+  </body>
+</html>

@@ -1,5 +1,4 @@
-from flask import Blueprint, render_template, jsonify, request, send_from_directory
-from flask_jwt import jwt_required
+from flask import Blueprint, render_template, jsonify, request, send_from_directory,send_file,current_app,make_response
 from flask_login import login_required, current_user
 
 
@@ -35,6 +34,11 @@ def client_app():
 def static_user_page():
   return send_from_directory('static', 'static-user.html')
 
+@user_views.route('/static/sw.js')
+def sw_pwa():
+  response = make_response(current_app.send_static_file('sw.js'))
+  response.headers['Service-Worker-Allowed'] = '/'
+  return response
 
 @user_views.route('/loginpage',methods=['GET'])
 def login_page():

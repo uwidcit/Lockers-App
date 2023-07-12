@@ -17,6 +17,8 @@ migrate = get_migrate(app)
 def initialize():
     db.drop_all()
     db.create_all()
+    # insert sample data into database
+    create_user('rob', 'robpass')
     create_user('bob', 'bobpass')
     print('database intialized')
     add_new_area("SAC Downstairs", 12, 10)

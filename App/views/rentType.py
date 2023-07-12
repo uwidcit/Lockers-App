@@ -182,3 +182,11 @@ def search_rentTypes_multi(offset):
             next = offset + 1
         return render_template('rentType_manage.html', results=data['data'],form = RentTypeAdd(),search=SearchForm(),delete= ConfirmDelete(), previous= previous, next= next, current_page=offset,num_pages=num_pages)
     return redirect(url_for('.render_rentType_all'))
+
+@rentType_views.route('/api/rentType',methods=['GET'])
+@login_required
+def api_getRentTypes():
+    rentTypes = get_All_rentType()
+    if not rentTypes: 
+        return {}
+    return jsonify(rentTypes),200

@@ -127,7 +127,10 @@ def get_all_lockers():
     data = []
     for locker,area in locker_list:
         l = locker.toJSON()
-        l['area_description'] = area.longitude
+        l['area_description'] = area.description
+        current_rental = Rent.query.filter(and_(Rent.locker_id == l['locker_code'], Rent.status != RStatus.VERIFIED)).first()
+        if current_rental:
+            l['current_rental'] = current_rental.toJSON()
         data.append(l)
     return data
 

@@ -14,7 +14,7 @@ def allowed_file(filename):
 @index_views.route('/', methods=['GET'])
 def index_page():
     if not flask_login.current_user.is_anonymous:
-        return redirect(url_for("locker_views.manage_locker"))
+        return redirect(url_for("locker_views.return_offline_page"))
     return render_template('index.html')
 
 #@index_views.app_errorhandler(400)
@@ -46,7 +46,7 @@ def user_authen():
     if user:
         flask_login.login_user(user,True)
         flash('Success')
-        return redirect(url_for("locker_views.manage_locker"))
+        return redirect(url_for("locker_views.return_offline_page"))
     flash('Error in credentials')
     return render_template('index.html')
 
@@ -81,3 +81,7 @@ def ex_student():
 def fresh_start():
     delete_all()
     return redirect(url_for("index_views.index_page"))
+
+@index_views.route('/offline.html',methods=['GET'])
+def return_offline_page():
+    return send_from_directory('static','offline.html')
