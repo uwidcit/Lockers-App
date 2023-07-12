@@ -69,7 +69,14 @@ def manage_locker_mulpages(offset):
         next = offset + 1
     form = LockerAdd()
     form.area.choices = get_area_choices()
-    return render_template('manage_locker.html', lockerData=lockerData,form = form ,delete=ConfirmDelete(), search=SearchForm(),keys=get_all_keys_id(), num_pages= num_pages,locker_names= get_all_locker_names(), current_page=offset,next= next, previous= previous,trans=TransactionAdd())
+    lockerSwitch = []
+    if request.args:
+            locker1 = request.args.get('locker1')
+            locker2 = request.args.get('locker2')
+            lockerSwitch.append(locker1)
+            if locker2:
+                lockerSwitch.append(locker2) 
+    return render_template('manage_locker.html', lockerData=lockerData,form = form ,delete=ConfirmDelete(), search=SearchForm(),keys=get_all_keys_id(), num_pages= num_pages,locker_names= get_all_locker_names(), current_page=offset,next= next, previous= previous,trans=TransactionAdd(), selectData = lockerSwitch)
 
 #deprecated
 #@locker_views.route('/locker/<id>/delete', methods=['GET'])
