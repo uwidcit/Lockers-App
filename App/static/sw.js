@@ -4,10 +4,6 @@ importScripts(
   'https://storage.googleapis.com/workbox-cdn/releases/6.4.1/workbox-sw.js'
 );
 
-workbox.setConfig({
-  debug:true,
-})
-
 self.skipWaiting()
 
 const {offlineFallback} = workbox.recipes;
@@ -17,13 +13,42 @@ const {CacheFirst, StaleWhileRevalidate, NetworkOnly,NetworkFirst} = workbox.str
 const {precacheAndRoute} = workbox.precaching;
 const {CacheableResponse, CacheableResponsePlugin} = workbox.cacheableResponse;
 
-setDefaultHandler(new NetworkOnly());
+precacheAndRoute([ { url: '/locker/offline', revision: null }, ...[{"revision":"bc56a6869ac03cd8815461a8a58ca256","url":"autocomplete.js"},{"revision":"9d295ec8b213fdfaac1595e739a950ef","url":"keep_alive.js"},{"revision":"4f0283c6ce28e888000e978e537a6a56","url":"leaflet/images/layers-2x.png"},{"revision":"a6137456ed160d7606981aa57c559898","url":"leaflet/images/layers.png"},{"revision":"401d815dc206b8dc1b17cd0e37695975","url":"leaflet/images/marker-icon-2x.png"},{"revision":"2273e3d8ad9264b7daa5bdbf8e6b47f8","url":"leaflet/images/marker-icon.png"},{"revision":"44a526eed258222515aa21eaffd14a96","url":"leaflet/images/marker-shadow.png"},{"revision":"7e29848ca196493b99af2368a37633a9","url":"leaflet/leaflet-src.esm.js"},{"revision":"e2633201d0c94e27be73c45656fe84ad","url":"leaflet/leaflet-src.js"},{"revision":"c02c12fe5e21d2493070649584ca38b7","url":"leaflet/leaflet.css"},{"revision":"f7a3fe98f3eb12ae0e6cff8019a0a672","url":"leaflet/leaflet.js"},{"revision":"3f30ec2b6411666f4f6313c8a9d4656d","url":"lockers.js"},{"revision":"870b5ea4295065881458d40c6df53a78","url":"main.js"},{"revision":"1d2280b2cb79e78740394a0a289ac2a3","url":"manage_locker_offline.html"},{"revision":"5c939ef677a57602e5e12eaa34058ead","url":"map_init.js"},{"revision":"b0663391a6dd5efed956259f29fa18dd","url":"materialize.css"},{"revision":"74ac8fd1cd0b94f532c54d4c707a86ae","url":"materialize.js"},{"revision":"ec1df3ba49973dcb9ff212f052d39483","url":"materialize.min.css"},{"revision":"5dcfc8944ed380b2215dc28b3f13835f","url":"materialize.min.js"},{"revision":"40e80c67fb109388b291614b9292789a","url":"offline.html"},{"revision":"7a2b4050bd5b0159ba5101b00d60b40f","url":"static-user.html"},{"revision":"ceac046cad1656146e8d521968b87cda","url":"style.css"},{"revision":"1d8179f18fcc6c658c386f9f30ef126b","url":"util.js"},{"revision":"2cd1cbbe5f9d94f135c89263d2eb4d2b","url":"workbox-a482575e.js"}]]);
 
-offlineFallback({
-  pageFallback:'/static/offline.html'
+// Custom wrapper function to log requests and register the route
+function registerRouteWithLogging(urlPattern, strategy, options) {
+  console.log('Registering route:', urlPattern);
+
+  // Log the request before registering the route
+  self.addEventListener('fetch', (event) => {
+    console.log('Fetching:', event.request.url);
+    // You can log other request details here if needed
+  });
+
+  // Register the route with the provided strategy and options
+  registerRoute(urlPattern, strategy, options);
+}
+
+registerRouteWithLogging(
+  '*', // URL pattern to match
+  new CacheFirst({
+    cacheName: 'lockers-cache',
+    plugins: [
+      new CacheableResponsePlugin({
+        statuses: [0, 200]
+      })
+    ]
+  })
+);
+
+// Log all network requests
+self.addEventListener('fetch', (event) => {
+  console.log('SW: Fetching', event.request.url);
+  // You can also log other request details like event.request.method, event.request.headers, etc.
+
+  // Pass through the fetch request
+  event.respondWith(fetch(event.request));
 });
-
-precacheAndRoute([{"revision":null, "url":"offline.html"},{"revision":null,"url":"/locker"},{"revision":"dad012731df1721b57dc48cf4f1add53","url":"autocomplete.js"},{"revision":"0dd78473fc27caf72ea72c454ec18a84","url":"keep_alive.js"},{"revision":"4f0283c6ce28e888000e978e537a6a56","url":"leaflet/images/layers-2x.png"},{"revision":"a6137456ed160d7606981aa57c559898","url":"leaflet/images/layers.png"},{"revision":"401d815dc206b8dc1b17cd0e37695975","url":"leaflet/images/marker-icon-2x.png"},{"revision":"2273e3d8ad9264b7daa5bdbf8e6b47f8","url":"leaflet/images/marker-icon.png"},{"revision":"44a526eed258222515aa21eaffd14a96","url":"leaflet/images/marker-shadow.png"},{"revision":"e3892d074983b63ffd604791f43d9e30","url":"leaflet/leaflet-src.esm.js"},{"revision":"df65e4dedb0f7e6b0e29ed00ec6fa463","url":"leaflet/leaflet-src.js"},{"revision":"049a8e8f1dbe4187144fa2343a2754c5","url":"leaflet/leaflet.css"},{"revision":"35b48eb991f383702f153452506e07b2","url":"leaflet/leaflet.js"},{"revision":"c04b5861eed5390a1803bbf55861277e","url":"lockers.js"},{"revision":"887d54f3e212bc67511d78086e044318","url":"main.js"},{"revision":"9298cb6a6bb2cba6ab1d9dd3f4865b99","url":"map_init.js"},{"revision":"b0663391a6dd5efed956259f29fa18dd","url":"materialize.css"},{"revision":"54596df2e8100554ca1508ce94a2fa9f","url":"materialize.js"},{"revision":"ec1df3ba49973dcb9ff212f052d39483","url":"materialize.min.css"},{"revision":"87d84bf8b4cc051c16092d27b1a7d9b3","url":"materialize.min.js"},{"revision":"13dd5c2619bcbed86af479c1c532d605","url":"static-user.html"},{"revision":"b139cfe10ede9b5038d0064723a6b35b","url":"style.css"},{"revision":"b05bf22f01944cec506282e9024be5c2","url":"util.js"}]);
 
 const bgSyncPlugin = new BackgroundSyncPlugin('LockersQueue',{
   maxRetentionTime:48 *60,
@@ -65,7 +90,6 @@ registerRoute(
   }),
   'POST'
   )
-
 
 registerRoute(
   new RegExp('\/api/*'),

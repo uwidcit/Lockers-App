@@ -4,15 +4,14 @@ importScripts(
   'https://storage.googleapis.com/workbox-cdn/releases/6.4.1/workbox-sw.js'
 );
 
+self.skipWaiting()
+
 const {offlineFallback} = workbox.recipes;
 const {BackgroundSyncPlugin,Queue} = workbox.backgroundSync;
 const {registerRoute,setDefaultHandler} = workbox.routing;
 const {CacheFirst, StaleWhileRevalidate, NetworkOnly,NetworkFirst} = workbox.strategies;
 const {precacheAndRoute} = workbox.precaching;
 const {CacheableResponse, CacheableResponsePlugin} = workbox.cacheableResponse;
-
-
-
 
 precacheAndRoute([ { url: '/locker/offline', revision: null }, ...self.__WB_MANIFEST]);
 
@@ -91,7 +90,7 @@ registerRoute(
   }),
   'POST'
   )
-  
+
 registerRoute(
   new RegExp('\/api/*'),
   new StaleWhileRevalidate()
