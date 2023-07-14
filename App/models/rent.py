@@ -13,7 +13,7 @@ class RentStatus(Enum):
 class Rent(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     student_id = db.Column (db.Integer, db.ForeignKey("student.student_id"), nullable= False)
-    locker_id = db.Column(db.String, db.ForeignKey("locker.locker_code"), nullable= False)
+    keyHistory_id = db.Column(db.String, db.ForeignKey("key_history.id"), nullable= False)
     rent_type =  db.Column(db.Integer, db.ForeignKey("rental_types.id"), nullable= False)
     rent_date_from =  db.Column(db.DateTime, nullable= False)
     rent_date_to = db.Column(db.DateTime, nullable= False)
@@ -22,9 +22,9 @@ class Rent(db.Model):
     status = db.Column(db.Enum(RentStatus), nullable = False)
     Transactions = db.relationship('TransactionLog', backref='rent', lazy=True, cascade="all, delete-orphan")
 
-    def __init__(self, student_id, locker_id, rent_type, rent_date_from, rent_date_to,amount_owed):
+    def __init__(self, student_id,  keyHistory_id, rent_type, rent_date_from, rent_date_to,amount_owed):
         self.student_id = student_id
-        self.locker_id = locker_id
+        self.keyHistory_id = keyHistory_id
         self.rent_type =  rent_type
         self.rent_date_from =  rent_date_from
         self.rent_date_to  =  rent_date_to
@@ -62,7 +62,7 @@ class Rent(db.Model):
         rent_dict =  {
             "id":self.id,
             "student_id" : self.student_id,
-            "locker_id":  self.locker_id,
+            "keyHistory_id":  self.keyHistory_id,
             "rent_type": self.rent_type,
             "rent_date_from": datetime.strftime(self.rent_date_from,'%Y-%m-%d %H:%M:%S'),
             "rent_date_to": datetime.strftime(self.rent_date_to,'%Y-%m-%d %H:%M:%S'),

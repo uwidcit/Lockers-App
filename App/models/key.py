@@ -16,6 +16,7 @@ class Key(db.Model):
     masterkey_id  = db.Column (db.String, db.ForeignKey("masterkey.masterkey_id"),nullable = False)
     key_status = db.Column(db.Enum(Key_Status),nullable = False)
     date_added = db.Column (db.Date, nullable = False)
+    KeyH = db.relationship('KeyHistory', backref='key', lazy="dynamic", cascade="all, delete-orphan")
 
     def __init__(self, key_id,masterkey_id,key_status, date_added):
         self.key_id = key_id
