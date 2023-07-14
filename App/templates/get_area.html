@@ -48,7 +48,6 @@
   </table>
 </div>
 
-{{areaList}}
 <div id="pag" class="col s12 center-align">
   <ul class="pagination">
 
@@ -71,6 +70,9 @@
 
   <div class="fixed-action-btn">
     <a class="btn-floating btn-large waves-effect waves-light purple darken-4" onclick="openNewLocker({{area.toJSON()}})"><i class="material-icons">add </i></a>
+    <ul>
+      <li><a class="btn-floating purple darken-4 modal-trigger" href="#mass_swap_modal"><i class="material-icons">swap_horiz</i></a></li>
+    </ul>
   </div>
 </div>
 
@@ -137,6 +139,16 @@
     </div>       
 </form>
 </div>    
+</div>
+<div class="modal grey darken-3 white-text" id="mass_swap_modal">
+  <div class="modal-content input-field" id="content">
+    <form>
+      {% for a in areaList %}
+      <input type="radio" name="area_select" value="{{a.id}}" id="{{a.description}}" style="display:inline">
+      <label for="{{a.description}}">{{a.description}}</label>
+      {% endfor %}
+    </form>
+  </div>
 </div>
 <script src="/static/autocomplete.js"></script> 
 <script>
