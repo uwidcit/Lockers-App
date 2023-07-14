@@ -12,6 +12,7 @@ from App.controllers.lockers import(
     get_locker_id,
     rent_locker,
     release_locker,
+    get_current_locker_instance,
     not_verified
 )
 
@@ -107,16 +108,19 @@ def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to):
     if get_overdue_rent_by_student(student_id) or get_owed_rent_by_student(student_id):
         flash("Unable to create rent. Rent Owed")
         return []
-
-    if get_locker_id(locker_id): 
+    locker = get_locker_id(locker_id)
+    if locker: 
         try:
-            amount_owed = init_amount_owed(rentType, rent_date_from, rent_date_to)
-            rent = Rent(student_id, locker_id, rentType,rent_date_from,rent_date_to,amount_owed)
-            db.session.add(rent)
-            db.session.commit()
-            rent_locker(locker_id)
-            update_student_status(student_id,"RENTING")
-            return rent
+            locker_instance = get_current_locker_instance(locker_id)
+            if locker_instance:
+                amount_owed = init_amount_owed(rentType, rent_date_from, rent_date_to)
+                rent = Rent(student_id, locker_instance.id, rentType,rent_date_from,rent_date_to,amount_owed)
+                db.session.add(rent)
+                db.session.commit()
+                rent_locker(locker_id)
+                update_student_status(student_id,"RENTING")
+                return rent
+            return None
         except SQLAlchemyError as e:
             print(e)
             create_log(student_id, type(e), datetime.now())
@@ -125,7 +129,8 @@ def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to):
             return None
         
 def import_verified_rent(student_id,locker_id,rentType,rent_date_from,rent_date_to,amount_owed,status,date_returned):
-    rent = Rent(student_id, locker_id, rentType,rent_date_from,rent_date_to,amount_owed)
+    locker_instance = get_current_locker_instance(locker_id)
+    rent = Rent(student_id, locker_instance.id, rentType,rent_date_from,rent_date_to,amount_owed)
     if status == 'Verified':
         rent.status = Status.VERIFIED
         rent.date_returned = date_returned

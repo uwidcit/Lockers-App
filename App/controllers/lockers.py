@@ -1,5 +1,5 @@
 from App.models import Locker
-from App.models import Area, Rent
+from App.models import Area, Rent, KeyHistory
 from App.models.rent import RentStatus as RStatus
 from App.models.locker import LockerStatus as Status, LockerTypes
 from App.database import db
@@ -13,10 +13,11 @@ from sqlalchemy.exc import SQLAlchemyError
 
 def add_new_locker(locker_code,locker_type,status,key_id,area):
     try:
-        locker = Locker(locker_code,locker_type,status,key_id,area)
+        locker = Locker(locker_code,locker_type,status,area)
         db.session.add(locker)
         db.session.commit()
         new_keyHistory(key_id,locker.locker_code,datetime.now().date())
+        print(locker.toJSON())
         return locker
     except SQLAlchemyError as e:
         print(e)
@@ -127,8 +128,9 @@ def get_all_lockers():
     data = []
     for locker,area in locker_list:
         l = locker.toJSON()
+        keyH = locker.KeyH.order_by(KeyHistory.date_moved.desc()).first().id
         l['area_description'] = area.description
-        current_rental = Rent.query.filter(and_(Rent.locker_id == l['locker_code'], Rent.status != RStatus.VERIFIED)).first()
+        current_rental = Rent.query.filter(and_(Rent.keyHistory_id == keyH, Rent.status != RStatus.VERIFIED)).first()
         if current_rental:
             l['current_rental'] = current_rental.toJSON()
         data.append(l)
@@ -180,6 +182,13 @@ def get_current_rental(id):
     if current_rental:
         return current_rental.toJSON()
     return None
+
+def get_current_locker_instance(id):
+    locker = get_locker_id_locker(id)
+
+    if not locker:
+        return None
+    return locker.order_by(KeyHistory.date_moved.desc()).first()
 
 
 def rent_locker(id):
@@ -264,9 +273,6 @@ def update_key(id, new_key):
         return None
     else:
         try:
-            locker.key = new_key
-            db.session.add(locker)
-            db.session.commit()
             new_keyHistory(new_key,locker.locker_code,datetime.now().date())
             return locker
         except SQLAlchemyError as e:
