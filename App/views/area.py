@@ -15,7 +15,8 @@ from App.controllers import (
     set_longitude,
     search_area,
     get_area_choices,
-    get_all_keys_id
+    get_all_keys_id,
+    get_area_all_except
 )
 
 from App.views.forms import AreaAdd,ConfirmDelete,SearchForm,LockerAdd
@@ -180,12 +181,13 @@ def get_area_id(id):
     previous = 1
     num_lockers = len(get_locker_by_area_id_toJSON(id))
     next = previous + 1
+    areaList = get_area_all_except(id)
     form = LockerAdd()
     form.area.choices = get_area_choices()
     if not area:
         flash('Area '+id+' not found')
         return redirect(url_for('.render_area_page'))
-    return render_template('get_area.html',area = area,locker=locker["data"], previous=previous,next=next,current_page=1,num_pages=locker['num_pages'],num_lockers=num_lockers,form=form,keys=get_all_keys_id())
+    return render_template('get_area.html',area = area,locker=locker["data"], previous=previous,next=next,current_page=1,num_pages=locker['num_pages'],num_lockers=num_lockers,form=form,keys=get_all_keys_id(), areaList=areaList)
 
 
 @area_views.route('/area/<id>/page/<offset>', methods=['GET'])
@@ -194,6 +196,7 @@ def get_area_id_multi(id,offset):
     offset = int(offset)
     area = get_area_by_id(id)
     locker = return_lockers(id,3,offset)
+    areaList = get_area_all_except(id)
     num_lockers = len(get_locker_by_area_id_toJSON(id))
     form = LockerAdd()
     form.area.choices = get_area_choices()
@@ -209,5 +212,4 @@ def get_area_id_multi(id,offset):
         next = locker['num_pages']
     else:
         next = offset + 1
-  
-    return render_template('get_area.html',area = area,locker=locker["data"], previous=previous,next=next,current_page=1,num_pages=locker['num_pages'],num_lockers=num_lockers,form=form,keys=get_all_keys_id())
+    return render_template('get_area.html',area = area,locker=locker["data"], previous=previous,next=next,current_page=1,num_pages=locker['num_pages'],num_lockers=num_lockers,form=form,keys=get_all_keys_id(), areaList=areaList)
