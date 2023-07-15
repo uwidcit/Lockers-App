@@ -29,11 +29,13 @@ class Locker (db.Model):
         self.area = area
             
     def toJSON(self):
+        from App.models import KeyHistory
         return {
             'locker_code': self.locker_code,
             'locker_type':self.locker_type.value,
             'status': self.status.value,
             'area': self.area,
+            'key': self.KeyH.order_by(KeyHistory.date_moved.desc()).first().key_id
         }
     def get_current_rent(self):
         if not self.Rented:
