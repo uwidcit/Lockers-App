@@ -142,7 +142,7 @@
 </div>
 <div class="modal grey darken-3 white-text" id="mass_swap_modal" style="max-width: 300px;">
   <div class="modal-content" id="content" >
-    <form style="overflow-x: auto; max-height: 300px;">
+    <form id="swapForm" style="overflow-x: auto; max-height: 300px;" action="/area/{{area.id}}/mass_swap" method="POST">
       {% for a in areaList %}
       <p>
       <label>
@@ -180,7 +180,6 @@
       instance = M.Modal.getInstance(elem)
       instance.open()
    }
-   
   
 
 </script>

@@ -16,7 +16,9 @@ from App.controllers import (
     search_area,
     get_area_choices,
     get_all_keys_id,
-    get_area_all_except
+    get_area_all_except,
+    get_lockers_in_area, 
+    get_lockers_all_except
 )
 
 from App.views.forms import AreaAdd,ConfirmDelete,SearchForm,LockerAdd
@@ -213,3 +215,15 @@ def get_area_id_multi(id,offset):
     else:
         next = offset + 1
     return render_template('get_area.html',area = area,locker=locker["data"], previous=previous,next=next,current_page=1,num_pages=locker['num_pages'],num_lockers=num_lockers,form=form,keys=get_all_keys_id(), areaList=areaList)
+
+@area_views.route('/area/<id>/mass_swap', methods=['POST'])
+@login_required
+def mass_swap_render(id):
+    form = request.form
+    areaLocker1 = get_lockers_in_area(id)
+    areaLocker2 = get_lockers_in_area(form["area_select"])
+    area_list_except = get_lockers_all_except(id, form["area_select"])
+    if not areaLocker1 or areaLocker2:
+        flash("This area has no lockers")
+        return redirect(url_for(".get_area_id", id=id))
+    return render_template('mass_swap.html', areaLocker1=areaLocker1, areaLocker2=areaLocker2, area_list_except = area_list_except, areaID1 = get_area_by_id(id), areaID2 = get_area_by_id(form["area_select"]))

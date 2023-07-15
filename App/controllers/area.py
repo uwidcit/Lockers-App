@@ -216,3 +216,9 @@ def get_area_all_except(areaID):
     if not areas:
         return None
     return [a.toJSON() for a in areas]
+
+def get_lockers_all_except(areaID1, areaID2):
+    areas = Area.query.filter(or_(Area.id != areaID1, Area.id != areaID2)).all()
+    if not areas:
+        return None
+    return [a.getLockersInArea() for a in areas]

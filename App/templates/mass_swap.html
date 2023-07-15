@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block title %}Area Details{% endblock %}
+{% block page %}Area Details{% endblock %}
+
+{{ super() }}
+
+{% block content %}
+<div class="grey darken-4" style="height: 100vh">
+<div class="col s6">
+    <h4>{{areaID1.description}}</h4>
+    {% for a in areaLocker1 %}
+    <p>
+        <label>
+            <input type="checkbox">
+            <span class="white-text">{{a.locker_code}}</span>
+        </label>
+    </p>
+    {% endfor %}
+</div>
+<div class="col s6">
+    <h4>{{areaID2.description}}</h4>
+    {% for a in areaLocker2 %}
+    <p>
+        <label>
+            <input type="checkbox">
+            <span class="white-text">{{a.locker_code}}</span>
+        </label>
+    </p>
+    {% endfor %}
+</div>
+</div>
+{% endblock %}
