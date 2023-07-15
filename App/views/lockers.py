@@ -344,7 +344,6 @@ def switch_key():
         id = request.json.get("locker_code1")
         lockers = swap_key(id, locker2)
         if lockers:
-
             return jsonify([lockers[0].toJSON(),lockers[1].toJSON()]),200
         return jsonify({"message":"error swapping keys"}),400
 
@@ -387,7 +386,7 @@ def update_locker_api():
         if not update_locker_status(id,data['status']):
             return jsonify({"message": "Error updating status"}),500
 
-    if locker.key != data['key'] and data['key'] is not None:
+    if locker.toJSON()['key']!= data['key'] and data['key'] is not None:
         if not update_key(id,data['key']):
             return jsonify({"message": "Error updating key"}),500
     locker = get_locker_id(data['locker_code'])
@@ -395,7 +394,7 @@ def update_locker_api():
         'locker_code': locker[0].locker_code,
         'locker_type':locker[0].locker_type.value,
         'status': locker[0].status.value,
-        'key':locker[0].key,
+        'key':locker[0].toJSON()['key'],
         'area': locker[0].area,
         'area_description':locker[1].description
         }

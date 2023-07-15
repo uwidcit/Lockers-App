@@ -128,7 +128,7 @@ def get_all_lockers():
     data = []
     for locker,area in locker_list:
         l = locker.toJSON()
-        keyH = locker.KeyH.order_by(KeyHistory.date_moved.desc()).first().id
+        keyH = locker.KeyH.order_by(KeyHistory.id.desc()).first().id
         l['area_description'] = area.description
         current_rental = Rent.query.filter(and_(Rent.keyHistory_id == keyH, Rent.status != RStatus.VERIFIED)).first()
         if current_rental:
@@ -170,7 +170,8 @@ def get_lockers_by_offset(size,offset):
      data = []
      for locker,area in lockers:
         l = locker.toJSON()
-        current_rental = Rent.query.filter(and_(Rent.locker_id == l['locker_code'], Rent.status != RStatus.VERIFIED)).first()
+        keyH = locker.KeyH.order_by(KeyHistory.id.desc()).first().id
+        current_rental =  Rent.query.filter(and_(Rent.keyHistory_id == keyH, Rent.status != RStatus.VERIFIED)).first()
         if current_rental:
             l['current_rental'] = current_rental.toJSON()
         l['area_description'] = area.description
@@ -178,7 +179,9 @@ def get_lockers_by_offset(size,offset):
      return data
 
 def get_current_rental(id):
-    current_rental = Rent.query.filter(and_(Rent.locker_id == id, Rent.status != RStatus.VERIFIED)).first()
+    locker = get_locker_id_locker(id)
+    keyH = locker.KeyH.order_by(KeyHistory.id.desc()).first().id
+    current_rental =  Rent.query.filter(and_(Rent.keyHistory_id == keyH, Rent.status != RStatus.VERIFIED)).first()
     if current_rental:
         return current_rental.toJSON()
     return None
@@ -188,7 +191,7 @@ def get_current_locker_instance(id):
 
     if not locker:
         return None
-    return locker.order_by(KeyHistory.date_moved.desc()).first()
+    return locker.order_by(KeyHistory.id.desc()).first()
 
 
 def rent_locker(id):
@@ -249,7 +252,7 @@ def delete_locker(id):
     if not locker:
         return None
 
-    if locker.get_current_rent():
+    if get_current_rental(id):
         flash('Can not delete a locker currently being rented')
         return None
     else:
@@ -268,7 +271,7 @@ def update_key(id, new_key):
     if not locker:
         return None
 
-    if locker.get_current_rent():
+    if get_current_rental(id):
         flash('Can not delete a locker currently being rented')
         return None
     else:
@@ -286,7 +289,7 @@ def update_locker_status(id, new_status):
     if not locker:
         return None
     
-    if locker.get_current_rent():
+    if get_current_rental(id):
         flash('Can not delete a locker currently being rented')
         return None
     else:
@@ -305,7 +308,7 @@ def update_locker_type(id, new_type):
     if not locker:
         return None
         
-    if locker.get_current_rent():
+    if get_current_rental(id):
         flash('Can not delete a locker currently being rented')
         return None
     else:
@@ -360,11 +363,12 @@ def swap_key(id1, id2):
     locker2 = get_locker_id_locker(id2)
     if locker1 is None or locker2 is None:
         return None
-    temp = locker1.KeyH.order_by(KeyHistory.date_moved.desc()).first().key_id
-    temp2 = locker2.KeyH.order_by(KeyHistory.date_moved.desc()).first().key_id
+    temp = locker1.KeyH.order_by(KeyHistory.id.desc()).first().key_id
+    temp2 = locker2.KeyH.order_by(KeyHistory.id.desc()).first().key_id
     try:
         new_keyHistory(temp2,locker1.locker_code,datetime.now().date())
         new_keyHistory(temp,locker2.locker_code,datetime.now().date())
+        locker2 = get_locker_id_locker(id2)
         return [locker1,locker2]
     except SQLAlchemyError:
         db.session.rollback()
