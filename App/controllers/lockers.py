@@ -368,7 +368,8 @@ def swap_key(id1, id2):
     try:
         new_keyHistory(temp2,locker1.locker_code,datetime.now().date())
         new_keyHistory(temp,locker2.locker_code,datetime.now().date())
-        locker2 = get_locker_id_locker(id2)
+        locker2 = get_locker_id(id2)
+        locker1 = get_locker_id(id1)
         return [locker1,locker2]
     except SQLAlchemyError:
         db.session.rollback()
