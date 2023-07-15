@@ -344,7 +344,17 @@ def switch_key():
         id = request.json.get("locker_code1")
         lockers = swap_key(id, locker2)
         if lockers:
-            return jsonify([lockers[0].toJSON(),lockers[1].toJSON()]),200
+            data = []
+            for l in lockers:
+             data.append({
+            'locker_code': l[0].locker_code,
+            'locker_type':l[0].locker_type.value,
+            'status': l[0].status.value,
+            'key':l[0].toJSON()['key'],
+            'area': l[0].area,
+            'area_description':l[1].description
+            })
+            return jsonify(data),200
         return jsonify({"message":"error swapping keys"}),400
 
 @locker_views.route('/api/locker', methods=['GET'])
@@ -364,7 +374,7 @@ def create_new_locker_api():
         'locker_code': locker[0].locker_code,
         'locker_type':locker[0].locker_type.value,
         'status': locker[0].status.value,
-        'key':locker[0].key,
+        'key':locker[0].toJSON()['key'],
         'area': locker[0].area,
         'area_description':locker[1].description
         }
