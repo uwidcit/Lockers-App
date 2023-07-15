@@ -315,8 +315,7 @@
       if ('serviceWorker' in navigator) {
         const wb = new Workbox('/static/sw.js', {scope:'/'});
         wb.register();
-        console.log(wb)
-    }
+      }
     </script>
     <script src='/static/materialize.js'></script>
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
@@ -365,17 +364,19 @@
         instance = M.Modal.getInstance(elem)
         instance.close()
         loadComments(data[0]['rent_id'],1)
+      }).catch((response)=>{
+        
       })
   })
 
 
   function loadComments(id,num){
-    fetch(window.origin+'/rent/'+id+'/notes').then((response) => response.json())
+    fetch(window.origin+'/api/rent/'+id+'/notes').then((response) => response.json())
     .then(data => {
         notes = document.getElementById('notes_content')
         form = document.getElementById('new_comment_form')
         footer = document.getElementById('notes_foot')
-        form.action = window.origin+'/rent/'+id+'/notes'
+        form.action = window.origin+'/api/rent/'+id+'/notes'
         if (data['data'].length == 0){
           notes.innerHTML = `<div class="card small grey darken-3 white-text" style="height: 10vh;">
                   <div class="card-content">
@@ -480,7 +481,7 @@
     
     notes = document.getElementById('notes_content')
     
-    fetch(window.origin+'/rent/'+id+'/notes/'+current_page).then((response) => response.json())
+    fetch(window.origin+'/api/rent/'+id+'/notes/'+current_page).then((response) => response.json())
     .then(data => {
       results = ``
             for (d in data['data']){
@@ -539,13 +540,11 @@
         instance = M.Modal.getInstance(elem)
         instance.close()
         form.reset()
-        let result = await sendRequest('/api/transactionLog','POST', data)
-
-        if('error' in result){
-            toast("Transaction failed"+result['error']);
-        }else{
-            toast("Success");
-        }
+        let result = await sendRequest('/api/transactionLog','POST', data).then((response)=>{
+          toast("Success");
+        }).catch((response)=>{
+          toast("Transaction failed"+result['error']);
+        })
       })
 
       rent_id.value = rent.id
