@@ -216,6 +216,10 @@ async function getAllRentTypes(){
     })
 }
 function initTable(data){
+    if ( $.fn.dataTable.isDataTable( '#lockerTable' ) ) {
+        table = $('#lockerTable').DataTable();
+    }
+    else{
     let table = new DataTable('#lockerTable',{
         "responsive":true,
         select:"multi",
@@ -270,6 +274,7 @@ function initTable(data){
             }
         }
     } );
+}
 }
 
 function enableOptions(d){
@@ -427,13 +432,12 @@ function createRent(studentID,locker_code){
     instance.close()
     form.reset()
 
-    let result = await sendRequest('/api/locker/swap','PUT', data)
-
-    if('error' in result){
-        toast("Updating locker failed"+result['error']);
-      }else{
+    let result = await sendRequest('/api/locker/swap','PUT', data).then((response)=>{
         toast("Success");
-      }
+        getLockers()
+    }).catch((response)=>{
+        toast("Updating locker failed");
+    })
 }
 
 function enableOptionsSwap(d){
