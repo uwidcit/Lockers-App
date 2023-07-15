@@ -17,17 +17,16 @@ async function addLocker(event){
     instance = M.Modal.getInstance(elem)
     instance.close()
 
-    let result = await sendRequest('/api/locker','POST', data)
-
-    if('error' in result){
-        toast("Adding locker failed"+result['error']);
-      }else{
-        toast("Success");
-        locker_list.push(result)
-        table = $('#lockerTable').DataTable();
-        table.row.add(result).draw()
-        
-      }
+    let result = await sendRequest('/api/locker','POST', data).then((response)=>{
+        if (response.status == 201){
+            toast("Success");
+            locker_list.push(result)
+            table = $('#lockerTable').DataTable();
+            table.row.add(result).draw()
+        }
+    }).catch((response)=>{
+        toast("Adding locker failed");
+    })
 }
 
 async function updateLocker(event){
@@ -51,15 +50,17 @@ async function updateLocker(event){
     instance.close()
     form.reset()
 
-    let result = await sendRequest('/api/locker','PUT', data)
-
-    if('error' in result){
-        toast("Updating locker failed"+result['error']);
-      }else{
-        toast("Success");
-        table = $('#lockerTable').DataTable();
-        table.row(row_id).data(result).draw()
-      }
+    let result = await sendRequest('/api/locker','PUT', data).then(
+        (response)=>{
+            if(response.status === 200){
+             toast("Success");
+             table = $('#lockerTable').DataTable();
+             table.row(row_id).data(result).draw()
+            }
+        }
+    ).catch((response)=>{
+        toast("Updating locker failed");
+    })
 
 }
 async function getAllLockers(){
@@ -390,13 +391,11 @@ function createRent(studentID,locker_code){
         elem = document.getElementById('new_Rent');
         instance = M.Modal.getInstance(elem)
         form.reset()
-        let result = await sendRequest('/api/locker/rent','POST', data)
-
-        if('error' in result){
-            toast("Adding locker failed"+result['error']);
-        }else{
+        let result = await sendRequest('/api/locker/rent','POST', data).then((response)=>{
             toast("Success");
-            }
+        }).catch((response)=>{
+             toast("Rental failed");
+        })
     })
     studentIDBox = document.getElementById("rent_student_id")
     studentIDBox.value = studentID

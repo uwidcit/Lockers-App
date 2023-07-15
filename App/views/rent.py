@@ -154,21 +154,21 @@ def return_locker_to_pool(id):
             flash("An error has occured checked the logs")
             return redirect(url)
 
-@rent_views.route('/rent/<id>/notes',methods=['GET'])
+@rent_views.route('/api/rent/<id>/notes',methods=['GET'])
 @login_required
 def notes_api(id):
     notes = get_comments_offset(id,3,1)
     return jsonify(notes),200
 
 
-@rent_views.route('/rent/<id>/notes/<offset>',methods=['GET'])
+@rent_views.route('/api/rent/<id>/notes/<offset>',methods=['GET'])
 @login_required
 def notes_api_multi(id,offset):
     offset = int(offset)
     notes = get_comments_offset(id,3,offset)
     return jsonify(notes),200
 
-@rent_views.route('/rent/<id>/notes',methods=['POST'])
+@rent_views.route('/api/rent/<id>/notes',methods=['POST'])
 @login_required
 def new_note_api(id):
     data = request.json
