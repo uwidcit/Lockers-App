@@ -6,12 +6,13 @@
 
 {% block content %}
 <div class="grey darken-4" style="height: 100vh">
+<form id="mSwap">
 <div class="col s6">
     <h4>{{areaID1.description}}</h4>
     {% for a in areaLocker1 %}
     <p>
         <label>
-            <input type="checkbox">
+            <input type="checkbox" name="areaLocker1">
             <span class="white-text">{{a.locker_code}}</span>
         </label>
     </p>
@@ -22,11 +23,35 @@
     {% for a in areaLocker2 %}
     <p>
         <label>
-            <input type="checkbox">
+            <input type="checkbox" name="areaLocker2">
             <span class="white-text">{{a.locker_code}}</span>
         </label>
     </p>
     {% endfor %}
 </div>
+<input type="submit" value="Start Swap">
+</form>
 </div>
+<script>
+    let area1Selected = []
+    let area2Selected = []
+    let unSelected = []
+    document.addEventListener('DOMContentLoaded',()=>{
+        var checkboxes1 =document.getElementsByName("areaLocker1")
+        var checkboxes2 =document.getElementsByName("areaLocker2")
+        for(v in checkboxes1.length){
+             unSelected.push(checkboxes1.items(v)
+)
+        }
+        for(v in checkboxes2.length){
+             unSelected.push(checkboxes2.items(v)
+)
+        }
+        console.log(unSelected)
+    })
+document.getElementById("mSwap").addEventListener("submit", ((event)=>{checkLockers(event)}))
+function checkLockers(event){
+    event.preventDefault()
+}
+</script>
 {% endblock %}
