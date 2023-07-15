@@ -360,16 +360,12 @@ def swap_key(id1, id2):
     locker2 = get_locker_id_locker(id2)
     if locker1 is None or locker2 is None:
         return None
-    temp = locker1.key
-    locker1.key = locker2.key
-    locker2.key = temp
+    temp = locker1.KeyH.order_by(KeyHistory.date_moved.desc()).first().key_id
+    temp2 = locker2.self.KeyH.order_by(KeyHistory.date_moved.desc()).first().key_id
     try:
-        db.session.add(locker1)
-        db.session.add(locker2)
-        db.session.commit()
-        new_keyHistory(locker1.key,locker1.locker_code,datetime.now().date())
-        new_keyHistory(locker2.key,locker2.locker_code,datetime.now().date())
-        return locker1
+        new_keyHistory(temp2,locker1.locker_code,datetime.now().date())
+        new_keyHistory(temp,locker2.locker_code,datetime.now().date())
+        return [locker1,locker2]
     except SQLAlchemyError:
         db.session.rollback()
         return None
