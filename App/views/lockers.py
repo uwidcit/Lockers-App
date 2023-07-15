@@ -342,9 +342,10 @@ def render_get_lockers_multi(id,offset):
 def switch_key():
         locker2 = request.json.get("locker_code2")
         id = request.json.get("locker_code1")
-        locker1 = swap_key(id, locker2)
-        if locker1:
-            return jsonify(locker1.toJSON()),200
+        lockers = swap_key(id, locker2)
+        if lockers:
+
+            return jsonify([lockers[0].toJSON(),lockers[1].toJSON()]),200
         return jsonify({"message":"error swapping keys"}),400
 
 @locker_views.route('/api/locker', methods=['GET'])

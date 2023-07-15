@@ -361,7 +361,7 @@ def swap_key(id1, id2):
     if locker1 is None or locker2 is None:
         return None
     temp = locker1.KeyH.order_by(KeyHistory.date_moved.desc()).first().key_id
-    temp2 = locker2.self.KeyH.order_by(KeyHistory.date_moved.desc()).first().key_id
+    temp2 = locker2.KeyH.order_by(KeyHistory.date_moved.desc()).first().key_id
     try:
         new_keyHistory(temp2,locker1.locker_code,datetime.now().date())
         new_keyHistory(temp,locker2.locker_code,datetime.now().date())
