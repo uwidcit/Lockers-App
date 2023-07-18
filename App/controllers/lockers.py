@@ -17,7 +17,6 @@ def add_new_locker(locker_code,locker_type,status,key_id,area):
         db.session.add(locker)
         db.session.commit()
         new_keyHistory(key_id,locker.locker_code,datetime.now().date())
-        print(locker.toJSON())
         return locker
     except SQLAlchemyError as e:
         print(e)
