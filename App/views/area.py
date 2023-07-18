@@ -18,7 +18,8 @@ from App.controllers import (
     get_all_keys_id,
     get_area_all_except,
     get_lockers_in_area, 
-    get_lockers_all_except
+    get_lockers_all_except,
+    swap_key
 )
 
 from App.views.forms import AreaAdd,ConfirmDelete,SearchForm,LockerAdd
@@ -227,3 +228,27 @@ def mass_swap_render(id):
         flash("This area has no lockers")
         return redirect(url_for(".get_area_id", id=id))
     return render_template('mass_swap.html', areaLocker1=areaLocker1, areaLocker2=areaLocker2, area_list_except = area_list_except, areaID1 = get_area_by_id(id), areaID2 = get_area_by_id(form["area_select"]))
+
+
+@area_views.route('/api/area/<id>/mass_swap', methods=['POST'])
+@login_required
+def new_mass_swap(id):
+    from random import shuffle
+    area1 = request.json.get('area1')
+    area2 = request.json.get('area2')
+    if len(area1) == len(area2):
+        shuffle(area1)
+        shuffle(area2)
+        locker_data1 = []
+        locker_data2 = []
+        for x in range(0,len(area1)):
+            l_d = swap_key(area1[x],area2[x])
+            locker_data1.append(l_d[0].toJSON())
+            locker_data1.append(l_d[1].toJSON())
+        #mass_swap_history(area1,area2)
+        return jsonify({'area1Data':locker_data1, 'area2Data':locker_data2}),200
+    return jsonify ({'message':'Error in swap'}),500
+        
+    
+
+
