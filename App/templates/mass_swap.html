@@ -12,7 +12,7 @@
     {% for a in areaLocker1 %}
     <p>
         <label>
-            <input type="checkbox" name="areaLocker1">
+            <input type="checkbox" name="areaLocker1" id="l_{{a.locker_code}}">
             <span class="white-text">{{a.locker_code}}</span>
         </label>
     </p>
@@ -23,7 +23,7 @@
     {% for a in areaLocker2 %}
     <p>
         <label>
-            <input type="checkbox" name="areaLocker2">
+            <input type="checkbox" name="areaLocker2"  id="l_{{a.locker_code}}">
             <span class="white-text">{{a.locker_code}}</span>
         </label>
     </p>
@@ -39,19 +39,59 @@
     document.addEventListener('DOMContentLoaded',()=>{
         var checkboxes1 =document.getElementsByName("areaLocker1")
         var checkboxes2 =document.getElementsByName("areaLocker2")
-        for(v in checkboxes1.length){
-             unSelected.push(checkboxes1.items(v)
-)
+        for(let v=0; v < checkboxes1.length;v++){
+            checkboxes1[v].addEventListener('change', ()=>{
+                if (checkboxes1[v].checked){
+                    updateUnchecked(checkboxes1[v].id,'area1')
+                }
+                else{
+                    updateAreaChecked(checkboxes1[v].id,'area1')
+                }
+            })
+             unSelected.push(checkboxes1[v].id)
         }
-        for(v in checkboxes2.length){
-             unSelected.push(checkboxes2.items(v)
-)
+        for(let v=0; v < checkboxes2.length;v++){
+            checkboxes2[v].addEventListener('change', ()=>{
+                if (checkboxes2[v].checked){
+                    updateUnchecked(checkboxes2[v].id,'area2')
+                }
+                else{
+                    updateAreaChecked(checkboxes2[v].id,'area2')
+                }
+            })
+            unSelected.push(checkboxes2[v].id)
         }
         console.log(unSelected)
     })
 document.getElementById("mSwap").addEventListener("submit", ((event)=>{checkLockers(event)}))
 function checkLockers(event){
     event.preventDefault()
+}
+
+function updateUnchecked(area_id, area){
+    if (area === 'area1'){
+        index = unSelected.findIndex(element => element = area_id)
+        unSelected.splice(index,1)
+        area1Selected.push(area_id)
+    }
+    else if(area === 'area2'){
+        index = unSelected.findIndex(element => element = area_id)
+        unSelected.splice(index,1)
+        area2Selected.push(area_id)
+    }
+}
+
+function updateAreaChecked(area_id, area){
+    if (area === 'area1'){
+        index = area1Selected.findIndex(element => element = area_id)
+        area1Selected.splice(index,1)
+        unSelected.push(area_id)
+    }
+    else if(area === 'area2'){
+        index = area2Selected.findIndex(element => element = area_id)
+        area2Selected.splice(index,1)
+        unSelected.push(area_id)
+    }
 }
 </script>
 {% endblock %}
