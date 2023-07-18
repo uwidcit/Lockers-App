@@ -49,6 +49,7 @@
             </div>
             <div>
             {% for area in area_list_except %}
+            {% if area %}
                 {% for a in area %}
                 <p>
                     <label>
@@ -58,6 +59,11 @@
                     </label>
                 </p>
                 {% endfor %}
+            {% else %}
+                <p>
+                    No lockers available. Unable to complete transaction.
+                </p>
+            {% endif %}
             {% endfor %}
             </div>
         </form>
