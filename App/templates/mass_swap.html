@@ -34,6 +34,13 @@
 </div>
 </form>
 </div>
+<div class="modal grey darken-3 white-text" id="confirm">
+    <div class="modal-content" id="interModal">
+        <p> You still have unselected lockers do you want to continue or do you wish to select additional lockers </p>
+        <a href="#" class="purple darken-4 btn"  id="proceedTo">Proceed</a>
+        <a href="#" class="purple darken-4 btn"  id="selectMore">Select more lockers</a>
+    </div>
+</div> 
 <div class="modal grey darken-3 white-text" id="more_lockers">
     <div class="modal-content" id="content">
         <form>
@@ -57,6 +64,7 @@
     </div>
 </div>
 <script>
+    let area_l_except = {{area_list_except | safe}}
     let area1Selected = []
     let area2Selected = []
     let unSelected = []
@@ -95,14 +103,14 @@ async function checkLockers(event){
         if (area1Selected.length > area2Selected.length || area1Selected.length < area2Selected.length){
             elem = document.getElementById('more_lockers');
             instance = M.Modal.getInstance(elem)
-            content = document.getElementById("unSelectedContent")
+            content = document.getElementById('unSelectedContent')
             let html = ``
             for(i=0; i<unSelected.length; i++){
                 html +=` 
                 <p>
                 <label>
                     <input type="checkbox" name="areaLocker1" id="${unSelected[i]}">
-                    <span class="white-text"${unSelected[i]}</span>
+                    <span class="white-text">${unSelected[i]}</span>
                 </label>
                 </p>`
             }
@@ -127,6 +135,12 @@ async function checkLockers(event){
                 toast("Swap Failed");
             })
         }
+    }
+
+    else if(area1Selected.length === area2Selected.length){
+        elem = document.getElementById('confirm');
+        instance = M.Modal.getInstance(elem)
+        instance.open()
     }
 }
 
@@ -155,5 +169,39 @@ function updateAreaChecked(area_id, area){
         unSelected.push(area_id)
     }
 }
+document.getElementById('selectMore').addEventListener('click',()=>{
+    content = document.getElementById('interModal')
+    content.innerHTML = `  
+      <div class="progress">
+      <div class="indeterminate"></div>
+      </div>`
+      let html = `<div class="col s6">`
+            for(i=0; i<unSelected.length; i++){
+                html +=` 
+                <p>
+                <label>
+                    <input type="checkbox" name="areaLocker1" id="${unSelected[i]}">
+                    <span class="white-text">${unSelected[i]}</span>
+                </label>
+                </p>`
+            }
+            html += `</div>
+            <div class="col s6">`
+            for( i in area_l_except){
+                for(v in area_l_except[i]){
+                html+=`
+                <p>
+                <label>
+                    <input type="checkbox" name="UnselectedLockers" id="${area_l_except[i][v].locker_code}">
+                    <span class="white-text">${area_l_except[i][v].locker_code}</span>
+                </label>
+                </p>
+                ` 
+                }  
+            }
+            html += `</div>`
+        content.innerHTML = html
+    
+})
 </script>
 {% endblock %}
