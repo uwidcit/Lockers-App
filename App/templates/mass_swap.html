@@ -41,14 +41,17 @@
                 
             </div>
             <div>
-                {% for a in area_list_except %}
+            {% for area in area_list_except %}
+                {% for a in area %}
                 <p>
                     <label>
-                        <input type="checkbox" name="areaLocker1" id="{{a.locker_code}}">
+                        <input type="checkbox" name="UnselectedLockers" id="{{a.locker_code}}">
                         <span class="white-text">{{a.locker_code}}</span>
+                        <span class="white-text">{{a.area_description}}</span>
                     </label>
                 </p>
                 {% endfor %}
+            {% endfor %}
             </div>
         </form>
     </div>
