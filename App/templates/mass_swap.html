@@ -12,7 +12,7 @@
     {% for a in areaLocker1 %}
     <p>
         <label>
-            <input type="checkbox" name="areaLocker1" id="l_{{a.locker_code}}">
+            <input type="checkbox" name="areaLocker1" id="{{a.locker_code}}">
             <span class="white-text">{{a.locker_code}}</span>
         </label>
     </p>
@@ -23,14 +23,35 @@
     {% for a in areaLocker2 %}
     <p>
         <label>
-            <input type="checkbox" name="areaLocker2"  id="l_{{a.locker_code}}">
+            <input type="checkbox" name="areaLocker2"  id="{{a.locker_code}}">
             <span class="white-text">{{a.locker_code}}</span>
         </label>
     </p>
     {% endfor %}
 </div>
-<input type="submit" value="Start Swap">
+<div>
+    <input type="submit" value="Start Swap">
+</div>
 </form>
+</div>
+<div class="modal grey darken-3 white-text" id="more_lockers">
+    <div class="modal-content" id="content">
+        <form>
+            <div id="unSelectedContent">
+                
+            </div>
+            <div>
+                {% for a in area_list_except %}
+                <p>
+                    <label>
+                        <input type="checkbox" name="areaLocker1" id="{{a.locker_code}}">
+                        <span class="white-text">{{a.locker_code}}</span>
+                    </label>
+                </p>
+                {% endfor %}
+            </div>
+        </form>
+    </div>
 </div>
 <script>
     let area1Selected = []
@@ -63,9 +84,47 @@
         }
         console.log(unSelected)
     })
-document.getElementById("mSwap").addEventListener("submit", ((event)=>{checkLockers(event)}))
-function checkLockers(event){
+document.getElementById("mSwap").addEventListener("submit", checkLockers)
+
+async function checkLockers(event){
     event.preventDefault()
+    if (unSelected.length == 0){
+        if (area1Selected.length > area2Selected.length || area1Selected.length < area2Selected.length){
+            elem = document.getElementById('more_lockers');
+            instance = M.Modal.getInstance(elem)
+            content = document.getElementById("unSelectedContent")
+            let html = ``
+            for(i=0; i<unSelected.length; i++){
+                html +=` 
+                <p>
+                <label>
+                    <input type="checkbox" name="areaLocker1" id="${unSelected[i]}">
+                    <span class="white-text"${unSelected[i]}</span>
+                </label>
+                </p>`
+            }
+            content.innerHTML = html
+            instance.open()
+        }
+        else{
+            let data = {}
+            let area1Data = []
+            let area2Data = []
+            for(i=0; i<area1Selected.length; i++){
+                area1Data.push(area1Selected[i]) 
+                area2Data.push(area2Selected[i])
+            }
+            data = {"area1": area1Data, "area2":area2Data}
+            let result = await sendRequest('/api/area/{{areaID1.id}}/mass_swap','POST', data).then((response)=>{
+            if (response.status == 201){
+                toast("Success");
+                window.location.reload()
+            }
+            }).catch((response)=>{
+                toast("Swap Failed");
+            })
+        }
+    }
 }
 
 function updateUnchecked(area_id, area){

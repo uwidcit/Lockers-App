@@ -126,14 +126,14 @@ def select_student_page_multi(id,offset):
     return render_template("locker_select_student.html",studentData=studentData['data'],num_pages=studentData["num_pages"], form=StudentAdd(),search=search,rent=rent,id = id,current_page=offset,next= next, previous= previous)
 
 #deprecated
-#@locker_views.route("/locker", methods=['POST'])
-#@login_required
+@locker_views.route("/locker", methods=['POST'])
+@login_required
 def add_locker():
     form = LockerAdd() # create form object
     if form.validate_on_submit:
         data = request.form # get data from form submission
         new_locker = add_new_locker(locker_code=data['locker_code'], locker_type=data['locker_type'], status=data['status'], key_id=data['key'],area=data['area'])
-        url = url_for('.manage_locker')
+        url = url_for('.return_offline_page')
         if request.args:
             callback = request.args.get('callback')
             callback_id = request.args.get('id')
