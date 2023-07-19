@@ -242,11 +242,9 @@ def new_mass_swap(id):
         locker_data1 = []
         locker_data2 = []
         for x in range(0,len(area1)):
-            l_d = swap_key(area1[x],area2[x])
-            locker_data1.append(l_d[0].toJSON())
-            locker_data1.append(l_d[1].toJSON())
+            swap_key(area1[x],area2[x])
         #mass_swap_history(area1,area2)
-        return jsonify({'area1Data':locker_data1, 'area2Data':locker_data2}),200
+        return jsonify({'message':'Success'}),200
     return jsonify ({'message':'Error in swap'}),500
         
     
