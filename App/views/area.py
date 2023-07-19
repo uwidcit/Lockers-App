@@ -246,7 +246,3 @@ def new_mass_swap(id):
         #mass_swap_history(area1,area2)
         return jsonify({'message':'Success'}),200
     return jsonify ({'message':'Error in swap'}),500
-        
-    
-
-
