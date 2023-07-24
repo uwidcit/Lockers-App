@@ -17,20 +17,20 @@ def index_page():
         return redirect(url_for("locker_views.return_offline_page"))
     return render_template('index.html')
 
-#@index_views.app_errorhandler(400)
+@index_views.app_errorhandler(400)
 def render_not_found(e):
     flash('Page not found')
     print(e)
     return redirect(url_for("index_views.index_page"))
 
 
-#@index_views.app_errorhandler(500)
+@index_views.app_errorhandler(500)
 def render_not_found(e):
     flash('You did something wrong :(')
     print(e)
     return redirect(url_for("index_views.index_page"))
 
-#@index_views.app_errorhandler(401)
+@index_views.app_errorhandler(401)
 def unauthorized_access(e):
     flash('You need to be logged in to see this content')
     return redirect(url_for("index_views.index_page"))

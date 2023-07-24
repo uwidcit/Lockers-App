@@ -190,7 +190,7 @@ def get_area_id(id):
     if not area:
         flash('Area '+id+' not found')
         return redirect(url_for('.render_area_page'))
-    return render_template('get_area.html',area = area,locker=locker["data"], previous=previous,next=next,current_page=1,num_pages=locker['num_pages'],num_lockers=num_lockers,form=form,keys=get_all_keys_id(), areaList=areaList)
+    return render_template('areaDetails.html',area = area,locker=locker["data"], previous=previous,next=next,current_page=1,num_pages=locker['num_pages'],num_lockers=num_lockers,form=form,keys=get_all_keys_id(), areaList=areaList)
 
 
 @area_views.route('/area/<id>/page/<offset>', methods=['GET'])
@@ -215,7 +215,7 @@ def get_area_id_multi(id,offset):
         next = locker['num_pages']
     else:
         next = offset + 1
-    return render_template('get_area.html',area = area,locker=locker["data"], previous=previous,next=next,current_page=1,num_pages=locker['num_pages'],num_lockers=num_lockers,form=form,keys=get_all_keys_id(), areaList=areaList)
+    return render_template('areaDetails.html',area = area,locker=locker["data"], previous=previous,next=next,current_page=1,num_pages=locker['num_pages'],num_lockers=num_lockers,form=form,keys=get_all_keys_id(), areaList=areaList)
 
 @area_views.route('/area/<id>/mass_swap', methods=['POST'])
 @login_required

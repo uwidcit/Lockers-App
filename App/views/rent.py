@@ -63,7 +63,7 @@ def get_rent_id(id):
 
     if not rental:
         return redirect(url_for('locker_views.manage_locker'))
-    return render_template('addrent.html', rent = rental,transaction=transaction['data'], current_page=1,next=next,previous=previous,num_pages=transaction['num_pages'],trans = TransactionAdd())
+    return render_template('rentDetails.html', rent = rental,transaction=transaction['data'], current_page=1,next=next,previous=previous,num_pages=transaction['num_pages'],trans = TransactionAdd())
 
 @rent_views.route('/rent/<id>/page/<offset>', methods=['GET'])
 @login_required
@@ -86,7 +86,7 @@ def get_rent_id_multi(id,offset):
             next = num_pages
         else:
             next = offset + 1
-    return render_template('addrent.html', rent = rental,transaction=transaction['data'], current_page=offset,next=next,previous=previous,num_pages=transaction['num_pages'])
+    return render_template('rentDetails.html', rent = rental,transaction=transaction['data'], current_page=offset,next=next,previous=previous,num_pages=transaction['num_pages'])
 
 @rent_views.route('/rent/all', methods=['GET'])
 @login_required
@@ -179,8 +179,8 @@ def new_note_api(id):
 
     return jsonify({'error':'Not created'}),400
 
-@rent_views.route('/makerent/<id>', methods=['GET'])
-@login_required
+#@rent_views.route('/makerent/<id>', methods=['GET'])
+#@login_required
 def render(id):
     form = RentAdd()
     rentType_list = get_All_rentType()
