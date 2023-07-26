@@ -224,8 +224,13 @@ def mass_swap_render(id):
     areaLocker1 = get_lockers_in_area(id)
     areaLocker2 = get_lockers_in_area(form["area_select"])
     area_list_except = get_lockers_all_except(id, form["area_select"])
+    if not area_list_except[0]:
+        area_list_except = []
     if not areaLocker1 or not areaLocker2:
-        flash("This area has no lockers")
+        if not areaLocker1:
+            flash("This area contains no lockers")
+        else:
+            flash("No lockers in that area")
         return redirect(url_for(".get_area_id", id=id))
     return render_template('mass_swap.html', areaLocker1=areaLocker1, areaLocker2=areaLocker2, area_list_except = area_list_except, areaID1 = get_area_by_id(id), areaID2 = get_area_by_id(form["area_select"]))
 

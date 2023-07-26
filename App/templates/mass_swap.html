@@ -6,8 +6,13 @@
 
 {% block content %}
 <div class="grey darken-4" style="height: 100vh">
+    <div class="col s6 offset-s1">
+       <a href="#" id="select_all" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">select_all</i><span id="btn_select">Select All</span></a>
+       <a href="#" class="purple darken-4 waves-effect waves-light btn-small" id="form_submit"><i class="material-icons left">swap_horiz</i>Start Swap</a>
+    </div>
+    
 <form id="mSwap">
-<div class="col s5 offset-s1">
+<div class="col s5 offset-s1" style="overflow-y: auto;">
     <h4>{{areaID1.description}}</h4>
     {% for a in areaLocker1 %}
     <p>
@@ -18,7 +23,7 @@
     </p>
     {% endfor %}
 </div>
-<div class="col s5 offset-s1">
+<div class="col s5 offset-s1" style="overflow-y: auto;">
     <h4>{{areaID2.description}}</h4>
     {% for a in areaLocker2 %}
     <p>
@@ -28,9 +33,6 @@
         </label>
     </p>
     {% endfor %}
-</div>
-<div class="col s6 offset-s1">
-    <input type="submit" value="Start Swap">
 </div>
 </form>
 </div>
@@ -45,10 +47,10 @@
             <div id="unSelectedContent">
                 
             </div>
-            <div>
+            <div style="overflow-y: auto;">
+            {% if area_list_except %}
             {% for area in area_list_except %}
-            {% if area %}
-                {% for a in area %}
+            {% for a in area %}
                 <p>
                     <label>
                         <input type="checkbox" name="UnselectedLockers" id="{{a.locker_code}}">
@@ -56,10 +58,12 @@
                         <span class="white-text">{{a.area_description}}</span>
                     </label>  
                 {% endfor %}
+                {% endfor %}
                 <div class="col s6">
                     <a href="#" class="purple darken-4 btn"  id="proceedTo" onclick="proceedToEvent()">Proceed</a>
                     <a href="#" class="purple darken-4 btn modal-close">Cancel</a>
                 </div>
+                
               
             {% else %}
                 <p>
@@ -67,7 +71,7 @@
                 </p>
                 <a href="#" class="purple darken-4 btn modal-close" > Close Modal</a>
             {% endif %}
-            {% endfor %}
+            
             </div>
         </form>
     </div>
@@ -78,6 +82,27 @@
     let area2Selected = []
     let unSelected = []
     let unequalArea = ''
+    document.getElementById('select_all').addEventListener('click',()=>{
+        var checkboxes1 =document.getElementsByName("areaLocker1")
+        var checkboxes2 =document.getElementsByName("areaLocker2")
+        for(let v=0; v < checkboxes1.length;v++){
+            checkboxes1[v].click()  
+        }
+        for(let v=0; v < checkboxes2.length;v++){
+            checkboxes2[v].click() 
+        }
+        
+        btn = document.getElementById('btn_select')
+
+        if(btn.innerHTML === "Select All"){
+            btn.innerHTML = "Deselect All"
+        }
+        else{
+            btn.innerHTML = "Select All"
+        }
+    
+
+    })
     document.addEventListener('DOMContentLoaded',()=>{
         var checkboxes1 =document.getElementsByName("areaLocker1")
         var checkboxes2 =document.getElementsByName("areaLocker2")
@@ -116,10 +141,9 @@
             })
         }
     })
-document.getElementById("mSwap").addEventListener("submit", checkLockers)
+document.getElementById("form_submit").addEventListener("click", checkLockers)
 
 async function checkLockers(event){
-    event.preventDefault()
     if (unSelected.length == 0){
         if (area1Selected.length > area2Selected.length || area1Selected.length < area2Selected.length){
             if(area1Selected.length > area2Selected.length){
@@ -209,7 +233,6 @@ function proceedToEvent(){
             }
             data = {"area1": area1Data, "area2":area2Data}
             let result = await sendRequest('/api/area/{{areaID1.id}}/mass_swap','POST', data).then((response)=>{
-            console.log(response)
             if (response.message){
                 toast("Success");
                 window.location = "/area/{{areaID1.id}}"

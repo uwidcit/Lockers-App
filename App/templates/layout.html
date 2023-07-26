@@ -1,8 +1,12 @@
 <!doctype html>
 <html>
   <head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='leaflet/leaflet.css') }}">
-    <script src="{{ url_for('static', filename='leaflet/leaflet.js') }}"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
      <!--Import Google Icon Font-->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -62,7 +66,14 @@
       </div>
 
     </div>
-    
+    <script type="module" >
+      import {Workbox} from 'https://storage.googleapis.com/workbox-cdn/releases/6.2.0/workbox-window.prod.mjs';
+
+      if ('serviceWorker' in navigator) {
+        const wb = new Workbox('/static/sw.js', {scope:'/'});
+        wb.register();
+      }
+    </script>
 
     <script src="{{ url_for('static', filename='materialize.js') }}"></script>
     
