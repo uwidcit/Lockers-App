@@ -299,9 +299,9 @@ def render_lockers_rent(id):
     form.rent_type.choices = get_All_rentType()
     return render_template("addrent.html", form=form,id=id)
 
-#deprecated
-#@locker_views.route("/locker/<id>", methods=["GET"])
-#@login_required
+
+@locker_views.route("/locker/<id>", methods=["GET"])
+@login_required
 def render_get_lockers(id):
     previous = 1 
     next = previous + 1
@@ -313,9 +313,9 @@ def render_get_lockers(id):
     if rents:
         return render_template('lockerDetails.html', locker = locker, rents = rents['data'], previous= previous,current_page=1,next=next, locker_names= get_all_locker_names(), num_pages=rents['num_pages'],keys=get_all_keys_id(),trans=TransactionAdd(),current_rental= current_rental, form = form,delete=ConfirmDelete())
     return render_template('lockerDetails.html', locker = locker, rents = None, previous= previous,current_page=1,next=next,num_pages=1, locker_names= get_all_locker_names(),keys=get_all_keys_id(),trans=TransactionAdd(),current_rental= current_rental,form = form, delete=ConfirmDelete())
-#deprecated
-#@locker_views.route("/locker/<id>/page/<offset>", methods=["GET"])
-#@login_required
+
+@locker_views.route("/locker/<id>/page/<offset>", methods=["GET"])
+@login_required
 def render_get_lockers_multi(id,offset):
     offset= int(offset)
     locker = get_locker_id(id)
