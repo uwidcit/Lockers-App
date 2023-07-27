@@ -127,7 +127,7 @@ def get_all_lockers():
     data = []
     for locker,area in locker_list:
         l = locker.toJSON()
-        keyH = locker.KeyH.order_by(KeyHistory.id.desc()).first().id
+        keyH = l['key']
         l['area_description'] = area.description
         current_rental = Rent.query.filter(and_(Rent.keyHistory_id == keyH, Rent.status != RStatus.VERIFIED)).first()
         if current_rental:

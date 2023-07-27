@@ -18,7 +18,7 @@ class Locker (db.Model):
     locker_type = db.Column(db.Enum(LockerTypes),nullable = False)
     status = db.Column(db.Enum(LockerStatus), nullable=False)
     area = db.Column(db.Integer, db.ForeignKey("area.id"), nullable=False)
-    KeyH = db.relationship('KeyHistory', backref='', lazy="dynamic", cascade="all, delete-orphan")
+    KeyH = db.relationship('KeyHistory', backref='locker', lazy="dynamic", cascade="all, delete-orphan")
 
     def __init__(self,locker_code,locker_type,status,area):
         self.locker_code = locker_code
@@ -35,7 +35,7 @@ class Locker (db.Model):
             'locker_type':self.locker_type.value,
             'status': self.status.value,
             'area': self.area,
-            'key': self.KeyH.order_by(KeyHistory.id.desc()).first().key_id
+            'key': self.KeyH.order_by(KeyHistory.id.desc()).first().id
         }
 
     

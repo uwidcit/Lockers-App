@@ -1,8 +1,10 @@
 from flask import Blueprint, redirect, render_template, request, send_from_directory,flash,url_for,send_file
+from database import db
 from App.controllers import get_current_user,export_all,import_all,delete_all,login
 import uuid
 import io
 from flask_login import login_required
+from sqlalchemy import exc
 import flask_login
 index_views = Blueprint('index_views', __name__, template_folder='../templates')
 
@@ -22,6 +24,10 @@ def render_not_found(e):
     flash('Page not found')
     return redirect(url_for("index_views.index_page"))
 
+@index_views.app_errorhandler(exc.SQLAlchemyError)
+def rollback_db():
+    db.session.rollback()
+    return redirect(url_for("locker_views.return_offline_page"))
 
 @index_views.app_errorhandler(401)
 def unauthorized_access(e):

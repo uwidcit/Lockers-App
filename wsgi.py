@@ -30,6 +30,8 @@ def initialize():
     new_key("92243", "243","Available",datetime.now())
     new_key("92301", "243","Available",datetime.now())
     new_key("92252", "243","Available",datetime.now())
+    new_key("1000", "243","Available",datetime.now())
+    new_key("1001", "243","Available",datetime.now())
 
     add_new_locker("A101","Medium","Free","92243",1)
     add_new_locker("A102","Medium","Free","92301",1)
