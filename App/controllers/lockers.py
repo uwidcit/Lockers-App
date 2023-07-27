@@ -190,7 +190,7 @@ def get_current_locker_instance(id):
 
     if not locker:
         return None
-    return locker.order_by(KeyHistory.id.desc()).first()
+    return locker.KeyH.order_by(KeyHistory.id.desc()).first()
 
 
 def rent_locker(id):
