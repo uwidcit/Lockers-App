@@ -1,5 +1,5 @@
 from flask import Blueprint, redirect, render_template, request, send_from_directory,flash,url_for,send_file
-from database import db
+from App.database import db
 from App.controllers import get_current_user,export_all,import_all,delete_all,login
 import uuid
 import io
