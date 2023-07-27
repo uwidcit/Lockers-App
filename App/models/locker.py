@@ -35,7 +35,7 @@ class Locker (db.Model):
             'locker_type':self.locker_type.value,
             'status': self.status.value,
             'area': self.area,
-            'key': self.KeyH.order_by(KeyHistory.id.desc()).first().id
+            'key': self.KeyH.order_by(KeyHistory.id.desc()).first().key_id
         }
 
     
