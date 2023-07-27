@@ -25,7 +25,7 @@ def render_not_found(e):
     return redirect(url_for("index_views.index_page"))
 
 @index_views.app_errorhandler(exc.SQLAlchemyError)
-def rollback_db():
+def rollback_db(e):
     db.session.rollback()
     return redirect(url_for("locker_views.return_offline_page"))
 
