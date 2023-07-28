@@ -81,7 +81,7 @@ registerRoute(
 
 registerRoute(
   new RegExp('\/api/*'),
-  new StaleWhileRevalidate({
+  new NetworkFirst({
     cacheName: 'api-cache',
     plugins: [
       new CacheableResponsePlugin({

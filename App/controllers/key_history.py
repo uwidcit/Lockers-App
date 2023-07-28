@@ -12,7 +12,13 @@ def new_keyHistory(key_id,locker_id,date_moved):
     except SQLAlchemyError:
         db.session.rollback()
         return None
- 
+def getKeyHistory(id):
+    key = KeyHistory.query.filter_by(id=id).first()
+
+    if not key:
+        return None
+    return key
+
 def getKeyHistory_by_id(id, size,offset):
     keys = KeyHistory.query.filter(or_(KeyHistory.locker_id.like(id),KeyHistory.key_id.like(id))).all()
 

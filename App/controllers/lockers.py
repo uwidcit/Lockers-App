@@ -5,7 +5,7 @@ from App.models.locker import LockerStatus as Status, LockerTypes
 from App.database import db
 from App.controllers.log import create_log
 from App.controllers.area import get_area_by_id,get_area_by_description
-from App.controllers.key_history import new_keyHistory
+from App.controllers.key_history import new_keyHistory,getKeyHistory
 from datetime import datetime
 from flask import flash
 from sqlalchemy import or_,and_
@@ -210,7 +210,8 @@ def rent_locker(id):
         return None
 
 def not_verified(id):
-    locker = get_locker_id_locker(id)
+    keyH = getKeyHistory(id)
+    locker = get_locker_id_locker(keyH.locker_id)
     
     if not locker :
         return None
@@ -229,9 +230,10 @@ def not_verified(id):
         return None
 
 def release_locker(id):
-    locker = get_locker_id_locker(id)
-    
-    if not locker :
+    keyH = getKeyHistory(id)
+    locker = get_locker_id_locker(keyH.locker_id)
+    print(locker)
+    if not locker:
         return None
     
     locker.status = Status.FREE

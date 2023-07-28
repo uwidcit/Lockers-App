@@ -233,7 +233,7 @@ def release_rental(id,d_returned):
     try:
         rent.date_returned = d_returned
         rent.status = Status.RETURNED
-        not_verified(rent.locker_id)
+        not_verified(rent.keyHistory_id)
         db.session.add(rent)
         db.session.commit()
         return rent
@@ -246,7 +246,7 @@ def release_rental(id,d_returned):
 
 def verify_rental(id):
     rent = update_rent(id)
-
+    
     if not rent:
         return None
     
@@ -257,7 +257,7 @@ def verify_rental(id):
         rent.status = Status.VERIFIED
         db.session.add(rent)
         db.session.commit()
-        release_locker(rent.locker_id)
+        release_locker(rent.keyHistory_id)
         update_student_status(rent.student_id,"GOOD")
         return rent
     except SQLAlchemyError as e:

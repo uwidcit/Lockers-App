@@ -266,7 +266,7 @@ function initTable(data){
                 else if(lockerRow_list[1] == indexes[0]){
                     lockerRow_list.pop()
                 }
-                enableOptions(table.rows(lockerRow_list).data())
+                enableOptions(table.rows(lockerRow_list).data()[0])
             }
         }
     } );
@@ -332,12 +332,11 @@ function passStudent (locker_code,student){
 
 async function rentInit(locker_code){
     const lock = locker_code
-    await getAllStudents().then(()=>{
-        elem = document.querySelector('#rent_modal')
-        if ( $.fn.dataTable.isDataTable( '#studentTable' ) ) {
-            table = $('#studentTable').DataTable();
-        }
-        else{
+    elem = document.querySelector('#rent_modal')
+    if ( $.fn.dataTable.isDataTable( '#studentTable' ) ) {
+        table = $('#studentTable').DataTable();
+    }
+    else{
         table = new DataTable('#studentTable',{
         "responsive":true,
         select:true,
@@ -369,8 +368,7 @@ async function rentInit(locker_code){
 
     instance = M.Modal.getInstance(elem)
     instance.open()
-    }) 
-}
+} 
 
 function createRent(studentID,locker_code){
     form = document.getElementById("rentalForm")
@@ -390,6 +388,7 @@ function createRent(studentID,locker_code){
         }
         elem = document.getElementById('new_Rent');
         instance = M.Modal.getInstance(elem)
+        instance.close()
         form.reset()
         let result = await sendRequest('/api/locker/rent','POST', data).then((response)=>{
             toast("Success");
@@ -438,7 +437,6 @@ function createRent(studentID,locker_code){
 }
 
 function enableOptionsSwap(d){
-    console.log(d)
     btn = document.querySelector('#options_btn')
     btn.className="dropdown-trigger btn purple darken-4 waves-effect"
     btn.dataset.target ="locker_dropdown1"

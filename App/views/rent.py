@@ -98,7 +98,7 @@ def get_all_rent():
 @login_required
 def release_locker(id):
     rental = update_rent(id)
-    url = url_for('locker_views.manage_locker')
+    url = url_for('locker_views.return_offline_page')
     if request.args:
             callback = request.args.get('callback')
             callback_id = request.args.get('id')
@@ -127,7 +127,7 @@ def release_locker(id):
 def return_locker_to_pool(id):
     rental = update_rent(id)
 
-    url = url_for('locker_views.manage_locker')
+    url = url_for('locker_views.return_offline_page')
     if request.args:
             callback = request.args.get('callback')
             callback_id = request.args.get('id')
@@ -135,7 +135,6 @@ def return_locker_to_pool(id):
                 url = url_for('.get_rent_id',id=callback_id)
             elif callback.lower() == 'student':
                 url = url_for('student_views.get_student_render',id=callback_id)
-
     if not rental:
         return redirect(url)
 
