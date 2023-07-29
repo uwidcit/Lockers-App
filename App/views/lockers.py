@@ -360,6 +360,7 @@ def switch_key():
 @locker_views.route('/api/locker', methods=['GET'])
 @login_required
 def locker_api():
+    get_all_rentals()
     return jsonify(get_all_lockers())
 
 @locker_views.route('/api/locker', methods=['POST'])
@@ -413,6 +414,5 @@ def update_locker_api():
 
 @locker_views.route('/locker', methods=['GET'])
 def return_offline_page():
-    get_all_rentals()
     return send_from_directory('static', 'manage_locker_offline.html')
      
