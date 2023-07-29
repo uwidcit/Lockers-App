@@ -4,7 +4,6 @@ from App.models.rent import RentStatus as RStatus
 from App.models.locker import LockerStatus as Status, LockerTypes
 from App.database import db
 from App.controllers.log import create_log
-from App.controllers.rent import update_rent
 from App.controllers.area import get_area_by_id,get_area_by_description
 from App.controllers.key_history import new_keyHistory,getKeyHistory
 from datetime import datetime
@@ -132,6 +131,7 @@ def get_all_lockers():
         l['area_description'] = area.description
         current_rental = Rent.query.filter(and_(Rent.keyHistory_id == keyH, Rent.status != RStatus.VERIFIED)).first()
         if current_rental:
+            from App.controllers import update_rent
             current_rental = update_rent(current_rental.id)
             l['current_rental'] = current_rental.toJSON()
         data.append(l)
