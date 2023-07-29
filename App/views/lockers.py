@@ -360,7 +360,6 @@ def switch_key():
 @locker_views.route('/api/locker', methods=['GET'])
 @login_required
 def locker_api():
-    get_all_rentals()
     return jsonify(get_all_lockers())
 
 @locker_views.route('/api/locker', methods=['POST'])
