@@ -30,12 +30,14 @@ class Locker (db.Model):
             
     def toJSON(self):
         from App.models import KeyHistory
+        key_model = self.KeyH.order_by(KeyHistory.id.desc()).first()
         return {
             'locker_code': self.locker_code,
             'locker_type':self.locker_type.value,
             'status': self.status.value,
             'area': self.area,
-            'key': self.KeyH.order_by(KeyHistory.id.desc()).first().key_id
+            'key': key_model.key_id,
+            'key_history':key_model.toJSON()
         }
 
     

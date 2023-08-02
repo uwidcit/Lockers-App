@@ -272,13 +272,14 @@ def get_all_rentals():
     if not rents:
         return None
 
+    data = []
     for r in rents:
-        update_rent(r.id)
+        data.append(update_rent(r.id).toJSON())
 
-    return[r.toJSON() for r in rents]
+    return data
 
 def get_transactions(id,size,offset):
-    data = get_rent_by_id(id)
+    data = update_rent(id)
     
     if not data:
         return None

@@ -127,13 +127,12 @@ def get_all_lockers():
     data = []
     for locker,area in locker_list:
         l = locker.toJSON()
-        keyH = locker.KeyH.order_by(KeyHistory.id.desc()).first().id
         l['area_description'] = area.description
-        current_rental = Rent.query.filter(and_(Rent.keyHistory_id == keyH, Rent.status != RStatus.VERIFIED)).first()
-        if current_rental:
+        if l['key_history']['rent']:
             from App.controllers import update_rent
-            current_rental = update_rent(current_rental.id)
-            l['current_rental'] = current_rental.toJSON()
+            for r in l['key_history']['rent']:
+                if r["status"] != "Verified":
+                     l['current_rental'] = update_rent(r.id).toJSON()           
         data.append(l)
     return data
 
