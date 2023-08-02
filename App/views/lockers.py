@@ -306,6 +306,7 @@ def render_get_lockers(id):
     previous = 1 
     next = previous + 1
     locker = get_locker_id(id)
+    rents = None
     rents = get_locker_rent_history(id,2,1)
     current_rental = get_current_rental(id)
     form = LockerAdd()

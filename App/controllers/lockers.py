@@ -328,7 +328,7 @@ def update_locker_type(id, new_type):
             return None
 
 def get_locker_rent_history(id,size,offset):
-    query = db.session.query(Locker,Rent).join(Rent).filter(Locker.locker_code == id).order_by( Rent.id.desc()).all()
+    query = db.session.query(KeyHistory,Rent).join(Rent).filter(KeyHistory.locker_id == id).order_by(Rent.id.desc()).all()
     if not query:
         return None
 

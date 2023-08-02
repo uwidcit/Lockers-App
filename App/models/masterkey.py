@@ -8,8 +8,7 @@ class Key_Type(Enum):
 
 class MasterKey(db.Model):
     __tablename__ = "masterkey"
-    id = db.Column(db.Integer, primary_key = True)
-    masterkey_id = db.Column(db.String, unique= True, nullable=False)
+    masterkey_id = db.Column(db.String, primary_key= True, nullable=False)
     series = db.Column(db.String, nullable=False)
     key_type = db.Column(db.Enum(Key_Type), nullable=False)
     date_added = db.Column(db.Date, nullable = False)
@@ -24,7 +23,6 @@ class MasterKey(db.Model):
 
     def toJSON(self):
         return{
-            'id':self.id,
             'masterkey_id':self.masterkey_id,
             'series': self.series,
             'key_type': self.key_type.value,

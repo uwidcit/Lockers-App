@@ -43,7 +43,7 @@
           <td><a href="/key/{{k.key_id}}">{{k.key_id}}</a></td>
           <td>{{k.key_status}}</td>
           <td>{{k.date_added}}</td>
-          <td><a href="/locker/{{k.current_locker.locker_id}}">{{k.current_locker.locker_id}}</a></td>
+          <td><a href="/locker/{{k.current_locker}}">{{k.current_locker}}</a></td>
         {% endfor %}
       </tbody>
     </table>
@@ -54,7 +54,7 @@
   {% if current_page == 1 %}
   <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
   {% else %}
-  <li><a href="/masterkey/{{masterkeyData.masterkey_id}}/page/{{previous}}"><i class="material-icons">chevron_left</i></a></li>
+  <li><a href="/masterkey/{{masterkeyData.masterkey_id}}/page/{{previous}}"><i class="material-icons white-text">chevron_left</i></a></li>
   {% endif %}
 
 <li class="waves effect purple darken-4"><a href="#" style="color:white;">{{current_page}}</a></li>
@@ -62,7 +62,7 @@
   {% if current_page == num_pages %}
   <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
   {% else %}
-  <li><a href="/masterkey/{{masterkeyData.masterkey_id}}/page/{{next}}"><i class="material-icons">chevron_right</i></a></li>
+  <li><a href="/masterkey/{{masterkeyData.masterkey_id}}/page/{{next}}"><i class="material-icons white-text">chevron_right</i></a></li>
   {% endif %}
 </ul>
 </div> 

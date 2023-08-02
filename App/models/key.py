@@ -26,9 +26,12 @@ class Key(db.Model):
         self.date_added = date_added
     
     def toJSON(self):
+        from App.models import KeyHistory
+        keyHistory = self.KeyH.order_by(KeyHistory.id.desc()).first()
         return{
             'key_id':self.key_id,
             'masterkey_id':self.masterkey_id,
             'key_status':self.key_status.value,
-            'date_added': datetime.strftime(self.date_added,'%Y-%m-%d')
+            'date_added': datetime.strftime(self.date_added,'%Y-%m-%d'),
+            'KeyHistory': keyHistory.toJSON(),
         }

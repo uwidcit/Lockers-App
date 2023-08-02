@@ -194,7 +194,7 @@ def render_get_masterkey_page(id):
         flash('Not found or does not exist')
         return redirect(url_for('.render_masterkey_page'))
     
-    keyData = get_key_masterkey_offset(id,1,3)
+    keyData = get_key_masterkey_offset(id,1,5)
     previous = 1
     next = previous + 1
     search = SearchForm()
@@ -212,7 +212,9 @@ def render_get_masterkey_page_offset(id,offset):
         flash('Not found or does not exist')
         return redirect(url_for('.render_masterkey_page'))
     
-    keyData = get_key_masterkey_offset(id,offset,3)
+    keyData = get_key_masterkey_offset(id,offset,5)
+    if offset > keyData["num_pages"]:
+        return redirect(url_for('.render_get_masterkey_page',id=id))
     previous = 1
     if offset - 1 <= 0:
         previous = 1

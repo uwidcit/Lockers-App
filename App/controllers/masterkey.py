@@ -52,7 +52,7 @@ def get_all_masterkeys_no_offset():
     
 
 def get_masterkey_by_id(id):
-    masterkey = MasterKey.query.filter(or_(MasterKey.id.like(id), MasterKey.masterkey_id.like(id))).first()
+    masterkey = MasterKey.query.filter(MasterKey.masterkey_id.like(id)).first()
 
     if not masterkey:
         return None
@@ -119,7 +119,7 @@ def update_masterkey_type(id, new_type):
         return None
 
 def search_masterkey(query,offset,size):
-    data = db.session.query(MasterKey).filter(or_(MasterKey.id.like(query), MasterKey.masterkey_id.like(query), MasterKey.series.like(query), MasterKey.key_type.like(query))).all()
+    data = db.session.query(MasterKey).filter(or_( MasterKey.masterkey_id.like(query), MasterKey.series.like(query), MasterKey.key_type.like(query))).all()
     if not data:
         return {'num_pages':1,'data':[]}
     
@@ -144,7 +144,7 @@ def search_masterkey(query,offset,size):
     return {"num_pages": num_pages,"data":m_list}
 
 def get_key_masterkey_offset(id,offset,size):
-    data = db.session.query(MasterKey,Key).join(Key).filter(or_(MasterKey.id.like(id), MasterKey.masterkey_id.like(id))).all()
+    data = db.session.query(MasterKey,Key).join(Key).filter_by(masterkey_id = id).all()
     if not data:
         return {'num_pages':1,'data':[],"num_keys":0}
     
@@ -165,10 +165,10 @@ def get_key_masterkey_offset(id,offset,size):
     
     m_list = []
     for masterkey,key in data[index:stop]:
-        current_locker = KeyHistory.query.order_by(KeyHistory.date_moved.desc()).filter_by(key_id = key.key_id).first()
+        temp_key = key.toJSON()
+        current_locker = temp_key['KeyHistory']['locker_id']
         if not current_locker:
             current_locker = ""
-        temp_key = key.toJSON()
         temp_key['current_locker'] = current_locker
         m_list.append(temp_key)
     return {"num_pages": num_pages,"data":m_list,"num_keys":length_mkey}
