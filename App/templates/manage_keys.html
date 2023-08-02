@@ -7,9 +7,9 @@
 {% block content %}
 <div class="row">
   <div class="row">
-    <div class="col s12 m8 offset-m7">
+    <div class="col s12 m4 offset-m8">
       <form action="/key/search" id="search_form">
-        <div class="input-field col s12 m5 offset-m1">
+        <div class="input-field col s12 m12">
          <div class = "search-wrapper">
           <input type="search" name="search_query" placeholder="Enter search query" required/>
           <i class="material-icons white-text" style="color:#4a148c; top:1vh; " id="submit_search">search</i>
@@ -19,7 +19,7 @@
     </div>
 </div>
 
-      <div class="col s12 m10 offset-m1" style="height:80vh;">
+      <div class="col s12 m10 offset-m1" style="height:100vh;">
         <table>
           <tr>
               <th>KeyID</th>
@@ -37,9 +37,9 @@
             <td>{{k.key_status}} </td>
             <td>{{k.date_added}}</td>
             <div style=" position: relative;display: inline-flex;">
-            <td style="width:150px;"><a href="#assign_key" onclick="assign('{{k.key_id}}')" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">add</i>Assign</a></td>
-              <td style="width:120px;"><a href="#edit" onclick="editMode({{k}})" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">edit</i>Edit</a></td>
-              <td style="width:120px;"><a href="#delete" onclick="removeMode({{k}})" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">delete</i>Delete</a></td>
+            <td style="width:160px;"><a href="#assign_key" onclick="assign('{{k.key_id}}')" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">add</i>Assign</a></td>
+              <td style="width:160px;"><a href="#edit" onclick="editMode({{k}})" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">edit</i>Edit</a></td>
+              <td style="width:160px;"><a href="#delete" onclick="removeMode({{k}})" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">delete</i>Delete</a></td>
             </div>
         </tr>
             
@@ -47,7 +47,7 @@
         {% endif %}
         </table>
     </div>
-    <div class="col m12 center-align" id="pag">
+    <div class="col s12 m12 l12 center-align" id="pag">
         <ul class="pagination">
           {% if query %}
           {% if current_page == 1  %}

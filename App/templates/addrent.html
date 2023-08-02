@@ -3,9 +3,9 @@
 {% block page %}Rent Details{% endblock %}
 
 {% block content %}
-<div class="row">
+<div class="row" style="height: 100vh;">
   <div class="col s6 offset-s3">
-<div class="card small indigo lighten-2"  style="height: 25vh;">
+<div class="card small purple darken-4"  style="height: 25vh;">
     <div class="card-content white-text">
       <span class="card-title">Rent No.: {{rent.id}} ({{rent.status.value}})</span>
         <div class="col s12">
@@ -62,7 +62,7 @@
         {% endif %}
        </table>
     </div>
-    <div class="col m5 offset-m5">
+    <div class="col s12 m12 l12 center-align" id="pag">
       <ul class="pagination">
     
       {% if current_page == 1 %}
