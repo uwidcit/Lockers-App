@@ -1,0 +1,4 @@
+﻿id,period_from,period_to,type,price
+1,2022-06-01,2023-12-31,Semester,150
+2,2022-06-01,2023-12-31,Daily,10
+3,2022-06-01,2023-12-31,Hourly,2
