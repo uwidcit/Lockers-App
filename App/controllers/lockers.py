@@ -132,7 +132,7 @@ def get_all_lockers():
             from App.controllers import update_rent
             for r in l['key_history']['rent']:
                 if r["status"] != "Verified":
-                     l['current_rental'] = update_rent(r.id).toJSON()           
+                     l['current_rental'] = update_rent(r['id']).toJSON()           
         data.append(l)
     return data
 
