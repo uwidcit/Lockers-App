@@ -1,4 +1,4 @@
-import click, pytest, sys
+import click, pytest, sys, csv
 from datetime import datetime
 from flask import Flask
 from flask.cli import with_appcontext, AppGroup
@@ -21,32 +21,61 @@ def initialize():
     create_user('rob', 'robpass')
     create_user('bob', 'bobpass')
     print('database intialized')
-    add_new_area("SAC Downstairs", 12, 10)
-    add_new_area("Library West(Blue)", 5, 9)
-    add_new_area("SAC Female Lockers", 12, 10)
-
-    new_masterkey("243", "Globe","Combination",datetime.now())
     
-    new_key("92243", "243","Available",datetime.now())
-    new_key("92301", "243","Available",datetime.now())
-    new_key("92252", "243","Available",datetime.now())
-    new_key("1000", "243","Available",datetime.now())
-    new_key("1001", "243","Available",datetime.now())
+    with open('area.csv', mode="r") as csv_file:
+        reader = csv.DictReader(csv_file)
+        for r in reader:
+            add_new_area(r["description"],r["longitude"],r["latitude"])
 
-    add_new_locker("A101","Medium","Free","92243",1)
-    add_new_locker("A102","Medium","Free","92301",1)
-    add_new_locker("A103","Medium","Free","92252",1)
+    with open('masterkey.csv', mode="r") as csv_file:
+        reader = csv.DictReader(csv_file)
+        for r in reader:
+            new_masterkey(r["masterkey_id"],r["series"],r["key_type"], r["date_added"])
 
-    add_new_locker("S371","Medium","Free","1000",2)
-    add_new_locker("S475","Small","Repair","1001",2)
+    with open('lockerkeytables.csv', mode="r") as csv_file:
+        reader = csv.DictReader(csv_file)
+        for r in reader:
+            new_key(r["\ufeffkey_id"], r["masterkey_id"], r["key_status"], r["date_added"])
+    
+    with open('lockers.csv', mode="r") as csv_file:
+        reader = csv.DictReader(csv_file)
+        for r in reader:
+            add_new_locker(r["locker_code"],r["locker_type"],r["status"],r["area"],r["key"])
 
-    new_rentType(datetime(2022,6,1), datetime(2023,12,31), "Semester", 150)
-    new_rentType(datetime(2022,6,1), datetime(2023,12,31), "Daily", 10)
-    new_rentType(datetime(2022,6,1), datetime(2023,12,31), "Hourly", 2)
+    with open('rentalTypes.csv', mode="r") as csv_file:
+        reader = csv.DictReader(csv_file)
+        for r in reader:
+            new_rentType(datetime.strptime(r['period_from'], '%Y-%m-%d'), datetime.strptime(r['period_to'], '%Y-%m-%d') ,r["type"],r["price"])
 
-    add_new_student("8160666", "Kat", "Bholai", "FST","1868123456","KatBholai@gmail.com")
-    add_new_student("8160777", "Jane", "Doe", "FFA","1868654321","JaneDoe@gmail.com")
-    add_new_student("8160888", "John", "Doe", "LAW","1868246810","JohnDoe@gmail.com")
+    with open('students.csv', mode="r") as csv_file:
+        reader = csv.DictReader(csv_file)
+        for r in reader:
+            add_new_student(r["\ufeffstudent_id"],r["first_name"],r["last_name"],r["faculty"],r["phone_number"], r["email"])
+
+    #add_new_area("SAC Downstairs", 12, 10)
+    #add_new_area("Library West(Blue)", 5, 9)
+    #add_new_area("SAC Female Lockers", 12, 10)
+
+    #new_masterkey("243", "Globe","Combination",datetime.now())
+    
+    #new_key("92243", "243","Available",datetime.now())
+    #new_key("92301", "243","Available",datetime.now())
+    #new_key("92252", "243","Available",datetime.now())
+
+    #add_new_locker("A101","Medium","Free","92243",1)
+    #add_new_locker("A102","Medium","Free","92301",1)
+    #add_new_locker("A103","Medium","Free","92252",1)
+
+    #add_new_locker("S371","Medium","Free","1000",2)
+    #add_new_locker("S475","Small","Repair","1001",2)
+
+    #new_rentType(datetime(2022,6,1), datetime(2023,12,31), "Semester", 150)
+    #new_rentType(datetime(2022,6,1), datetime(2023,12,31), "Daily", 10)
+    #new_rentType(datetime(2022,6,1), datetime(2023,12,31), "Hourly", 2)
+
+    #add_new_student("8160666", "Kat", "Bholai", "FST","1868123456","KatBholai@gmail.com")
+    #add_new_student("8160777", "Jane", "Doe", "FFA","1868654321","JaneDoe@gmail.com")
+    #add_new_student("8160888", "John", "Doe", "LAW","1868246810","JohnDoe@gmail.com")
     
 '''
 User Commands
