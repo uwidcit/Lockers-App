@@ -15,6 +15,10 @@ const {CacheableResponse, CacheableResponsePlugin} = workbox.cacheableResponse;
 
 precacheAndRoute([ { url: '/locker', revision: null }, ...self.__WB_MANIFEST]);
 
+setDefaultHandler(new NetworkFirst());
+
+offlineFallback();
+
 // Custom wrapper function to log requests and register the route
 function registerRouteWithLogging(urlPattern, strategy, options) {
   console.log('Registering route:', urlPattern);
