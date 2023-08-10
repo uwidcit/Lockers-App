@@ -20,12 +20,11 @@ async function addLocker(event){
     let result = await sendRequest('/api/locker','POST', data).then((response)=>{
         if (response.status == 201){
             toast("Success");
-            locker_list.push(result)
-            table = $('#lockerTable').DataTable();
-            table.row.add(result).draw()
+            window.location.reload()
         }
     }).catch((response)=>{
         toast("Adding locker failed");
+        window.location.reload()
     })
 }
 
@@ -54,8 +53,7 @@ async function updateLocker(event){
         (response)=>{
             if(response.status === 200){
              toast("Success");
-             table = $('#lockerTable').DataTable();
-             table.row(row_id).data(result).draw()
+             window.location.reload()
             }
         }
     ).catch((response)=>{
@@ -391,9 +389,11 @@ function createRent(studentID,locker_code){
         instance.close()
         form.reset()
         let result = await sendRequest('/api/locker/rent','POST', data).then((response)=>{
-            toast("Success");
+            toast("Success")
+            window.location.reload()
         }).catch((response)=>{
              toast("Rental failed");
+             window.location.reload()
         })
     })
     studentIDBox = document.getElementById("rent_student_id")
@@ -428,11 +428,10 @@ function createRent(studentID,locker_code){
 
     let result = await sendRequest('/api/locker/swap','PUT', data).then((response)=>{
         toast("Success");
-        table = $('#lockerTable').DataTable();
-        table.row(lockerRow_list[0]).data(response[0]).draw()
-        table.row(lockerRow_list[1]).data(response[1]).draw()
+        window.location.reload()
     }).catch((response)=>{
         toast("Updating locker failed");
+        window.location.reload()
     })
 }
 
