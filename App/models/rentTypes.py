@@ -5,9 +5,8 @@ from datetime import datetime
 class Types (Enum):
     HOURLY = "Hourly"
     DAILY = "Daily"
-    WEEKLY = "Weekly"
-    MONTHLY = "Monthly"
     SEMESTER = "Semester"
+    YEARLY = "Yearly"
 
 class RentTypes(db.Model):
     __tablename__= "rental_types"
