@@ -17,7 +17,7 @@ async function addLocker(event){
     instance = M.Modal.getInstance(elem)
     instance.close()
 
-    let result = await sendRequest('/api/locker','POST', data).then((response)=>{
+    let result = await sendRequest('/api/locker/','POST', data).then((response)=>{
         if (response.status == 201){
             toast("Success");
             locker_list.push(result)
@@ -50,7 +50,7 @@ async function updateLocker(event){
     instance.close()
     form.reset()
 
-    let result = await sendRequest('/api/locker','PUT', data).then(
+    let result = await sendRequest('/api/locker/','PUT', data).then(
         (response)=>{
             if(response.status === 200){
              toast("Success");
@@ -65,7 +65,7 @@ async function updateLocker(event){
 }
 async function getAllLockers(){
     let html = ""
-    let result = await sendRequest('/api/locker','GET')
+    let result = await sendRequest('/api/locker/','GET')
     
     data = document.querySelector('#lockerTable')
     
@@ -112,7 +112,7 @@ async function getAllLockers(){
 }
 async function getAllAreas(){
     let html = `<option value=”” disabled selected>Select a Area Status</option>`
-    let result = await sendRequest('/api/area','GET')
+    let result = await sendRequest('/api/area/','GET')
     
     
     data = document.querySelector('#area')
@@ -135,7 +135,7 @@ async function getAllAreas(){
 
 function editMode(locker){
     form = document.getElementById('newLocker')
-    form.action = "/locker/"+locker.locker_code+"/update"
+    form.action = "/locker/"+locker.locker_code+"/update/"
     form.removeEventListener('submit',addLocker)
     document.forms['newLocker'].addEventListener('submit',updateLocker)
  
@@ -175,7 +175,7 @@ function editMode(locker){
     instance = M.Modal.init(elem,{
         onCloseEnd:()=>{
             form = document.getElementById('newLocker')
-            form.action = "/api/locker"
+            form.action = "/api/locker/"
             form.reset()
             button = document.getElementById('l_submit')
             button.value = "Add Locker"
@@ -193,14 +193,14 @@ var lockerRow_list = []
 var row_id = 0
 
 async function getAllStudents(){
-    let result = await sendRequest('/api/student/available','GET').then((result)=>{
+    let result = await sendRequest('/api/student/available/','GET').then((result)=>{
         for(r in result){
             student_list.push(result[r])
         }
     })
 }
 async function getLockers(){
-    let result = await sendRequest('/api/locker','GET')
+    let result = await sendRequest('/api/locker/','GET')
     for (r in result){
         locker_list.push(result[r])
     }
@@ -209,7 +209,7 @@ async function getLockers(){
 }
 
 async function getAllRentTypes(){
-    let result = await sendRequest('/api/rentType','GET').then((result)=>{
+    let result = await sendRequest('/api/rentType/','GET').then((result)=>{
         for(r in result){
             rentType_list.push(result[r])
         }
@@ -390,7 +390,7 @@ function createRent(studentID,locker_code){
         instance = M.Modal.getInstance(elem)
         instance.close()
         form.reset()
-        let result = await sendRequest('/api/locker/rent','POST', data).then((response)=>{
+        let result = await sendRequest('/api/locker/rent/','POST', data).then((response)=>{
             toast("Success");
         }).catch((response)=>{
              toast("Rental failed");
@@ -426,7 +426,7 @@ function createRent(studentID,locker_code){
     instance.close()
     form.reset()
 
-    let result = await sendRequest('/api/locker/swap','PUT', data).then((response)=>{
+    let result = await sendRequest('/api/locker/swap/','PUT', data).then((response)=>{
         toast("Success");
         table = $('#lockerTable').DataTable();
         table.row(lockerRow_list[0]).data(response[0]).draw()

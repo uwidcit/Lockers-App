@@ -25,6 +25,7 @@ from datetime import datetime,timedelta
 from App.database import db 
 from sqlalchemy import and_
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.sql import func
 
 def period_elapsed(rentType_id, rent_date_from, rent_date_to):
     type = get_rentType_by_id(rentType_id)
@@ -305,6 +306,20 @@ def get_transactions(id,size,offset):
         s_list.append(d.toJSON())
 
     return {"num_pages":num_pages,"data":s_list}
+
+def get_rents_range(start_date, end_date):
+    rent_query = db.session.query(Rent).filter(and_(Rent.rent_date_from >= start_date, Rent.rent_date_from < end_date)).all()
+    if not rent_query:
+        return 0
+    data = [r.toJSON() for r in rent_query]
+    return {"length":len(rent_query),"data":data}
+
+def get_rents_returned_range(start_date, end_date):
+    rent_query = db.session.query(Rent).filter(and_(Rent.rent_date_from >= start_date, Rent.rent_date_from < end_date,Rent.status == Status.VERIFIED)).all()
+    if not rent_query:
+        return 0
+    data = [r.toJSON() for r in rent_query]
+    return {"length":len(rent_query),"data":data}
     
     
 

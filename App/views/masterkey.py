@@ -24,6 +24,7 @@ page_size = 6
 @login_required
 def render_masterkey_page():
     masterkeyData = get_all_masterkeys(page_size,1)
+    print(masterkeyData)
     previous = 1
     next = previous + 1
     search = SearchForm()

@@ -90,6 +90,8 @@
       var instancesColl = M.Collapsible.init(elemsColl);
       var elemsFxBtn = document.querySelectorAll('.fixed-action-btn');
       var instancesFxBtn = M.FloatingActionButton.init(elemsFxBtn);
+      var elemsTabs = document.querySelectorAll('.tabs');
+      var instanceTabs = M.Tabs.init(elemsTabs);
       var instancesBtn = M.Dropdown.init(elemsBtn,{
         hover:true,
         constrainWidth:false
@@ -112,6 +114,9 @@
     <style>
       .indentMenu {
         text-indent: 35px;
+      }
+      .tabs .tab a:hover, .tabs .tab a.active,.tab a{
+        color: white !important;
       }
       .modal{
         border-radius: 25px;

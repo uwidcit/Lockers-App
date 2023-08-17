@@ -1,5 +1,6 @@
 from flask import Response, Blueprint, send_file, redirect, render_template,jsonify, request, send_from_directory,flash,url_for
 from App.controllers import get_current_user
+from datetime import datetime,timedelta
 report_views = Blueprint('report_views', __name__, template_folder='../templates')
 from fpdf import FPDF
 from flask_login import login_required
@@ -8,6 +9,9 @@ from App.controllers import (
     get_all_lockers,
     get_all_transactions,
     get_all_keys,
+    get_revenue,
+    get_rents_range,
+    get_rents_returned_range,
 )
 
 @report_views.route('/report', methods=['GET'])
@@ -99,3 +103,32 @@ def keys_report():
 
 
     return Response(pdf.output(dest='S').encode('latin-1'), mimetype='application/pdf', headers={'Content-Disposition':'attachment;filename=key_report.pdf'})
+
+@report_views.route('/api/report/monthly', methods=['GET'])
+@login_required
+def get_daily_report():
+    date = datetime.now()
+    if  [1,3,5,7,8,10,12].index(date.month):
+        e_days = 31
+    elif [4,6,9,11].index(date.month):
+        e_days = 30
+    else:
+        import calendar
+        if calendar.isleap(date.year):
+            e_days = 29
+        else:
+            e_days = 28
+    start_date = datetime(date.year,date.month,1)
+    end_date = datetime(date.year,date.month,e_days)
+    revenue = get_revenue(start_date,end_date)
+    rents = get_rents_range(start_date,end_date)
+    returns = get_rents_returned_range(start_date,end_date)
+    data = {
+        "start_date": datetime.strftime(start_date,'%Y-%m-%d'),
+        "end_date":datetime.strftime(end_date,'%Y-%m-%d'),
+        "revenue":revenue,
+        "num_of_rents":rents,
+        "num_of_returns":returns
+    }
+    
+    return jsonify(data),200
