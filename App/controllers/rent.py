@@ -41,15 +41,7 @@ def period_elapsed(rentType_id, rent_date_from, rent_date_to):
     elif type.type.value == "Daily":
         time = rent_date_to - rent_date_from   
         return  time.days
-    elif type.type.value == "Weekly":
-        time = rent_date_to - rent_date_from   
-        return ceil(time.days/7)
-    elif type.type.value == "Monthly":
-        time = (rent_date_to.year - rent_date_from.year)  * 12 + (rent_date_to.month - rent_date_from.month)
-        if time == 0 or time == -1:
-            time = 1
-        return ceil(time)
-    elif type.type.value == "Semester":
+    elif type.type.value == "Semester" or type.type.value == "Yearly":
         return 1
 
 def init_amount_owed(rentType_id, rent_date_from, rent_date_to):
