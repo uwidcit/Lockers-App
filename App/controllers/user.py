@@ -1,8 +1,14 @@
-from App.models import User
+from App.models import User,Assistant
 from App.database import db
 
 def create_user(username, password):
     newuser = User(username=username, password=password)
+    db.session.add(newuser)
+    db.session.commit()
+    return newuser
+
+def create_assistant(username,password):
+    newuser = Assistant(username=username, password=password)
     db.session.add(newuser)
     db.session.commit()
     return newuser
@@ -18,6 +24,13 @@ def get_all_users():
 
 def get_all_users_json():
     users = User.query.all()
+    if not users:
+        return []
+    users = [user.toJSON() for user in users]
+    return users
+
+def get_all_assistant_json():
+    users = Assistant.query.all()
     if not users:
         return []
     users = [user.toJSON() for user in users]

@@ -5,7 +5,7 @@ from flask.cli import with_appcontext, AppGroup
 
 from App.database import db, get_migrate
 from App.main import create_app
-from App.controllers import ( create_user, get_all_users_json, get_all_users, add_new_locker, add_new_area, new_key, new_masterkey, new_rentType, add_new_student)
+from App.controllers import ( create_user, create_assistant, get_all_users_json, get_all_assistant_json,get_all_users, add_new_locker, add_new_area, new_key, new_masterkey, new_rentType, add_new_student)
 
 # This commands file allow you to create convenient CLI commands for testing controllers
 
@@ -20,6 +20,7 @@ def initialize():
     # insert sample data into database
     create_user('rob', 'robpass')
     create_user('bob', 'bobpass')
+    create_assistant('student1','studentpass')
     print('database intialized')
     
     with open('area.csv', mode="r") as csv_file:
@@ -104,6 +105,11 @@ def list_user_command(format):
         print(get_all_users())
     else:
         print(get_all_users_json())
+
+@user_cli.command("assistant", help="Lists assistants in the database")
+@click.argument("format", default="string")
+def list_user_command(format):
+        print(get_all_assistant_json())
 
 app.cli.add_command(user_cli) # add the group to the cli
 
