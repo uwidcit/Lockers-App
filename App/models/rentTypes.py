@@ -1,12 +1,22 @@
 from App.database import db
 from enum import Enum
 from datetime import datetime
-
+class Sizes(Enum):
+    SMALL = "Small"
+    MEDIUM = "Medium"
+    LARGE = "Large"
+    COMBINATION = "Combination"
 class Types (Enum):
     HOURLY = "Hourly"
     DAILY = "Daily"
-    SEMESTER = "Semester"
-    YEARLY = "Yearly"
+    SEMESTERSMALL = "Semester Small"
+    SEMESTERMEDIUM = "Semester Medium"
+    SEMESTERLARGE = "Semester Large"
+    SEMESTERCOMBINATION = "Semester Combination"
+    YEARLYSMALL = "Yearly Small"
+    YEARLYMEDIUM = "Yearly Medium"
+    YEARLYLARGE = "Yearly Large"
+    YEARLYCOMBINATION = "Yearly Combination"
 
 class RentTypes(db.Model):
     __tablename__= "rental_types"

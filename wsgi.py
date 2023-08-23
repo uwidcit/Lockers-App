@@ -35,7 +35,7 @@ def initialize():
     with open('lockerkeytables.csv', mode="r") as csv_file:
         reader = csv.DictReader(csv_file)
         for r in reader:
-            new_key(r["\ufeffkey_id"], r["masterkey_id"], r["key_status"], r["date_added"])
+            new_key(r["key_id"], r["masterkey_id"], r["key_status"], r["date_added"])
     
     with open('lockers.csv', mode="r") as csv_file:
         reader = csv.DictReader(csv_file)
@@ -50,7 +50,7 @@ def initialize():
     with open('students.csv', mode="r") as csv_file:
         reader = csv.DictReader(csv_file)
         for r in reader:
-            add_new_student(r["\ufeffstudent_id"],r["first_name"],r["last_name"],r["faculty"],r["phone_number"], r["email"])
+            add_new_student(r["student_id"],r["first_name"],r["last_name"],r["faculty"],r["phone_number"], r["email"])
 
     #add_new_area("SAC Downstairs", 12, 10)
     #add_new_area("Library West(Blue)", 5, 9)

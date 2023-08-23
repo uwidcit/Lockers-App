@@ -144,7 +144,7 @@
 
                 <div class="input-field col s12 m4">
                   <p> Price </p>
-                  {{form.price (size=20,class="validate", id="u_price")}}
+                  {{form.price (size=20,class="validate white-text", id="u_price")}}
                  </div>
             
           
@@ -207,9 +207,8 @@
           e_price.value = price.price
 
           button.value = "Update Price Modal"
-
           for (i = 0; i < type.options.length; i++){
-              if(type.options[i].value === price.type){
+              if(type.options[i].innerHTML === price.type){
                 type.selectedIndex = i
               }
           

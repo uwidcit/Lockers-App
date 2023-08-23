@@ -1,5 +1,5 @@
 from App.models import Rent 
-from App.models.rent import RentStatus as Status
+from App.models.rent import RentStatus as Status, RentMethod as Method
 from math import ceil,floor
 
 from App.controllers.rentType import (
@@ -96,7 +96,15 @@ def late_fees(rentType_id, date_returned, rent_date_from, rent_date_to):
     else:
         return 0.00
 
-def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to):
+def cal_fixed_price(rentType_id):
+    type = get_rentType_by_id(rentType_id)
+
+    if not type:
+        return -1
+
+    return float(type.price)
+
+def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to,rent_method):
     if get_overdue_rent_by_student(student_id) or get_owed_rent_by_student(student_id):
         flash("Unable to create rent. Rent Owed")
         return []
@@ -105,8 +113,13 @@ def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to):
         try:
             locker_instance = get_current_locker_instance(locker_id)
             if locker_instance:
-                amount_owed = init_amount_owed(rentType, rent_date_from, rent_date_to)
-                rent = Rent(student_id, locker_instance.id, rentType,rent_date_from,rent_date_to,amount_owed)
+                if rent_method.upper() == "FIXED":
+                    amount_owed = cal_fixed_price(rentType)
+                elif rent_method.upper() == "RATE":
+                    amount_owed = init_amount_owed(rentType, rent_date_from, rent_date_to)
+                else:
+                    return None
+                rent = Rent(student_id, locker_instance.id, rentType,rent_date_from,rent_date_to,amount_owed,rent_method)
                 db.session.add(rent)
                 db.session.commit()
                 rent_locker(locker_id)
@@ -120,9 +133,9 @@ def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to):
             db.session.rollback()   
             return None
         
-def import_verified_rent(student_id,locker_id,rentType,rent_date_from,rent_date_to,amount_owed,status,date_returned):
+def import_verified_rent(student_id,locker_id,rentType,rent_date_from,rent_date_to,amount_owed,status,date_returned,rent_method):
     locker_instance = get_current_locker_instance(locker_id)
-    rent = Rent(student_id, locker_instance.id, rentType,rent_date_from,rent_date_to,amount_owed)
+    rent = Rent(student_id, locker_instance.id, rentType,rent_date_from,rent_date_to,amount_owed,rent_method)
     if status == 'Verified':
         rent.status = Status.VERIFIED
         rent.date_returned = date_returned
@@ -155,10 +168,12 @@ def update_rent(id):
     
     if rent.status is Status.VERIFIED:
         return rent
+         
+    if rent.rent_method == Method.RATE:
+        amt = round(recal_amount_owed(rent.rent_type,rent.date_returned,rent.rent_date_from,rent.rent_date_to),2)
+        if amt is not None:
+            rent.amount_owed = round(round(amt,2) - round(cal_transaction_amount(id),2),2)
     
-    amt = round(recal_amount_owed(rent.rent_type,rent.date_returned,rent.rent_date_from,rent.rent_date_to),2)
-    if amt is not None:
-        rent.amount_owed = round(round(amt,2) - round(cal_transaction_amount(id),2),2)
     rent.status = rent.check_status()
 
     if rent.status.value == "Overdue":

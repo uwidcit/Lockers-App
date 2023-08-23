@@ -385,6 +385,7 @@ function createRent(studentID,locker_code){
             student_id: fields['student_id'].value,
             locker_id:  fields['locker_code'].value,
             rentType: fields['rent_type'].value,
+            rentMethod: fields['rent_method'].value,
             rent_date_from: fields['rent_date_from'].value,
             rent_date_to: fields['rent_date_to'].value   
         }
