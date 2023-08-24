@@ -43,7 +43,7 @@ def render_rentType_all_multi(offset):
     else:
         next = offset + 1
 
-    return render_template('rentType_manage.html', results=data['data'],form = RentTypeAdd(),search=SearchForm(),delete= ConfirmDelete(), previous= previous, next= next, current_page=offset)
+    return render_template('rentType_manage.html', results=data['data'],form = RentTypeAdd(),search=SearchForm(),delete= ConfirmDelete(), previous= previous, next= next, current_page=offset,num_pages=num_pages)
 
 @rentType_views.route('/rentType',methods=['POST'])
 @login_required
