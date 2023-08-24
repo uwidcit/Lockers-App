@@ -176,7 +176,19 @@ def get_all_rentType_current():
 
 
 def get_rt_Type():
-    return [rt.value for rt in Types]
+    data = {
+        "Semester":[],
+        "Rate":[],
+        "Yearly":[]
+    }
+    for rt in Types:
+        if rt.value.__contains__("Semester"):
+            data["Semester"].append((rt.name, rt.value))
+        elif rt.value.__contains__("Yearly"):
+            data["Yearly"].append((rt.name, rt.value))
+        else:
+           data["Rate"].append((rt.name, rt.value))
+    return data
 
 def get_rentType_by_offset(size,offset):
     l_offset = (offset * size) - size

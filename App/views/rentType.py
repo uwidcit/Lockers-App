@@ -17,11 +17,11 @@ from App.controllers import (
 from App.views.forms import RentTypeAdd,ConfirmDelete,SearchForm
 rentType_views = Blueprint('rentType_views', __name__, template_folder='../templates')
 
-
+size = 6
 @rentType_views.route('/rentType',methods=['GET'])
 @login_required
 def render_rentType_all():
-    data = get_rentType_by_offset(15,1)
+    data = get_rentType_by_offset(size,1)
     num_pages = data['num_pages']
     previous = 1
     next = previous + 1
@@ -30,8 +30,8 @@ def render_rentType_all():
 @rentType_views.route('/rentType/page/<offset>',methods=['GET'])
 @login_required
 def render_rentType_all_multi(offset):
-    int(offset)
-    data = get_rentType_by_offset(15,offset)
+    offset = int(offset)
+    data = get_rentType_by_offset(size,offset)
     num_pages = data['num_pages']
     if offset - 1 <= 0:
         previous = 1
@@ -152,7 +152,7 @@ def search_rentTypes():
     form = SearchForm()
     if form.validate_on_submit:
         query = request.args.get("search_query")
-        data = search_rentType(query,15,1)
+        data = search_rentType(query,size,1)
 
         if data:
              num_pages = data['num_pages']
@@ -167,7 +167,7 @@ def search_rentTypes_multi(offset):
     form = SearchForm()
     if form.validate_on_submit:
         query = request.args.get("search_query")
-        data = search_rentType(query,15,offset)
+        data = search_rentType(query,size,offset)
 
         if data:
              num_pages = data['num_pages']

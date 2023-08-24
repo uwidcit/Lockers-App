@@ -1,7 +1,7 @@
 // https://developer.chrome.com/docs/workbox/modules/workbox-sw/
 
 importScripts(
-  'https://storage.googleapis.com/workbox-cdn/releases/6.4.1/workbox-sw.js'
+  'https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-sw.js'
 );
 
 self.skipWaiting()
