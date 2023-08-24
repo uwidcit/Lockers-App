@@ -13,7 +13,7 @@ const {CacheFirst, StaleWhileRevalidate, NetworkOnly,NetworkFirst} = workbox.str
 const {precacheAndRoute} = workbox.precaching;
 const {CacheableResponse, CacheableResponsePlugin} = workbox.cacheableResponse;
 
-precacheAndRoute([ { url: '/locker', revision: null }, ...[{"revision":"bc56a6869ac03cd8815461a8a58ca256","url":"autocomplete.js"},{"revision":"9d295ec8b213fdfaac1595e739a950ef","url":"keep_alive.js"},{"revision":"ce4c3ba64e524e4a0abb92009ab1984b","url":"lockers.js"},{"revision":"870b5ea4295065881458d40c6df53a78","url":"main.js"},{"revision":"4fe196af4c2b24f40a6caf902d35c9cb","url":"manage_locker_offline.html"},{"revision":"5c939ef677a57602e5e12eaa34058ead","url":"map_init.js"},{"revision":"b0663391a6dd5efed956259f29fa18dd","url":"materialize.css"},{"revision":"74ac8fd1cd0b94f532c54d4c707a86ae","url":"materialize.js"},{"revision":"ec1df3ba49973dcb9ff212f052d39483","url":"materialize.min.css"},{"revision":"5dcfc8944ed380b2215dc28b3f13835f","url":"materialize.min.js"},{"revision":"c4f484683bb213d9a1fc33e2b1a97928","url":"offline.html"},{"revision":"7a2b4050bd5b0159ba5101b00d60b40f","url":"static-user.html"},{"revision":"ceac046cad1656146e8d521968b87cda","url":"style.css"},{"revision":"1d8179f18fcc6c658c386f9f30ef126b","url":"util.js"},{"revision":"2cd1cbbe5f9d94f135c89263d2eb4d2b","url":"workbox-a482575e.js"}]]);
+precacheAndRoute([ { url: '/locker', revision: null }, ...[{"revision":"bc56a6869ac03cd8815461a8a58ca256","url":"autocomplete.js"},{"revision":"9d295ec8b213fdfaac1595e739a950ef","url":"keep_alive.js"},{"revision":"c6c2db910a5123f68497b3a70b8de683","url":"lockers.js"},{"revision":"870b5ea4295065881458d40c6df53a78","url":"main.js"},{"revision":"6316620c8b5381acf41282bb9cba943d","url":"manage_locker_offline.html"},{"revision":"5c939ef677a57602e5e12eaa34058ead","url":"map_init.js"},{"revision":"b0663391a6dd5efed956259f29fa18dd","url":"materialize.css"},{"revision":"74ac8fd1cd0b94f532c54d4c707a86ae","url":"materialize.js"},{"revision":"ec1df3ba49973dcb9ff212f052d39483","url":"materialize.min.css"},{"revision":"5dcfc8944ed380b2215dc28b3f13835f","url":"materialize.min.js"},{"revision":"c4f484683bb213d9a1fc33e2b1a97928","url":"offline.html"},{"revision":"7a2b4050bd5b0159ba5101b00d60b40f","url":"static-user.html"},{"revision":"ceac046cad1656146e8d521968b87cda","url":"style.css"},{"revision":"1d8179f18fcc6c658c386f9f30ef126b","url":"util.js"},{"revision":"2cd1cbbe5f9d94f135c89263d2eb4d2b","url":"workbox-a482575e.js"}]]);
 
 setDefaultHandler(new NetworkFirst());
 
@@ -94,15 +94,6 @@ registerRoute(
       })
     ]
   })
-  new NetworkFirst({
-    cacheName: 'api-cache',
-    networkTimeoutSeconds: 8,
-    plugins: [
-      new CacheableResponsePlugin({
-        statuses: [0, 200]
-      })
-    ]
-  })
 );
 
 registerRoute(
@@ -162,30 +153,6 @@ registerRoute(
     ]
   })
 );
-
-registerRoute(
-  new RegExp('https://fonts.googleapis.com/*'),
-  new CacheFirst({
-    cacheName: 'lockers-cache',
-    plugins: [
-      new CacheableResponsePlugin({
-        statuses: [0, 200]
-      })
-    ]
-  })
-)
-
-registerRoute(
-  new RegExp('https://fonts.gstatic.com/*'),
-  new CacheFirst({
-    cacheName: 'lockers-cache',
-    plugins: [
-      new CacheableResponsePlugin({
-        statuses: [0, 200]
-      })
-    ]
-  })
-)
 
 registerRoute(
   new RegExp('https://fonts.googleapis.com/*'),
