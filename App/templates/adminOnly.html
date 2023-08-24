@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block title %} Unauthorized {% endblock %}
+{% block page %} Unauthorized {% endblock %}
+
+{{ super() }}
+
+{% block content %}
+<div class="row" style="height:100vh;">   
+    <div class="container center-align">
+      <h1>Administrative Privilege Required</h1>
+      <p>You do not have suffcient permissions to access the following content</p>
+      <a href="/locker" class="btn purple darken-4">Return to Locker Page</a>
+    </div>
+  </div>
+    
+{% endblock %}
