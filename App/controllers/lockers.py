@@ -13,10 +13,13 @@ from sqlalchemy.exc import SQLAlchemyError
 
 def add_new_locker(locker_code,locker_type,status,key_id,area):
     try:
+        if key_id is None or key_id == 'None':
+            status = 'Repair'
         locker = Locker(locker_code,locker_type,status,area)
         db.session.add(locker)
         db.session.commit()
-        new_keyHistory(key_id,locker.locker_code,datetime.now().date())
+        if key_id is not None or key_id != 'None':
+            new_keyHistory(key_id,locker.locker_code,datetime.now().date())
         return locker
     except SQLAlchemyError as e:
         print(e)

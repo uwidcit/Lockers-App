@@ -4,6 +4,7 @@ from flask_login import login_required
 
 from App.controllers import (
     get_All_rentType,
+    get_All_rentType_group,
     get_rentType_by_id,
     delete_rent_type,
     get_rentType_by_offset,
@@ -200,3 +201,13 @@ def api_getRentTypes():
     if not rentTypes: 
         return {}
     return jsonify(rentTypes),200
+
+@rentType_views.route('/api/rentType/group',methods=['GET'])
+@login_required
+def api_getRentTypes_group():
+    rentTypes = get_All_rentType_group()
+    if not rentTypes: 
+        return {}
+    return jsonify(rentTypes),200
+
+

@@ -1,6 +1,7 @@
 import click, pytest, sys, csv
 from datetime import datetime
 from flask import Flask
+from flaskwebgui import FlaskUI
 from flask.cli import with_appcontext, AppGroup
 
 from App.database import db, get_migrate
@@ -11,6 +12,9 @@ from App.controllers import ( create_user, create_assistant, get_all_users_json,
 
 app = create_app()
 migrate = get_migrate(app)
+
+if __name__ == "__main__":
+    FlaskUI(app=app, server="flask").run()
 
 # This command creates and initializes the database
 @app.cli.command("init", help="Creates and initializes the database")

@@ -11,6 +11,7 @@ class LockerStatus(Enum):
 class LockerTypes(Enum):
     SMALL = "Small"
     MEDIUM = "Medium"
+    LARGE = "Large"
     COMBINATION = "Combination"
 
 class Locker (db.Model):

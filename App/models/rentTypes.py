@@ -1,11 +1,7 @@
 from App.database import db
 from enum import Enum
 from datetime import datetime
-class Sizes(Enum):
-    SMALL = "Small"
-    MEDIUM = "Medium"
-    LARGE = "Large"
-    COMBINATION = "Combination"
+
 class Types (Enum):
     HOURLY = "Hourly"
     DAILY = "Daily"

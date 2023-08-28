@@ -22,11 +22,46 @@ def get_user(id):
 def get_all_users():
     return User.query.all()
 
+def get_assistant(id):
+    return Assistant.query.get(id)
+
+def set_assistant_password(id,password):
+    assistant = get_assistant(id)
+
+    if not assistant:
+        return None
+    try:
+        assistant.set_password(password)
+        db.session.add(assistant)
+        return db.session.commit()
+    except:
+        db.session.rollback()
+        return None
+
+def delete_assistant(id):
+    assistant = get_assistant(id)
+
+    if not assistant:
+        return None
+    try:
+    
+        db.session.delete(assistant)
+        return db.session.commit()
+    except:
+        db.session.rollback()
+        return None
+
 def get_all_users_json():
     users = User.query.all()
     if not users:
         return []
     users = [user.toJSON() for user in users]
+    return users
+
+def get_all_assistant():
+    users = Assistant.query.all()
+    if not users:
+        return None
     return users
 
 def get_all_assistant_json():

@@ -150,6 +150,26 @@ def get_All_rentType():
         
     return [r.toJSON() for r in rentType]
 
+def get_All_rentType_group():
+    rentType = RentTypes.query.all()
+
+    if not rentType:
+        return None
+
+    fixed = []
+    rates = []
+
+    for r in rentType:
+        if r.type == Types.DAILY or r.type == Types.HOURLY:
+            fixed.append(r.toJSON())
+        else:
+            rates.append(r.toJSON())
+    data = {
+        'fixed':fixed,
+        'rates': rates
+    }
+    return data
+
 def get_all_rentType_tuple():
     rentType = get_All_rentType()
     rentTuple = []

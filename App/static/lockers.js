@@ -207,7 +207,7 @@ async function getLockers(){
 }
 
 async function getAllRentTypes(){
-    let result = await sendRequest('/api/rentType','GET').then((result)=>{
+    let result = await sendRequest('/api/rentType/group','GET').then((result)=>{
         for(r in result){
             rentType_list.push(result[r])
         }
@@ -401,10 +401,8 @@ function createRent(studentID,locker_code){
     studentIDBox.value = studentID
 
     rentTypes = document.getElementById("rent_type")
-    html = ' <option value=”” disabled selected>Select Rental Plan</option>'
-    for (r in rentType_list){
-        html+= `<option value=${rentType_list[r].id}>${rentType_list[r].type}: $${rentType_list[r].price} Period: ${rentType_list[r].period_from} to ${rentType_list[r].period_to}</option>`
-    }
+    html = ' <option value=”” disabled selected>Select Rental Method First </option>'
+   
    rentTypes.innerHTML = html
    elem = document.getElementById('new_Rent');
    instance = M.Modal.getInstance(elem)
@@ -477,7 +475,34 @@ function OpenSwapKey(locker1, locker2){
 //Add event listener to object later
 document.addEventListener('DOMContentLoaded',getLockers)
 document.addEventListener('DOMContentLoaded',getAllAreas)
+
 document.addEventListener('DOMContentLoaded',getAllRentTypes)
 document.addEventListener('DOMContentLoaded',getAllStudents)
 document.getElementById('newLocker').addEventListener('submit',addLocker)
 document.getElementById('swapKey_form').addEventListener('submit',swapKey)
+
+document.getElementById('rent_method').addEventListener('change',(event)=>{
+    table = $('#lockerTable').DataTable();
+    var data = table.rows( lockerRow_list[0]).data();
+    rentTypes = document.getElementById("rent_type")
+    html = ' <option value=”” disabled selected>Select Rental Type </option>'
+    
+    if(event.target.value === "Rate"){
+        for (r in rentType_list[0]){
+            html+= `<option value=${rentType_list[0][r].id}>${rentType_list[0][r].type}: $${rentType_list[0][r].price} Period: ${rentType_list[0][r].period_from} to ${rentType_list[0][r].period_to}</option>`
+       }
+    }
+    else{
+        for (r in rentType_list[1]){
+            if(rentType_list[1][r].type.toLowerCase().includes(data[0].locker_type.toLowerCase())){
+            html+= `<option value=${rentType_list[1][r].id}>${rentType_list[1][r].type}: $${rentType_list[1][r].price} Period: ${rentType_list[1][r].period_from} to ${rentType_list[1][r].period_to}</option>`
+        }
+    }
+    }
+    
+   
+    
+    rentTypes.innerHTML = html
+})
+
+
