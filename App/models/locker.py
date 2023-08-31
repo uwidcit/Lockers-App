@@ -34,7 +34,7 @@ class Locker (db.Model):
         key_model = self.KeyH.order_by(KeyHistory.id.desc()).first()
         if not key_model:
             key = ''
-            kH = ''
+            kH = []
         else:
             key = key_model.key_id
             kH = key_model.toJSON()
