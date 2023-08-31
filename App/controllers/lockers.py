@@ -7,24 +7,21 @@ from App.controllers.log import create_log
 from App.controllers.area import get_area_by_id,get_area_by_description
 from App.controllers.key_history import new_keyHistory,getKeyHistory
 from datetime import datetime
-from flask import flash
 from sqlalchemy import or_,and_
 from sqlalchemy.exc import SQLAlchemyError
 
 def add_new_locker(locker_code,locker_type,status,key_id,area):
     try:
-        if key_id is None or key_id == 'None':
+        if key_id == '' or key_id == 'None':
             status = 'Repair'
         locker = Locker(locker_code,locker_type,status,area)
         db.session.add(locker)
         db.session.commit()
-        if key_id is not None or key_id != 'None':
+        if len(key_id) > 0:
             new_keyHistory(key_id,locker.locker_code,datetime.now().date())
         return locker
     except SQLAlchemyError as e:
-        print(e)
         db.session.rollback()
-        flash(create_log(e, locker_code))
         return None
 
 def get_lockers_available():
@@ -184,6 +181,8 @@ def get_lockers_by_offset(size,offset):
 
 def get_current_rental(id):
     locker = get_locker_id_locker(id)
+    if locker is None:
+        return None
     keyH = locker.KeyH.order_by(KeyHistory.id.desc()).first().id
     current_rental =  Rent.query.filter(and_(Rent.keyHistory_id == keyH, Rent.status != RStatus.VERIFIED)).first()
     if current_rental:
@@ -201,7 +200,6 @@ def get_current_locker_instance(id):
 def rent_locker(id):
     locker = get_locker_id_locker(id)
     if not locker or locker.status == Status.RENTED:
-        flash("locker already Rented")
         return None
     locker.status = Status.RENTED
     try:
@@ -210,7 +208,6 @@ def rent_locker(id):
         return True
     except SQLAlchemyError as e:
         create_log(id, type(e), datetime.now())
-        flash("Unable to Rent Locker. Check Error Log for more Details")
         db.session.rollback()
         return None
 
@@ -231,13 +228,11 @@ def not_verified(id):
     except SQLAlchemyError as e:
         db.session.rollback()
         create_log(id, type(e), datetime.now())
-        flash("Unable to release Locker. Check Error Log for more Details")
         return None
 
 def release_locker(id):
     keyH = getKeyHistory(id)
     locker = get_locker_id_locker(keyH.locker_id)
-    print(locker)
     if not locker:
         return None
     
@@ -248,8 +243,6 @@ def release_locker(id):
         db.session.commit()
         return locker
     except SQLAlchemyError as e:
-        create_log(id, type(e), datetime.now())
-        flash("Unable to release Locker. Check Error Log for more Details")
         db.session.rollback()
         return None
 
@@ -259,7 +252,6 @@ def delete_locker(id):
         return None
 
     if get_current_rental(id):
-        flash('Can not delete a locker currently being rented')
         return None
     else:
         try:
@@ -267,8 +259,6 @@ def delete_locker(id):
             db.session.commit()
             return locker
         except SQLAlchemyError as e:
-            create_log(id, type(e), datetime.now())
-            flash("Unable to delete Locker. Check Error Log for more Details")
             db.session.rollback()
             return None
     
@@ -278,7 +268,6 @@ def update_key(id, new_key):
         return None
 
     if get_current_rental(id):
-        flash('Can not delete a locker currently being rented')
         return None
     else:
         try:
@@ -286,7 +275,6 @@ def update_key(id, new_key):
             return locker
         except SQLAlchemyError as e:
             create_log(id, type(e), datetime.now())
-            flash("Unable to update key. Check Error Log for more Details")
             db.session.rollback()
             return None
 
@@ -296,7 +284,6 @@ def update_locker_status(id, new_status):
         return None
     
     if get_current_rental(id):
-        flash('Can not delete a locker currently being rented')
         return None
     else:
         try:
@@ -315,7 +302,6 @@ def update_locker_type(id, new_type):
         return None
         
     if get_current_rental(id):
-        flash('Can not delete a locker currently being rented')
         return None
     else:
         try:
@@ -326,9 +312,7 @@ def update_locker_type(id, new_type):
                 return locker
         except SQLAlchemyError as e:
             db.session.rollback()
-            print(e.__dict__)
             create_log(id, type(e), datetime.now())
-            flash("Unable to update locker status. Check Error Log for more Details")
             return None
 
 def get_locker_rent_history(id,size,offset):
