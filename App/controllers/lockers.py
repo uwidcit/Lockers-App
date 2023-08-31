@@ -131,11 +131,12 @@ def get_all_lockers():
     for locker,area in locker_list:
         l = locker.toJSON()
         l['area_description'] = area.description
-        if l['key_history']['rent']:
-            from App.controllers import update_rent
-            for r in l['key_history']['rent']:
-                if r["status"] != "Verified":
-                     l['current_rental'] = update_rent(r['id']).toJSON()           
+        if l['key_history']:
+            if l['key_history']['rent']:
+                from App.controllers import update_rent
+                for r in l['key_history']['rent']:
+                    if r["status"] != "Verified":
+                        l['current_rental'] = update_rent(r['id']).toJSON()           
         data.append(l)
     return data
 
