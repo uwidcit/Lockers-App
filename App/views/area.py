@@ -25,7 +25,8 @@ from App.controllers import (
 from App.views.forms import AreaAdd,ConfirmDelete,SearchForm,LockerAdd
 
 area_views = Blueprint('area_views', __name__, template_folder='../templates')
-
+size = 6
+size2 = 4
 @area_views.route('/area', methods=['POST'])
 @login_required
 def create_new_area():
@@ -47,8 +48,8 @@ def create_new_area():
 @area_views.route('/area',methods=['GET'])
 @login_required
 def render_area_page():
-    num_pages = get_num_area_page(15)
-    areaData = get_area_by_offset(15,1)
+    num_pages = get_num_area_page(size)
+    areaData = get_area_by_offset(size,1)
     previous = 1
     next = previous + 1
     search = SearchForm()
@@ -59,8 +60,8 @@ def render_area_page():
 @login_required
 def render_area_page_offset(offset):
     offset = int(offset)
-    num_pages = get_num_area_page(15)
-    areaData = get_area_by_offset(15,offset)
+    num_pages = get_num_area_page(size)
+    areaData = get_area_by_offset(size,offset)
     
     if offset - 1 <= 0:
         previous = 1
@@ -85,7 +86,7 @@ def render_search_area_page():
     form = SearchForm()
     if form.validate_on_submit:
         query = request.args.get('search_query')
-        result = search_area(query,1,15)
+        result = search_area(query,1,size)
 
         if result:
             num_pages = result['num_pages']
@@ -100,7 +101,7 @@ def render_search_area_page_multi(offset):
     form = SearchForm()
     if form.validate_on_submit:
         query = request.args.get('search_query')
-        result = search_area(query,offset,15)
+        result = search_area(query,offset,size)
 
         if result:
             num_pages = result['num_pages']
@@ -180,7 +181,7 @@ def get_all_areas():
 @login_required
 def get_area_id(id):
     area = get_area_by_id(id)
-    locker = return_lockers(id,3,1)
+    locker = return_lockers(id,size2,1)
     previous = 1
     num_lockers = len(get_locker_by_area_id_toJSON(id))
     next = previous + 1
@@ -198,7 +199,7 @@ def get_area_id(id):
 def get_area_id_multi(id,offset):
     offset = int(offset)
     area = get_area_by_id(id)
-    locker = return_lockers(id,3,offset)
+    locker = return_lockers(id,size2,offset)
     areaList = get_area_all_except(id)
     num_lockers = len(get_locker_by_area_id_toJSON(id))
     form = LockerAdd()
@@ -215,7 +216,7 @@ def get_area_id_multi(id,offset):
         next = locker['num_pages']
     else:
         next = offset + 1
-    return render_template('get_area.html',area = area,locker=locker["data"], previous=previous,next=next,current_page=1,num_pages=locker['num_pages'],num_lockers=num_lockers,form=form,keys=get_all_keys_id(), areaList=areaList)
+    return render_template('get_area.html',area = area,locker=locker["data"], previous=previous,next=next,current_page=offset,num_pages=locker['num_pages'],num_lockers=num_lockers,form=form,keys=get_all_keys_id(), areaList=areaList)
 
 @area_views.route('/area/<id>/mass_swap', methods=['POST'])
 @login_required

@@ -6,16 +6,17 @@ from App.views.admin import admin_only
 from App.controllers import (
     create_user, 
     create_assistant,
+    change_password,
     set_assistant_password,
     delete_assistant,
     get_all_users,
     get_all_users_json,
     store_file,
-    get_all_assistant,
+    get_all_assistant_by_offset,
 )
 
 user_views = Blueprint('user_views', __name__, template_folder='../templates')
-
+size = 6
 @user_views.route('/upload', methods=['POST'])
 def upload_file_route():
     user_file = request.files.getlist('upload')
@@ -30,6 +31,37 @@ def upload_file_route():
 def get_user_page():
     users = get_all_users()
     return render_template('users.html', users=users)
+
+@user_views.route('/users/password', methods=['GET'])
+@login_required
+def get_password_page():
+    return render_template('account.html')
+
+@user_views.route('/users/password', methods=['POST'])
+@login_required
+def password_user_change():
+    current_pass = request.form.get('current_password')
+    new_pass = request.form.get('new_password')
+    confirm_pass = request.form.get('confirm_password')
+
+    if new_pass == '' or confirm_pass == '' or current_pass == '':
+       flash('Password field cannot be empty')
+       return redirect(url_for('.get_password_page'))
+    if new_pass == confirm_pass:
+       if len(new_pass) < 7:
+          flash('Password cannot be shorter than 7 characters')
+          return redirect(url_for('.get_password_page'))
+       try:
+          user = change_password(current_user.id,current_pass,new_pass)
+          if user:
+           flash('Success')
+          else:
+            flash('Error')
+       except Exception as e:
+          flash(str(e))
+    else:
+       flash('New passwords do not match')
+    return redirect(url_for('.get_password_page'))
 
 @user_views.route('/users/assistant', methods=['POST'])
 @login_required
@@ -51,8 +83,26 @@ def add_user_post():
 @login_required
 @admin_only
 def assistant_management():
-   assistants = get_all_assistant()
-   return render_template('manage_assistants.html',assistants = assistants, current_page=1 , num_pages = 1, previous = 1, next= 1)
+   assistants = get_all_assistant_by_offset(size,1)
+   return render_template('manage_assistants.html',assistants = assistants['data'], current_page=1 , num_pages = assistants['num_pages'], previous = 1, next= 2)
+
+@user_views.route('/users/manage/page/<offset>', methods=['GET'])
+@login_required
+@admin_only
+def assistant_management_multi(offset):
+   offset = int(offset)
+   assistants = get_all_assistant_by_offset(size,offset)
+   if offset - 1 <= 0:
+        previous = 1
+        offset = 1
+   else:
+        previous = offset - 1
+   if offset + 1 >= assistants['num_pages']:
+        next = assistants['num_pages']
+   else:
+        next = offset + 1
+   return render_template('manage_assistants.html',assistants = assistants['data'], current_page=offset , num_pages = assistants['num_pages'], previous = previous, next= next)
+
 
 @user_views.route('/users/assistant/<id>/reset', methods=['POST'])
 @login_required

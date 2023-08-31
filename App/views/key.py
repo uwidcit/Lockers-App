@@ -50,7 +50,7 @@ def render_keys_page_multi(offset):
     keys = KeyAdd()
     keys.key_status.choices = get_key_statuses()
     search.submit.label.text = "Search Key"
-    return render_template('manage_keys.html', current_page=1, masterkeys = get_all_masterkeys_no_offset(), lockers= get_all_locker_names(), previous=previous, next = next, search = search, keyData = keyData['data'], num_pages=keyData["num_pages"], delete = ConfirmDelete(), keys = keys)
+    return render_template('manage_keys.html', current_page=offset, masterkeys = get_all_masterkeys_no_offset(), lockers= get_all_locker_names(), previous=previous, next = next, search = search, keyData = keyData['data'], num_pages=keyData["num_pages"], delete = ConfirmDelete(), keys = keys)
 
 @key_views.route('/key/<id>/assign',methods=['POST'])
 @login_required

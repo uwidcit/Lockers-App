@@ -34,6 +34,7 @@ class User(db.Model,UserMixin):
         """Check hashed password."""
         return check_password_hash(self.password, password)
 
+
 class Assistant(User):
     __tablename__ = 'assistant'
     id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)

@@ -22,10 +22,11 @@ def initialize():
     db.drop_all()
     db.create_all()
     # insert sample data into database
+    print('Beginning Initalization')
     create_user('rob', 'robpass')
     create_user('bob', 'bobpass')
     create_assistant('student1','studentpass')
-    print('database intialized')
+    
     
     with open('area.csv', mode="r") as csv_file:
         reader = csv.DictReader(csv_file)
@@ -35,12 +36,12 @@ def initialize():
     with open('masterkey.csv', mode="r") as csv_file:
         reader = csv.DictReader(csv_file)
         for r in reader:
-            new_masterkey(r["masterkey_id"],r["series"],r["key_type"], r["date_added"])
+            new_masterkey(r["masterkey_id"],r["series"],r["key_type"],datetime.strptime(r['date_added'], '%Y-%m-%d'))
 
     with open('lockerkeytables.csv', mode="r") as csv_file:
         reader = csv.DictReader(csv_file)
         for r in reader:
-            new_key(r["key_id"], r["masterkey_id"], r["key_status"], r["date_added"])
+            new_key(r["key_id"], r["masterkey_id"], r["key_status"], datetime.strptime(r['date_added'], '%Y-%m-%d'))
     
     with open('lockers.csv', mode="r") as csv_file:
         reader = csv.DictReader(csv_file)
@@ -56,6 +57,8 @@ def initialize():
         reader = csv.DictReader(csv_file)
         for r in reader:
             add_new_student(r["student_id"],r["first_name"],r["last_name"],r["faculty"],r["phone_number"], r["email"])
+    
+    print('database intialized')
 
     #add_new_area("SAC Downstairs", 12, 10)
     #add_new_area("Library West(Blue)", 5, 9)

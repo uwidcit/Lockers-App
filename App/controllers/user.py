@@ -13,6 +13,24 @@ def create_assistant(username,password):
     db.session.commit()
     return newuser
 
+def change_password(id,current_pass,new_pass):
+    user = get_user(id)
+
+    if not user:
+        return None
+
+    if user.check_password(current_pass):
+        try:
+            user.set_password(new_pass)
+            db.session.add(user)
+            db.session.commit()
+            return user
+        except:
+            db.session.rollback()
+            return None
+    else:
+         raise Exception('Current password is incorrect')
+
 def get_user_by_username(username):
     return User.query.filter_by(username=username).first()
 
@@ -63,6 +81,33 @@ def get_all_assistant():
     if not users:
         return None
     return users
+
+def get_all_assistant_by_offset(size,offset):
+    users = Assistant.query.all()
+    if not users:
+        return {"num_pages":1,"data":[]}
+    
+    length_assistant = len(users)
+    if length_assistant == 0:
+         num_pages = 1
+    
+    if length_assistant%size != 0:
+        num_pages = int((length_assistant/size) + 1)
+    else:
+        num_pages = int(length_assistant/size)
+    
+    index = (offset * size) - size
+    stop = (offset * size)
+
+    if(stop > length_assistant):
+        stop = length_assistant
+    
+    s_list = []
+
+    for d in users[index:stop]:
+        s_list.append(d.toJSON())
+
+    return {"num_pages":num_pages,"data":s_list}
 
 def get_all_assistant_json():
     users = Assistant.query.all()
