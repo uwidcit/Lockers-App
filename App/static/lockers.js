@@ -217,7 +217,12 @@ function initTable(data){
     let table = new DataTable('#lockerTable',{
         "responsive":true,
         select:"multi",
-        data:data,
+        processing: true,
+        serverSide: true,
+        ajax:{
+            url:'/api/locker',
+            type:'POST'
+        },
         "columns":[
             {"data":"locker_code"},
             {"data":"locker_type"},
@@ -473,9 +478,8 @@ function OpenSwapKey(locker1, locker2){
   }
 
 //Add event listener to object later
-document.addEventListener('DOMContentLoaded',getLockers)
+document.addEventListener('DOMContentLoaded',initTable)
 document.addEventListener('DOMContentLoaded',getAllAreas)
-
 document.addEventListener('DOMContentLoaded',getAllRentTypes)
 document.addEventListener('DOMContentLoaded',getAllStudents)
 document.getElementById('newLocker').addEventListener('submit',addLocker)

@@ -12,12 +12,12 @@ from sqlalchemy.exc import SQLAlchemyError
 
 def add_new_locker(locker_code,locker_type,status,key_id,area):
     try:
-        if key_id == '' or key_id == 'None':
+        if len(key_id) == 0 or not key_id:
             status = 'Repair'
         locker = Locker(locker_code,locker_type,status,area)
         db.session.add(locker)
         db.session.commit()
-        if len(key_id) > 0:
+        if len(key_id) > 0 or not key_id:
             new_keyHistory(key_id,locker.locker_code,datetime.now().date())
         return locker
     except SQLAlchemyError as e:
@@ -119,23 +119,42 @@ def search_lockers(query,offset,size):
     return {"num_pages": num_pages,"data":l_list}
     
 
-def get_all_lockers():
+def get_all_lockers(draw,size,offset):
     locker_list = db.session.query(Locker,Area).join(Area).all()
+
     if not locker_list:
         return []
     
+    l_offset = (offset * size) - size
+    length_lockers = len(locker_list)
+
+    if length_lockers%size != 0:
+        num_pages  = int((length_lockers/size)+1)
+    else:
+        num_pages = int(length_lockers/size)
+    
+    index = (offset * size) - size
+    stop = (offset * size)
     data = []
-    for locker,area in locker_list:
+    locker_data = {
+        "draw":draw,
+        "recordsTotal": length_lockers,
+        "recordsFiltered":length_lockers,
+        "data": []
+    }
+
+    for locker,area in locker_list[index:stop]:
         l = locker.toJSON()
         l['area_description'] = area.description
-        if l['key_history']:
-            if l['key_history']['rent']:
+        if l['status'] !='Repair' and l['status'] == 'Rented':
+           if l['key_history']['rent']:
                 from App.controllers import update_rent
                 for r in l['key_history']['rent']:
                     if r["status"] != "Verified":
-                        l['current_rental'] = update_rent(r['id']).toJSON()           
+                       l['current_rental'] = update_rent(r['id']).toJSON()           
         data.append(l)
-    return data
+    locker_data['data'] = data
+    return locker_data
 
 def get_num_lockers():
     try:

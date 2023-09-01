@@ -364,7 +364,20 @@ def switch_key():
 @locker_views.route('/api/locker', methods=['GET'])
 @login_required
 def locker_api():
-    return jsonify(get_all_lockers())
+    #return jsonify(get_all_lockers())
+    return {},200
+
+@locker_views.route('/api/locker', methods=['POST'])
+@login_required
+def locker_api_test():
+    draw = int(request.form.get('draw'))
+    start = int(request.form.get('start'))
+    size = int(request.form.get('length'))
+    offset = int(start/size)
+    if offset == 0:
+        offset = 1
+    return jsonify(get_all_lockers(draw,size,offset))
+    
 
 @locker_views.route('/api/locker', methods=['POST'])
 @login_required
