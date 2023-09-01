@@ -376,6 +376,8 @@ def locker_api_test():
     offset = int(start/size)
     if offset == 0:
         offset = 1
+    else:
+        offset = offset + 1
     return jsonify(get_all_lockers(draw,size,offset))
     
 
