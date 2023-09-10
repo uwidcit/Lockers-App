@@ -33,7 +33,7 @@ def render_not_found(e):
 @index_views.app_errorhandler(exc.SQLAlchemyError)
 def rollback_db(e):
     db.session.rollback()
-    return redirect(url_for("locker_views.return_offline_page"))
+    #return redirect(url_for("locker_views.return_offline_page"))
 
 @index_views.app_errorhandler(401)
 def unauthorized_access(e):

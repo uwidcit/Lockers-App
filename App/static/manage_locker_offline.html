@@ -61,14 +61,22 @@
         <li><a class="white-text" href="/logout"><i class="material-icons white-text">exit_to_app</i><h7>Logout</h7></a></li>
       </ul>
   </header>
-  <nav class="grey darken-4">
-
-  </nav>
   <main>
     <div class="row" >   
-      <div class="grey darken-4 white-text" >
+      <div class="grey darken-4 white-text" style="height: 100vh;"> 
         <div class="row">
-            <div class="col s12 m10 offset-m1 white-text" style="height:100vh;" >
+          <div class="col s12">
+            <ul class="tabs grey darken-4 white-text">
+                <li class="tab col s4"><a href="#locker_tab">Lockers</a></li>
+                <li class="tab col s4"><a href="#rent_tab">Active Rents</a></li>
+                <li class="tab col s4"><a href="#rent_tab_complete">Completed Rents</a></li>
+              </ul>
+            </div>
+            <div class="col s12">
+              <br>
+            </div>
+            <div class="col s12 m10 offset-m1 white-text">
+              <div id="locker_tab">
               <div >
                    <a id="refresh_btn" class="btn purple darken-4 center-align" onclick="window.location.reload()" >Refresh<i class="large material-icons center-align">refresh</i> </a>
                   <a id="options_btn" class="btn disabled center-align" >Options<i class="large material-icons center-align">arrow_drop_down</i> </a>
@@ -88,12 +96,59 @@
 
                 </table>
             </div>
+            </div>
+            <div class="col s12 m10 offset-m1 grey darken-4 white-text" id="rent_tab">
+              <div >
+                <a id="refresh_btn" class="btn purple darken-4 center-align" onclick="window.location.reload()" >Refresh<i class="large material-icons center-align">refresh</i> </a>
+               <a id="rent_options_btn" class="btn disabled center-align" >Options<i class="large material-icons center-align">arrow_drop_down</i> </a>
+               <ul id='rent_dropdown1' class='dropdown-content purple darken-4 white-text'>
+
+               </ul>
+           </div>
+           
+           <table id="rentTable" class="purple darken-4 white-text">
+             <thead>
+               <th>Rent ID</th>
+               <th>Rented By</th>
+               <th>Key</th>
+               <th>Locker</th>
+               <th>Rent Type</th>
+               <th>Rented From </th>
+               <th>Rented To </th>
+               <th>Owed</th>
+               <th>Status </th>
+             </thead>
+             </table>
+         </div>
+
+         <div class="col s12 m10 offset-m1 grey darken-4 white-text" id="rent_tab_complete">
+          <div >
+            <a id="refresh_btn" class="btn purple darken-4 center-align" onclick="window.location.reload()" >Refresh<i class="large material-icons center-align">refresh</i> </a>
+       </div>
+       
+       <table id="rentTable_complete" class="purple darken-4 white-text">
+         <thead>
+           <th>Rent ID</th>
+           <th>Rented By</th>
+           <th>Key</th>
+           <th>Locker</th>
+           <th>Rent Type</th>
+           <th>Rented From </th>
+           <th>Rented To </th>
+           <th>Owed</th>
+           <th>Status </th>
+         </thead>
+         </table>
+     </div>
+            </div>
         </div>
       </div>
       <div class="fixed-action-btn">
         <a class="btn-floating btn-large waves-effect waves-light purple darken-4 modal-trigger"  href="#new_locker"><i class="material-icons">add </i></a>
       </div>
     </div>
+
+    
 
     <div class="row">
       <div class ="modal grey darken-3 white-text" id="new_locker">
@@ -344,6 +399,8 @@
       var instancesColl = M.Collapsible.init(elemsColl);
       var elemsFxBtn = document.querySelectorAll('.fixed-action-btn');
       var instancesFxBtn = M.FloatingActionButton.init(elemsFxBtn);
+      var el= document.querySelectorAll('.tabs');
+      var instanceTabs = M.Tabs.init(el,);
       
       var elems = document.querySelectorAll('.modal');
       var instances = M.Modal.init(elems);

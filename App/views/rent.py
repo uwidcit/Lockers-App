@@ -10,7 +10,8 @@ from App.controllers import (
     get_all_rentals,
     get_comments_offset,
     release_rental,
-    release_locker,
+    get_all_rentals_active,
+    get_all_rentals_inactive,
     get_lockers_available,
     get_student_by_id,
     get_All_rentType,
@@ -160,6 +161,15 @@ def notes_api(id):
     notes = get_comments_offset(id,3,1)
     return jsonify(notes),200
 
+@rent_views.route('/api/rent/active',methods=['GET'])
+@login_required
+def active_rents():
+    return jsonify(get_all_rentals_active()),200
+
+@rent_views.route('/api/rent/inactive',methods=['GET'])
+@login_required
+def inactive_rents():
+    return jsonify(get_all_rentals_inactive()),200
 
 @rent_views.route('/api/rent/<id>/notes/<offset>',methods=['GET'])
 @login_required

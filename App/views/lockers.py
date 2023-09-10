@@ -1,6 +1,5 @@
 
-from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify,url_for,flash,make_response
-
+from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify,url_for,flash,make_response,stream_with_context
 from App.views.forms import  ConfirmDelete,SearchForm,LockerAdd,RentAdd,StudentAdd,TransactionAdd
 
 from datetime import datetime
@@ -364,21 +363,7 @@ def switch_key():
 @locker_views.route('/api/locker', methods=['GET'])
 @login_required
 def locker_api():
-    #return jsonify(get_all_lockers())
-    return {},200
-
-@locker_views.route('/api/locker', methods=['POST'])
-@login_required
-def locker_api_test():
-    draw = int(request.form.get('draw'))
-    start = int(request.form.get('start'))
-    size = int(request.form.get('length'))
-    offset = int(start/size)
-    if offset == 0:
-        offset = 1
-    else:
-        offset = offset + 1
-    return jsonify(get_all_lockers(draw,size,offset))
+    return jsonify(get_all_lockers())
     
 
 @locker_views.route('/api/locker', methods=['POST'])

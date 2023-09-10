@@ -1,4 +1,4 @@
-from App.models import Rent 
+from App.models import Rent,RentTypes,KeyHistory
 from App.models.rent import RentStatus as Status, RentMethod as Method
 from math import ceil,floor
 
@@ -26,8 +26,7 @@ from App.database import db
 from sqlalchemy import and_
 from sqlalchemy.exc import SQLAlchemyError
 
-def period_elapsed(rentType_id, rent_date_from, rent_date_to):
-    type = get_rentType_by_id(rentType_id)
+def period_elapsed(type, rent_date_from, rent_date_to):
 
     if not type:
         return -1
@@ -52,44 +51,44 @@ def init_amount_owed(rentType_id, rent_date_from, rent_date_to):
 
     price = float(type.price)
 
-    return round((price * period_elapsed(rentType_id, rent_date_from, rent_date_to)),2)
+    return round((price * period_elapsed(type, rent_date_from, rent_date_to)),2)
         
-def recal_amount_owed(rentType_id,date_returned,rent_date_from,rent_date_to):
+def recal_amount_owed(rent,rentType_id,date_returned,rent_date_from,rent_date_to):
     timestamp = datetime.now()
     semester_period = get_rentType_by_id(rentType_id)
-    orignal_duration = period_elapsed(rentType_id,rent_date_from,rent_date_to)
+    orignal_duration = period_elapsed(semester_period,rent_date_from,rent_date_to)
 
     if date_returned:
         date_returned_1 = date_returned
-        return_duration = period_elapsed(rentType_id,rent_date_from,date_returned)
+        return_duration = period_elapsed(semester_period,rent_date_from,date_returned)
     else:
         date_returned_1 = timestamp
-        return_duration = period_elapsed(rentType_id,rent_date_from,timestamp)
+        return_duration = period_elapsed(semester_period,rent_date_from,timestamp)
 
     
     if date_returned_1.date() <= semester_period.period_to:
         if return_duration > orignal_duration:
-            return init_amount_owed(rentType_id,rent_date_from,rent_date_to) + late_fees(rentType_id,date_returned,rent_date_from,rent_date_to)
+            rent.late_fees = late_fees(semester_period,date_returned,rent_date_from,rent_date_to)
+            rent.cal_amount_owed()
         else:
-            return init_amount_owed(rentType_id,rent_date_from,rent_date_to)
+            return rent
     else:
-        return init_amount_owed(rentType_id,rent_date_from,rent_date_to) + late_fees(rentType_id,semester_period.period_to,rent_date_from,rent_date_to)
+        rent.late_fees = late_fees(semester_period,semester_period.period_to,rent_date_from,rent_date_to)
+        return rent
    
 
-def late_fees(rentType_id, date_returned, rent_date_from, rent_date_to):
-    type = get_rentType_by_id(rentType_id)
+def late_fees(type, date_returned, rent_date_from, rent_date_to):
     
     timestamp = datetime.now()
     if not type:
         return -1
-    orignal_duration = period_elapsed(rentType_id,rent_date_from,rent_date_to)
+    orignal_duration = period_elapsed(type,rent_date_from,rent_date_to)
 
     if date_returned:
-        provisional_date = date_returned
-        duration = period_elapsed(rentType_id,rent_date_from,date_returned)
+        duration = period_elapsed(type,rent_date_from,date_returned)
     else:
-        provisional_date = timestamp
-        duration = period_elapsed(rentType_id,rent_date_from,timestamp)
+
+        duration = period_elapsed(type,rent_date_from,timestamp)
 
     if duration > orignal_duration:
         return (duration - orignal_duration) * type.price
@@ -170,9 +169,7 @@ def update_rent(id):
         return rent
          
     if rent.rent_method == Method.RATE:
-        amt = round(recal_amount_owed(rent.rent_type,rent.date_returned,rent.rent_date_from,rent.rent_date_to),2)
-        if amt is not None:
-            rent.amount_owed = round(round(amt,2) - round(cal_transaction_amount(id),2),2)
+        rent = recal_amount_owed(rent,rent.rent_type,rent.date_returned,rent.rent_date_from,rent.rent_date_to)
     
     rent.status = rent.check_status()
 
@@ -282,6 +279,44 @@ def get_all_rentals():
     data = []
     for r in rents:
         data.append(update_rent(r.id).toJSON())
+
+    return data
+
+def get_all_rentals_active():
+    rents = db.session.query(Rent,KeyHistory,RentTypes).filter(Rent.status != Status.VERIFIED,KeyHistory.id == Rent.keyHistory_id, RentTypes.id == Rent.rent_type).all()
+    date = datetime.now()
+    if not rents:
+        return []
+
+    data = []
+    for r,kh,rt in rents:
+        if date > r.rent_date_to:
+            d = update_rent(r.id).toJSON()
+        else:
+            d = r.toJSON()
+        d['key'] = kh.key_id
+        d['locker_code'] = kh.locker_id
+        d['rent_types'] = rt.type.value
+        data.append(d)
+
+    return data
+
+def get_all_rentals_inactive():
+    rents = db.session.query(Rent,KeyHistory,RentTypes).filter(Rent.status == Status.VERIFIED,KeyHistory.id == Rent.keyHistory_id, RentTypes.id == Rent.rent_type).all()
+    date = datetime.now()
+    if not rents:
+        return []
+
+    data = []
+    for r,kh,rt in rents:
+        if date > r.rent_date_to:
+            d = update_rent(r.id).toJSON()
+        else:
+            d = r.toJSON()
+        d['key'] = kh.key_id
+        d['locker_code'] = kh.locker_id
+        d['rent_types'] = rt.type.value
+        data.append(d)
 
     return data
 
