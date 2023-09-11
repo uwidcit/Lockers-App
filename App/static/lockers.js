@@ -187,6 +187,7 @@ function editMode(locker){
 var student_list = []
 var locker_list = []
 var rentType_list = []
+var add_list = []
 var lockerRow_list = []
 var row_id = 0
 
@@ -224,6 +225,15 @@ async function getAllRentTypes(){
         }
     })
 }
+
+async function getAllAdditionalRentTypes(){
+    let result = await sendRequest('/api/rentType/addition','GET').then((result)=>{
+        for(r in result){
+            add_list.push(result[r])
+        }
+    })
+}
+
 function initTable(data){
     let table = new DataTable('#lockerTable',{
         "responsive":true,
@@ -412,6 +422,59 @@ function createRent(studentID,locker_code){
    instance.open()
   }
 
+  function additionalCharge(id){
+    form = document.getElementById("additionalForm")
+    html = `<input type="hidden" value="${id}" name="rent_id">
+    <select id="rType" name="rentType" style="display:inline;" required>
+    <option value=”” disabled selected>Select Additional Charge </option>
+    `
+    for(r in add_list){
+         html+= `<option value=${add_list[r].id}>${add_list[r].type}: $${add_list[r].price} Period: ${add_list[r].period_from} to ${add_list[r].period_to}</option>`
+    }
+    html+=`
+    </select>
+    <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+
+    <div class="col s4 offset-s4">
+       <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+    </div>
+
+    <div class="col s4">
+     <input type="submit" class="right purple darken-4 waves-light btn" id="l_submit" value="Add Charge">
+    </div>
+   </div>    `
+    form.innerHTML = html 
+
+    form.addEventListener('submit',async (event) => {
+        event.preventDefault()
+        let form = event.target
+        let fields = event.target.elements
+    
+        let data = {
+            rent_id: fields['rent_id'].value,
+            rentType:  fields['rentType'].value,  
+        }
+        elem = document.getElementById('additional_modal');
+        instance = M.Modal.getInstance(elem)
+        instance.close()
+        form.reset()
+        let result = await sendRequest('/api/rent/additional','POST', data).then((response)=>{
+            toast("Success")
+            window.location.reload()
+        }).catch((response)=>{
+             toast("failed");
+             window.location.reload()
+        })
+    })
+    
+
+    
+    elem = document.getElementById('additional_modal');
+    instance = M.Modal.getInstance(elem)
+    instance.open()
+
+  }
+
   async function swapKey(event){
     event.preventDefault()
 
@@ -535,7 +598,9 @@ function rentOptions(d){
     
     if (d.status !== "Returned"){
         html += ` <li><a href="#" onclick="loadComments(${d.id},1)" class="white-text"><i class="material-icons left white-text">check</i>Note</a></li>
-        <li><a href="#" onclick="releaseMode({'amount_owed':${d.amount_owed}, 'id':${d.id},'locker_id':'${d.locker_id}'})" class="white-text"><i class="material-icons left white-text">close</i>Release</a></li>`
+        <li><a href="#" onclick="releaseMode({'amount_owed':${d.amount_owed}, 'id':${d.id},'locker_id':'${d.locker_id}'})" class="white-text"><i class="material-icons left white-text">close</i>Release</a></li>
+        <li><a href="#" onclick="additionalCharge(${d.id})" class="white-text"><i class="material-icons left white-text">add_circle_outline</i>Add Charge</a></li>
+        `
     }
 
     else if (d.status === "Returned"){
@@ -554,6 +619,7 @@ function rentOptions(d){
 document.addEventListener('DOMContentLoaded',getLockers)
 document.addEventListener('DOMContentLoaded',getAllAreas)
 document.addEventListener('DOMContentLoaded',getAllRentTypes)
+document.addEventListener('DOMContentLoaded',getAllAdditionalRentTypes)
 document.addEventListener('DOMContentLoaded',getAllStudents)
 document.addEventListener('DOMContentLoaded',getActiveRents)
 document.addEventListener('DOMContentLoaded',getInactiveRents)

@@ -143,7 +143,7 @@ def delete_rent_type(id):
         return []    
 
 def get_All_rentType():
-    rentType = RentTypes.query.all()
+    rentType = RentTypes.query.filter(RentTypes.type != Types.KEYREPLACEMENT).all()
 
     if not rentType:
         return None
@@ -151,7 +151,7 @@ def get_All_rentType():
     return [r.toJSON() for r in rentType]
 
 def get_All_rentType_group():
-    rentType = RentTypes.query.all()
+    rentType = RentTypes.query.filter(RentTypes.type != Types.KEYREPLACEMENT).all()
 
     if not rentType:
         return None
@@ -169,6 +169,14 @@ def get_All_rentType_group():
         'rates': rates
     }
     return data
+
+def get_addtional_rentTypes():
+    rentType = RentTypes.query.filter(RentTypes.type == Types.KEYREPLACEMENT).all()
+
+    if not rentType:
+        return None
+
+    return [rt.toJSON() for rt in rentType]
 
 def get_all_rentType_tuple():
     rentType = get_All_rentType()

@@ -67,7 +67,11 @@ class Rent(db.Model):
     def update_payments(self,amount_paid):
         self.amount_paid = self.amount_paid + float(amount_paid)
         self.check_status()
-  
+
+    def cal_additional_fees(self,new_fees):
+        self.additional_fees = self.additional_fees + float(new_fees)
+        self.check_status()
+        
     def toJSON(self):
         rent_dict =  {
             "id":self.id,

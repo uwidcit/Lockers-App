@@ -159,6 +159,20 @@ def get_rent_by_id(id):
     
     return rent
 
+def rent_additional_payments(id,monetary_value):
+    rent = update_rent(id)
+
+    if not rent:
+        raise Exception("Rent doesn't exist")
+    
+    rent.cal_additional_fees(monetary_value)
+    try:
+        db.session.add(rent)
+        db.session.commit()
+    except:
+        db.session.rollback()
+        return None
+
 def update_rent(id):
     rent = get_rent_by_id(id)
 

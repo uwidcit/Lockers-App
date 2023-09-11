@@ -10,6 +10,8 @@ from App.controllers import (
     get_all_rentals,
     get_comments_offset,
     release_rental,
+    get_rentType_by_id,
+    rent_additional_payments,
     get_all_rentals_active,
     get_all_rentals_inactive,
     get_lockers_available,
@@ -165,6 +167,27 @@ def notes_api(id):
 @login_required
 def active_rents():
     return jsonify(get_all_rentals_active()),200
+
+
+@rent_views.route('/api/rent/additional', methods=['POST'])
+@login_required
+def add_addtional_fees():
+    rent_id = request.json.get('rent_id')
+    rtType = request.json.get('rentType')
+    rentType = get_rentType_by_id(rtType)
+
+    if rentType:
+        try:
+            rent = rent_additional_payments(rent_id,rentType.price)
+            if rent:
+                return(jsonify(rent.toJSON())),200
+            else:
+                return jsonify({}),400
+        except Exception as e:
+            return jsonify({'message': str(e)}),400
+    else:
+        return {},400
+
 
 @rent_views.route('/api/rent/inactive',methods=['GET'])
 @login_required

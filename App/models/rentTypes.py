@@ -13,6 +13,7 @@ class Types (Enum):
     YEARLYMEDIUM = "Yearly Medium"
     YEARLYLARGE = "Yearly Large"
     YEARLYCOMBINATION = "Yearly Combination"
+    KEYREPLACEMENT = "Key Replacement"
 
 class RentTypes(db.Model):
     __tablename__= "rental_types"
