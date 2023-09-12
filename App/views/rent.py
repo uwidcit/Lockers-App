@@ -48,9 +48,12 @@ def create_new_rent():
     locker_id = request.json.get('locker_id')
     rentType = request.json.get('rentType')
     rent_method = request.json.get('rentMethod')
-    print(rent_method)
-    r_date_f = datetime.strptime(request.json.get('rent_date_from'),'%Y-%m-%dT%H:%M')
-    r_date_t = datetime.strptime(request.json.get('rent_date_to'),'%Y-%m-%dT%H:%M')
+    r_date_f = request.json.get('rent_date_from')
+    r_date_t = request.json.get('rent_date_to')
+    if '' in [s_id,locker_id,rentType, rent_method,r_date_f,r_date_t]:
+        return jsonify({"Message": "Empty values cannot create rent"}),400 
+    r_date_f = datetime.strptime(r_date_f,'%Y-%m-%dT%H:%M')
+    r_date_t = datetime.strptime(r_date_t,'%Y-%m-%dT%H:%M')
     rental = create_rent(s_id,locker_id,rentType,r_date_f,r_date_t,rent_method)
     if not rental:
         return jsonify({"Message": "Rental not created"}),400
@@ -206,7 +209,8 @@ def notes_api_multi(id,offset):
 def new_note_api(id):
     data = request.json
     new_comment = create_comment(id,data['comment'],datetime.now().date())
-
+    if '' in [data]:
+        return jsonify({'error':'Not created'}),400
     if new_comment:
         return jsonify(new_comment.toJSON(),200)
 

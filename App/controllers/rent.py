@@ -70,12 +70,12 @@ def recal_amount_owed(rent,rentType_id,date_returned,rent_date_from,rent_date_to
         if return_duration > orignal_duration:
             rent.late_fees = late_fees(semester_period,date_returned,rent_date_from,rent_date_to)
             rent.cal_amount_owed()
+            return rent
         else:
             return rent
     else:
         rent.late_fees = late_fees(semester_period,semester_period.period_to,rent_date_from,rent_date_to)
-        return rent
-   
+        return rent   
 
 def late_fees(type, date_returned, rent_date_from, rent_date_to):
     
@@ -87,7 +87,6 @@ def late_fees(type, date_returned, rent_date_from, rent_date_to):
     if date_returned:
         duration = period_elapsed(type,rent_date_from,date_returned)
     else:
-
         duration = period_elapsed(type,rent_date_from,timestamp)
 
     if duration > orignal_duration:
@@ -176,7 +175,7 @@ def rent_additional_payments(id,monetary_value):
 def update_rent(id):
     rent = get_rent_by_id(id)
 
-    if not rent:
+    if rent is None:
         return None
     
     if rent.status is Status.VERIFIED:
@@ -186,7 +185,6 @@ def update_rent(id):
         rent = recal_amount_owed(rent,rent.rent_type,rent.date_returned,rent.rent_date_from,rent.rent_date_to)
     
     rent.status = rent.check_status()
-
     if rent.status.value == "Overdue":
         update_student_status(rent.student_id,"OVERDUE")
 

@@ -345,6 +345,8 @@ def render_get_lockers_multi(id,offset):
 def switch_key():
         locker2 = request.json.get("locker_code2")
         id = request.json.get("locker_code1")
+        if '' in [id,locker2]:
+            return jsonify({"message":"Error empty locker values"}),400
         lockers = swap_key(id, locker2)
         if lockers:
             data = []
@@ -370,6 +372,9 @@ def locker_api():
 @login_required
 def create_new_locker_api():
     data = request.json     #get data from JSON 
+    if '' in data or data is None:
+         return jsonify({"message":"Invalid values"}),400
+    
     new_locker = add_new_locker(locker_code=data['locker_code'], locker_type=data['locker_type'], status=data['status'], key_id=data['key'],area=data['area'])
     if not new_locker:
         return jsonify({"message":"Locker already exist or some error has occurred"}),400

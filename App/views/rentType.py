@@ -61,8 +61,7 @@ def create_new_rentType():
         period_to = datetime.strptime(request.form.get('period_to'), '%Y-%m-%d')
         type =  request.form.get('type')
         price = request.form.get('price')
-
-        print(period_from)
+        
         rentType = new_rentType(period_from, period_to,type,price)
 
         if not rentType:
