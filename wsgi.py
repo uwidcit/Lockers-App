@@ -55,8 +55,8 @@ def initialize():
 
     with open('students.csv', mode="r") as csv_file:
         reader = csv.DictReader(csv_file)
-        for r in reader:
-            add_new_student(r["student_id"],r["first_name"],r["last_name"],r["faculty"],r["phone_number"], r["email"])
+        #for r in reader:
+            #add_new_student(r["student_id"],r["first_name"],r["last_name"],r["faculty"],r["phone_number"], r["email"])
     
     print('database intialized')
 

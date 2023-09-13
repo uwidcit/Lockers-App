@@ -161,19 +161,8 @@ def import_transactionLog(uploaded_file):
     return True
 
 def delete_all():
-    if os.environ.get('ENV') == "PRODUCTION":
-        string = 'TRUNCATE TABLE '
-        for m in model_list:
-            string= string +'public.'+m.__tablename__+','
-        
-        string = string[:-1]
-        string = string + ' RESTART IDENTITY'
-        db.session.execute(string)
-        db.session.commit()
-    else:
-        for m in model_list: 
-            db.session.query(m).delete()
-            db.session.commit()
+    db.drop_all()
+    db.create_all()
     return True
         
 
