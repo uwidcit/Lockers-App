@@ -1,5 +1,5 @@
-from App.models import Rent 
-from App.models.rent import RentStatus as Status
+from App.models import Rent,RentTypes,KeyHistory
+from App.models.rent import RentStatus as Status, RentMethod as Method
 from math import ceil,floor
 
 from App.controllers.rentType import (
@@ -26,8 +26,7 @@ from App.database import db
 from sqlalchemy import and_
 from sqlalchemy.exc import SQLAlchemyError
 
-def period_elapsed(rentType_id, rent_date_from, rent_date_to):
-    type = get_rentType_by_id(rentType_id)
+def period_elapsed(type, rent_date_from, rent_date_to):
 
     if not type:
         return -1
@@ -41,7 +40,7 @@ def period_elapsed(rentType_id, rent_date_from, rent_date_to):
     elif type.type.value == "Daily":
         time = rent_date_to - rent_date_from   
         return  time.days
-    elif type.type.value == "Semester" or type.type.value == "Yearly":
+    else:
         return 1
 
 def init_amount_owed(rentType_id, rent_date_from, rent_date_to):
@@ -52,51 +51,48 @@ def init_amount_owed(rentType_id, rent_date_from, rent_date_to):
 
     price = float(type.price)
 
-    return round((price * period_elapsed(rentType_id, rent_date_from, rent_date_to)),2)
+    return round((price * period_elapsed(type, rent_date_from, rent_date_to)),2)
         
-def recal_amount_owed(rentType_id,date_returned,rent_date_from,rent_date_to):
+def recal_amount_owed(rent,rentType_id,date_returned,rent_date_from,rent_date_to):
     timestamp = datetime.now()
     semester_period = get_rentType_by_id(rentType_id)
-    orignal_duration = period_elapsed(rentType_id,rent_date_from,rent_date_to)
+    orignal_duration = period_elapsed(semester_period,rent_date_from,rent_date_to)
 
     if date_returned:
         date_returned_1 = date_returned
-        return_duration = period_elapsed(rentType_id,rent_date_from,date_returned)
+        return_duration = period_elapsed(semester_period,rent_date_from,date_returned)
     else:
         date_returned_1 = timestamp
-        return_duration = period_elapsed(rentType_id,rent_date_from,timestamp)
+        return_duration = period_elapsed(semester_period,rent_date_from,timestamp)
 
     
     if date_returned_1.date() <= semester_period.period_to:
         if return_duration > orignal_duration:
-            return init_amount_owed(rentType_id,rent_date_from,rent_date_to) + late_fees(rentType_id,date_returned,rent_date_from,rent_date_to)
+            rent.late_fees = late_fees(semester_period, return_duration, original_duration)
+            return rent
         else:
-            return init_amount_owed(rentType_id,rent_date_from,rent_date_to)
+            return rent
     else:
-        return init_amount_owed(rentType_id,rent_date_from,rent_date_to) + late_fees(rentType_id,semester_period.period_to,rent_date_from,rent_date_to)
-   
+        rent.late_fees = late_fees(semester_period, return_duration, original_duration)
+        return rent   
 
-def late_fees(rentType_id, date_returned, rent_date_from, rent_date_to):
-    type = get_rentType_by_id(rentType_id)
+def late_fees(type, duration, original_duration):
     
     timestamp = datetime.now()
     if not type:
         return -1
-    orignal_duration = period_elapsed(rentType_id,rent_date_from,rent_date_to)
+    
+    return (duration - orignal_duration) * type.price
 
-    if date_returned:
-        provisional_date = date_returned
-        duration = period_elapsed(rentType_id,rent_date_from,date_returned)
-    else:
-        provisional_date = timestamp
-        duration = period_elapsed(rentType_id,rent_date_from,timestamp)
+def cal_fixed_price(rentType_id):
+    type = get_rentType_by_id(rentType_id)
 
-    if duration > orignal_duration:
-        return (duration - orignal_duration) * type.price
-    else:
-        return 0.00
+    if not type:
+        return -1
 
-def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to):
+    return float(type.price)
+
+def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to,rent_method):
     if get_overdue_rent_by_student(student_id) or get_owed_rent_by_student(student_id):
         flash("Unable to create rent. Rent Owed")
         return []
@@ -105,8 +101,13 @@ def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to):
         try:
             locker_instance = get_current_locker_instance(locker_id)
             if locker_instance:
-                amount_owed = init_amount_owed(rentType, rent_date_from, rent_date_to)
-                rent = Rent(student_id, locker_instance.id, rentType,rent_date_from,rent_date_to,amount_owed)
+                if rent_method.upper() == "FIXED":
+                    amount_owed = cal_fixed_price(rentType)
+                elif rent_method.upper() == "RATE":
+                    amount_owed = init_amount_owed(rentType, rent_date_from, rent_date_to)
+                else:
+                    return None
+                rent = Rent(student_id, locker_instance.id, rentType,rent_date_from,rent_date_to,amount_owed,rent_method)
                 db.session.add(rent)
                 db.session.commit()
                 rent_locker(locker_id)
@@ -120,9 +121,9 @@ def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to):
             db.session.rollback()   
             return None
         
-def import_verified_rent(student_id,locker_id,rentType,rent_date_from,rent_date_to,amount_owed,status,date_returned):
+def import_verified_rent(student_id,locker_id,rentType,rent_date_from,rent_date_to,amount_owed,status,date_returned,rent_method):
     locker_instance = get_current_locker_instance(locker_id)
-    rent = Rent(student_id, locker_instance.id, rentType,rent_date_from,rent_date_to,amount_owed)
+    rent = Rent(student_id, locker_instance.id, rentType,rent_date_from,rent_date_to,amount_owed,rent_method)
     if status == 'Verified':
         rent.status = Status.VERIFIED
         rent.date_returned = date_returned
@@ -147,20 +148,33 @@ def get_rent_by_id(id):
     
     return rent
 
+def rent_additional_payments(id,monetary_value):
+    rent = update_rent(id)
+
+    if not rent:
+        raise Exception("Rent doesn't exist")
+    
+    rent.cal_additional_fees(monetary_value)
+    try:
+        db.session.add(rent)
+        db.session.commit()
+    except:
+        db.session.rollback()
+        return None
+
 def update_rent(id):
     rent = get_rent_by_id(id)
 
-    if not rent:
+    if rent is None:
         return None
     
     if rent.status is Status.VERIFIED:
         return rent
+         
+    if rent.rent_method == Method.RATE:
+        rent = recal_amount_owed(rent,rent.rent_type,rent.date_returned,rent.rent_date_from,rent.rent_date_to)
     
-    amt = round(recal_amount_owed(rent.rent_type,rent.date_returned,rent.rent_date_from,rent.rent_date_to),2)
-    if amt is not None:
-        rent.amount_owed = round(round(amt,2) - round(cal_transaction_amount(id),2),2)
     rent.status = rent.check_status()
-
     if rent.status.value == "Overdue":
         update_student_status(rent.student_id,"OVERDUE")
 
@@ -225,7 +239,7 @@ def release_rental(id,d_returned):
     try:
         rent.date_returned = d_returned
         rent.status = Status.RETURNED
-        not_verified(rent.locker_id)
+        not_verified(rent.keyHistory_id)
         db.session.add(rent)
         db.session.commit()
         return rent
@@ -238,7 +252,7 @@ def release_rental(id,d_returned):
 
 def verify_rental(id):
     rent = update_rent(id)
-
+    
     if not rent:
         return None
     
@@ -249,7 +263,7 @@ def verify_rental(id):
         rent.status = Status.VERIFIED
         db.session.add(rent)
         db.session.commit()
-        release_locker(rent.locker_id)
+        release_locker(rent.keyHistory_id)
         update_student_status(rent.student_id,"GOOD")
         return rent
     except SQLAlchemyError as e:
@@ -264,13 +278,52 @@ def get_all_rentals():
     if not rents:
         return None
 
+    data = []
     for r in rents:
-        update_rent(r.id)
+        data.append(update_rent(r.id).toJSON())
 
-    return[r.toJSON() for r in rents]
+    return data
+
+def get_all_rentals_active():
+    rents = db.session.query(Rent,KeyHistory,RentTypes).filter(Rent.status != Status.VERIFIED,KeyHistory.id == Rent.keyHistory_id, RentTypes.id == Rent.rent_type).all()
+    date = datetime.now()
+    if not rents:
+        return []
+
+    data = []
+    for r,kh,rt in rents:
+        if date > r.rent_date_to:
+            d = update_rent(r.id).toJSON()
+        else:
+            d = r.toJSON()
+        d['key'] = kh.key_id
+        d['locker_code'] = kh.locker_id
+        d['rent_types'] = rt.type.value
+        data.append(d)
+
+    return data
+
+def get_all_rentals_inactive():
+    rents = db.session.query(Rent,KeyHistory,RentTypes).filter(Rent.status == Status.VERIFIED,KeyHistory.id == Rent.keyHistory_id, RentTypes.id == Rent.rent_type).all()
+    date = datetime.now()
+    if not rents:
+        return []
+
+    data = []
+    for r,kh,rt in rents:
+        if date > r.rent_date_to:
+            d = update_rent(r.id).toJSON()
+        else:
+            d = r.toJSON()
+        d['key'] = kh.key_id
+        d['locker_code'] = kh.locker_id
+        d['rent_types'] = rt.type.value
+        data.append(d)
+
+    return data
 
 def get_transactions(id,size,offset):
-    data = get_rent_by_id(id)
+    data = update_rent(id)
     
     if not data:
         return None

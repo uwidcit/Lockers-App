@@ -37,33 +37,39 @@
         <th>Status</th>
         <th>Key ID</th>
     </tr>
-    {% for l in area.locker %}
+    {% for l in locker %}
     <tr class="purple darken-4">
       <td><a href="/locker/{{l.locker_code}}">{{l.locker_code}}</a></td>
-      <td>{{l.locker_type.value}}</td>
-      <td>{{l.status.value}}</td>
+      <td>{{l.locker_type}}</td>
+      <td>{{l.status}}</td>
       <td>{{l.key}} </td>
     </tr>
     {% endfor %}
   </table>
 </div>
 
-
-<div id="pag" class="col s12 center-align">
+<div id="pag" class="col s12 m12 l12 center-align">
   <ul class="pagination">
 
   {% if current_page == 1 %}
   <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
   {% else %}
-  <li><a href="/area/{{area.id}}/page/{{previous}}"><i class="material-icons">chevron_left</i></a></li>
+  <li><a href="/area/{{area.id}}/page/{{previous}}"><i class="material-icons white-text">chevron_left</i></a></li>
   {% endif %}
 
+  
   <li class="waves effect purple darken-4"><a href="#" style="color:white;">{{current_page}}</a></li>
- 
+  {% if current_page < num_pages %}
+  <li class="waves effect purple darken-4"><a href="#" style="color:white;">...</a></li>
+  <li class="waves effect purple darken-4"><a href="/area/{{area.id}}/page/{{num_pages}}" style="color:white;">{{num_pages}}</a></li>
+  {% else %}
+  <li class="waves effect purple darken-4"><a href="#" style="color:white;">...</a></li>
+  <li class="waves effect purple darken-4"><a href="/area/{{area.id}}/page/1" style="color:white;">1</a></li>
+  {% endif %}
   {% if current_page == num_pages %}
   <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
   {% else %}
-  <li><a href="/area/{{area.id}}/page/{{next}}"><i class="material-icons">chevron_right</i></a></li>
+  <li><a href="/area/{{area.id}}/page/{{next}}"><i class="material-icons white-text">chevron_right</i></a></li>
   {% endif %}
 </ul>
 </div>
@@ -71,6 +77,9 @@
 
   <div class="fixed-action-btn">
     <a class="btn-floating btn-large waves-effect waves-light purple darken-4" onclick="openNewLocker({{area.toJSON()}})"><i class="material-icons">add </i></a>
+    <ul>
+      <li><a class="btn-floating purple darken-4 modal-trigger" href="#mass_swap_modal"><i class="material-icons">swap_horiz</i></a></li>
+    </ul>
   </div>
 </div>
 
@@ -138,6 +147,21 @@
 </form>
 </div>    
 </div>
+<div class="modal grey darken-3 white-text" id="mass_swap_modal" style="max-width: 300px;">
+  <div class="modal-content" id="content" >
+    <form id="swapForm" style="overflow-x: auto; max-height: 300px;" action="/area/{{area.id}}/mass_swap" method="POST">
+      {% for a in areaList %}
+      <p>
+      <label>
+        <input name="area_select" type="radio" value="{{a.id}}"/>
+        <span class="white-text">{{a.description}}</span>
+      </label>
+     </p>
+    {% endfor %}
+    <input type="submit"/>
+    </form>
+  </div>
+</div>
 <script src="/static/autocomplete.js"></script> 
 <script>
   autocomplete(document.getElementById('key'),{{keys | safe}})
@@ -163,7 +187,6 @@
       instance = M.Modal.getInstance(elem)
       instance.open()
    }
-   
   
 
 </script>

@@ -5,8 +5,15 @@ from datetime import datetime
 class Types (Enum):
     HOURLY = "Hourly"
     DAILY = "Daily"
-    SEMESTER = "Semester"
-    YEARLY = "Yearly"
+    SEMESTERSMALL = "Semester Small"
+    SEMESTERMEDIUM = "Semester Medium"
+    SEMESTERLARGE = "Semester Large"
+    SEMESTERCOMBINATION = "Semester Combination"
+    YEARLYSMALL = "Yearly Small"
+    YEARLYMEDIUM = "Yearly Medium"
+    YEARLYLARGE = "Yearly Large"
+    YEARLYCOMBINATION = "Yearly Combination"
+    KEYREPLACEMENT = "Key Replacement"
 
 class RentTypes(db.Model):
     __tablename__= "rental_types"

@@ -1,0 +1,246 @@
+{% extends "layout.html" %}
+{% block title %}Area Details{% endblock %}
+{% block page %}Area Details{% endblock %}
+
+{{ super() }}
+
+{% block content %}
+<div class="grey darken-4" style="height: 100vh">
+    <div class="col s6 offset-s1">
+       <a href="#" id="select_all" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">select_all</i><span id="btn_select">Select All</span></a>
+       <a href="#" class="purple darken-4 waves-effect waves-light btn-small" id="form_submit"><i class="material-icons left">swap_horiz</i>Start Swap</a>
+    </div>
+    
+<form id="mSwap">
+<div class="col s5 offset-s1" style="overflow-y: auto;">
+    <h4>{{areaID1.description}}</h4>
+    {% for a in areaLocker1 %}
+    <p>
+        <label>
+            <input type="checkbox" name="areaLocker1" id="{{a.locker_code}}">
+            <span class="white-text">{{a.locker_code}}</span>
+        </label>
+    </p>
+    {% endfor %}
+</div>
+<div class="col s5 offset-s1" style="overflow-y: auto;">
+    <h4>{{areaID2.description}}</h4>
+    {% for a in areaLocker2 %}
+    <p>
+        <label>
+            <input type="checkbox" name="areaLocker2"  id="{{a.locker_code}}">
+            <span class="white-text">{{a.locker_code}}</span>
+        </label>
+    </p>
+    {% endfor %}
+</div>
+</form>
+</div>
+<div class="modal grey darken-3 white-text" id="confirm">
+    <div class="modal-content" id="interModal">
+        
+    </div>
+</div> 
+<div class="modal grey darken-3 white-text" id="more_lockers">
+    <div class="modal-content" id="content">
+        <form>
+            <div id="unSelectedContent">
+                
+            </div>
+            <div style="overflow-y: auto;">
+            {% if area_list_except %}
+            {% for area in area_list_except %}
+            {% for a in area %}
+                <p>
+                    <label>
+                        <input type="checkbox" name="UnselectedLockers" id="{{a.locker_code}}">
+                        <span class="white-text">{{a.locker_code}}</span>
+                        <span class="white-text">{{a.area_description}}</span>
+                    </label>  
+                {% endfor %}
+                {% endfor %}
+                <div class="col s6">
+                    <a href="#" class="purple darken-4 btn"  id="proceedTo" onclick="proceedToEvent()">Proceed</a>
+                    <a href="#" class="purple darken-4 btn modal-close">Cancel</a>
+                </div>
+                
+              
+            {% else %}
+                <p>
+                    No lockers available. Unable to complete transaction.
+                </p>
+                <a href="#" class="purple darken-4 btn modal-close" > Close Modal</a>
+            {% endif %}
+            
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    let area_l_except = {{area_list_except | safe}}
+    let area1Selected = []
+    let area2Selected = []
+    let unSelected = []
+    let unequalArea = ''
+    document.getElementById('select_all').addEventListener('click',()=>{
+        var checkboxes1 =document.getElementsByName("areaLocker1")
+        var checkboxes2 =document.getElementsByName("areaLocker2")
+        for(let v=0; v < checkboxes1.length;v++){
+            checkboxes1[v].click()  
+        }
+        for(let v=0; v < checkboxes2.length;v++){
+            checkboxes2[v].click() 
+        }
+        
+        btn = document.getElementById('btn_select')
+
+        if(btn.innerHTML === "Select All"){
+            btn.innerHTML = "Deselect All"
+        }
+        else{
+            btn.innerHTML = "Select All"
+        }
+    
+
+    })
+    document.addEventListener('DOMContentLoaded',()=>{
+        var checkboxes1 =document.getElementsByName("areaLocker1")
+        var checkboxes2 =document.getElementsByName("areaLocker2")
+        var checkboxes3 =document.getElementsByName("UnselectedLockers")
+        for(let v=0; v < checkboxes1.length;v++){
+            checkboxes1[v].addEventListener('change', ()=>{
+                if (checkboxes1[v].checked){
+                    updateUnchecked(checkboxes1[v].id,'area1')
+                }
+                else{
+                    updateAreaChecked(checkboxes1[v].id,'area1')
+                }
+            })
+             unSelected.push(checkboxes1[v].id)
+        }
+        for(let v=0; v < checkboxes2.length;v++){
+            checkboxes2[v].addEventListener('change', ()=>{
+                if (checkboxes2[v].checked){
+                    updateUnchecked(checkboxes2[v].id,'area2')
+                }
+                else{
+                    updateAreaChecked(checkboxes2[v].id,'area2')
+                }
+            })
+            unSelected.push(checkboxes2[v].id)
+        }
+
+        for(let v=0; v < checkboxes3.length;v++){
+            checkboxes3[v].addEventListener('change', ()=>{
+                if (checkboxes3[v].checked){
+                    updateUnchecked(checkboxes3[v].id,unequalArea)
+                }
+                else{
+                    updateAreaChecked(checkboxes3[v].id,unequalArea)
+                }
+            })
+        }
+    })
+document.getElementById("form_submit").addEventListener("click", checkLockers)
+
+async function checkLockers(event){
+    if (unSelected.length == 0){
+        if (area1Selected.length > area2Selected.length || area1Selected.length < area2Selected.length){
+            if(area1Selected.length > area2Selected.length){
+                unequalArea = 'area2'
+            }
+            else{
+                unequalArea = 'area1'
+            }
+            elem = document.getElementById('more_lockers');
+            instance = M.Modal.getInstance(elem)
+            instance.open()
+        }
+        else{
+            let data = {}
+            let area1Data = []
+            let area2Data = []
+            for(i=0; i<area1Selected.length; i++){
+                area1Data.push(area1Selected[i]) 
+                area2Data.push(area2Selected[i])
+            }
+            data = {"area1": area1Data, "area2":area2Data}
+            let result = await sendRequest('/api/area/{{areaID1.id}}/mass_swap','POST', data).then((response)=>{
+            if (response.message){
+                toast()
+                wi
+            }
+            }).catch((response)=>{
+                toast("Swap Failed");
+            })
+        }
+    }
+
+    else if(area1Selected.length >= 1 || area2Selected.length >= 1){
+        content = document.getElementById('interModal')
+        if(area1Selected.length == area2Selected.length){
+            content.innerHTML = `<p> You still have unselected lockers do you want to continue or do you wish to select additional lockers </p>
+        <a href="#" class="purple darken-4 btn"  id="proceedTo">Proceed</a>
+        <a href="#" class="purple darken-4 btn modal-close" >Select more lockers</a>`
+        proceedToEvent()
+        }
+        else{
+            content.innerHTML = `<p> You still have unselected lockers do you want to continue or do you wish to select additional lockers </p>
+        <a href="#" class="purple darken-4 btn disabled">Proceed</a>
+        <a href="#" class="purple darken-4 btn modal-close"  id="selectMore">Select more lockers</a>`
+        }
+        
+        elem = document.getElementById('confirm');
+        instance = M.Modal.getInstance(elem)
+        instance.open()
+    }
+}
+
+function updateUnchecked(area_id, area){
+    if (area === 'area1'){
+        index = unSelected.findIndex(element => element === area_id)
+        unSelected.splice(index,1)
+        area1Selected.push(area_id)
+    }
+    else if(area === 'area2'){
+        index = unSelected.findIndex(element => element === area_id)
+        unSelected.splice(index,1)
+        area2Selected.push(area_id)
+    }
+}
+
+function updateAreaChecked(area_id, area){
+    if (area === 'area1'){
+        index = area1Selected.findIndex(element => element === area_id)
+        area1Selected.splice(index,1)
+        unSelected.push(area_id)
+    }
+    else if(area === 'area2'){
+        index = area2Selected.findIndex(element => element === area_id)
+        area2Selected.splice(index,1)
+        unSelected.push(area_id)
+    }
+    
+}
+function proceedToEvent(){
+    document.getElementById('proceedTo').addEventListener('click',async()=>{
+            let data = {}
+            let area1Data = []
+            let area2Data = []
+            for(i=0; i<area1Selected.length; i++){
+                area1Data.push(area1Selected[i]) 
+                area2Data.push(area2Selected[i])
+            }
+            data = {"area1": area1Data, "area2":area2Data}
+            let result = await sendRequest('/api/area/{{areaID1.id}}/mass_swap','POST', data).then((response)=>{
+            if (response.message){
+                toast("Success");
+                window.location = "/area/{{areaID1.id}}"
+            }
+            }).catch((response)=>{
+                toast("Swap Failed");
+            })
+})
+}
+</script>
+{% endblock %}

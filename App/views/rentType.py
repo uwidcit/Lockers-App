@@ -4,6 +4,8 @@ from flask_login import login_required
 
 from App.controllers import (
     get_All_rentType,
+    get_All_rentType_group,
+    get_addtional_rentTypes,
     get_rentType_by_id,
     delete_rent_type,
     get_rentType_by_offset,
@@ -15,13 +17,15 @@ from App.controllers import (
 )
 
 from App.views.forms import RentTypeAdd,ConfirmDelete,SearchForm
+from App.views.admin import admin_only
 rentType_views = Blueprint('rentType_views', __name__, template_folder='../templates')
 
-
+size = 6
 @rentType_views.route('/rentType',methods=['GET'])
 @login_required
+@admin_only
 def render_rentType_all():
-    data = get_rentType_by_offset(15,1)
+    data = get_rentType_by_offset(size,1)
     num_pages = data['num_pages']
     previous = 1
     next = previous + 1
@@ -29,9 +33,10 @@ def render_rentType_all():
 
 @rentType_views.route('/rentType/page/<offset>',methods=['GET'])
 @login_required
+@admin_only
 def render_rentType_all_multi(offset):
-    int(offset)
-    data = get_rentType_by_offset(15,offset)
+    offset = int(offset)
+    data = get_rentType_by_offset(size,offset)
     num_pages = data['num_pages']
     if offset - 1 <= 0:
         previous = 1
@@ -43,10 +48,11 @@ def render_rentType_all_multi(offset):
     else:
         next = offset + 1
 
-    return render_template('rentType_manage.html', results=data['data'],form = RentTypeAdd(),search=SearchForm(),delete= ConfirmDelete(), previous= previous, next= next, current_page=offset)
+    return render_template('rentType_manage.html', results=data['data'],form = RentTypeAdd(),search=SearchForm(),delete= ConfirmDelete(), previous= previous, next= next, current_page=offset,num_pages=num_pages)
 
 @rentType_views.route('/rentType',methods=['POST'])
 @login_required
+@admin_only
 def create_new_rentType():
     form = RentTypeAdd()
 
@@ -55,8 +61,7 @@ def create_new_rentType():
         period_to = datetime.strptime(request.form.get('period_to'), '%Y-%m-%d')
         type =  request.form.get('type')
         price = request.form.get('price')
-
-        print(period_from)
+        
         rentType = new_rentType(period_from, period_to,type,price)
 
         if not rentType:
@@ -68,6 +73,7 @@ def create_new_rentType():
 
 @rentType_views.route('/rentType/<id>/delete', methods=['GET'])
 @login_required
+@admin_only
 def render_confirm_delete(id):
     rentType = get_rentType_by_id(id)
 
@@ -79,6 +85,7 @@ def render_confirm_delete(id):
 
 @rentType_views.route('/rentType/<id>/confirmed', methods=['POST'])
 @login_required
+@admin_only
 def remove_area(id):
     form = ConfirmDelete()
     if form.validate_on_submit:
@@ -92,6 +99,7 @@ def remove_area(id):
 
 @rentType_views.route('/rentType/<id>/edit', methods=['GET'])
 @login_required
+@admin_only
 def render_edit_pade(id):
     rentType = get_rentType_by_id(id)
 
@@ -108,6 +116,7 @@ def render_edit_pade(id):
 
 @rentType_views.route('/rentType/<id>/update', methods=['POST'])
 @login_required
+@admin_only
 def update_rentType(id):
     form = RentTypeAdd()
     if form.validate_on_submit:
@@ -145,6 +154,7 @@ def update_rentType(id):
 
 @rentType_views.route('/rentType/search',methods=['GET'])
 @login_required
+@admin_only
 def search_rentTypes():
     previous = 1
     next = previous + 1
@@ -152,7 +162,7 @@ def search_rentTypes():
     form = SearchForm()
     if form.validate_on_submit:
         query = request.args.get("search_query")
-        data = search_rentType(query,15,1)
+        data = search_rentType(query,size,1)
 
         if data:
              num_pages = data['num_pages']
@@ -161,13 +171,14 @@ def search_rentTypes():
 
 @rentType_views.route('/rentType/search/page/<offset>/',methods=['GET'])
 @login_required
+@admin_only
 def search_rentTypes_multi(offset):
     offset = int(offset)
 
     form = SearchForm()
     if form.validate_on_submit:
         query = request.args.get("search_query")
-        data = search_rentType(query,15,offset)
+        data = search_rentType(query,size,offset)
 
         if data:
              num_pages = data['num_pages']
@@ -190,3 +201,21 @@ def api_getRentTypes():
     if not rentTypes: 
         return {}
     return jsonify(rentTypes),200
+
+@rentType_views.route('/api/rentType/group',methods=['GET'])
+@login_required
+def api_getRentTypes_group():
+    rentTypes = get_All_rentType_group()
+    if not rentTypes: 
+        return {}
+    return jsonify(rentTypes),200
+
+@rentType_views.route('/api/rentType/addition',methods=['GET'])
+@login_required
+def api_getRentTypes_Additional():
+    rentTypes = get_addtional_rentTypes()
+    if not rentTypes: 
+        return {}
+    return jsonify(rentTypes),200
+
+

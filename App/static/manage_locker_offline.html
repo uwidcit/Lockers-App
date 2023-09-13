@@ -30,43 +30,55 @@
       wb.register();
     }
   </script>
-
-  <nav class="grey darken-4">
-    <div class="nav-wrapper">
-      <ul>
-        <li><a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons white-text">menu</i></a></li>
-      </ul>
-    </div>
-  </nav> 
  
   <body style="display: flexbox; overflow-y: hidden;">
-    <ul id="slide-out" class="sidenav sidenav-fixed purple darken-4">
-      <li>
-          <ul class="collapsible">
-          <li><a class="white-text collapsible-header"><i class="material-icons white-text">key</i>Key Management</a>
-          <div class="collapsible-body grey darken-4">
-            <ul>
-            <li><a class="white-text" href="/masterkey"><h7>Master Key</h7></a></li>
-            <li><a class="white-text" href="/key"><h7>Key</h7></a></li>
-            </ul>
-          </div>
+    <header class="grey darken-4">
+      <div class="container">
+        <a href="#" data-target="nav-mobile" class="top-nav sidenav-trigger full hide-on-large-only"><i class="material-icons white-text">menu</i></a>
+      </div> 
+      <ul id="nav-mobile" class="sidenav sidenav-fixed purple darken-4">
+        <li>
+            <ul class="collapsible">
+            <li><a class="white-text collapsible-header"><i class="material-icons white-text">key</i>Key Management</a>
+            <div class="collapsible-body grey darken-4">
+              <ul>
+              <li><a class="white-text" href="/masterkey"><h7>Master Key</h7></a></li>
+              <li><a class="white-text" href="/key"><h7>Key</h7></a></li>
+              </ul>
+            </div>
+          </li>
+          </ul>
         </li>
-        </ul>
-      </li>
-      <li><a class="white-text" href="/area"><i class="material-icons white-text">add_location</i><h7>Area</h7></a></li>
-      <li><a class= "white-text" href="/locker" ><i class="material-icons white-text">assignment</i><h7>Lockers</h7></a></li>
-      <li><a class="white-text" href="/rentType"><i class="material-icons white-text">attach_money</i><h7>Pricing</h7></a></li>
-      <li ><a class="white-text" href="/student"><i class="material-icons white-text">person</i><h7></h7>Student</a></li>
-      <li><a class="white-text" href="/transactionLog"><i class="material-icons white-text">book</i><h7>Transaction Log</h7></a></li>
-      <li><a class="white-text" href="/export"><i class="material-icons white-text">cloud_download</i><h7>Import/Export</h7></a></li>
-      <li><a class="white-text" href="/report"><i class="material-icons white-text">person</i><h7>Reports</h7></a></li>
-      <li><a class="white-text" href="/"><i class="material-icons white-text">exit_to_app</i><h7>Logout</h7></a></li>
-    </ul>  
+        <li><a class="white-text" href="/area"><i class="material-icons white-text">add_location</i><h7>Area</h7></a></li>
+        <li><a class= "white-text" href="/locker" ><i class="material-icons white-text">assignment</i><h7>Lockers</h7></a></li>
+        <li><a class="white-text" href="/rentType"><i class="material-icons white-text">attach_money</i><h7>Pricing</h7></a></li>
+        <li ><a class="white-text" href="/student"><i class="material-icons white-text">person</i><h7></h7>Student</a></li>
+        <li><a class="white-text" href="/transactionLog"><i class="material-icons white-text">book</i><h7>Transaction Log</h7></a></li>
+        <li><a class="white-text" href="/export"><i class="material-icons white-text">cloud_download</i><h7>Import/Export</h7></a></li>
+        <li><a class="white-text" href="/report"><i class="material-icons white-text">trending_up</i><h7>Reports</h7></a></li>
+        <li><a class="white-text" href="/users/manage"><i class="material-icons white-text">group_add</i><h7>Assistant Management</h7></a></li>
+        <li><a class="white-text" href="/users/password"><i class="material-icons white-text">account_circle</i><h7>Account</h7></a></li>
+        <li><a class="white-text" href="/logout"><i class="material-icons white-text">exit_to_app</i><h7>Logout</h7></a></li>
+      </ul>
+  </header>
+  <main>
     <div class="row" >   
-      <div class="grey darken-4 white-text" >
+      <div class="grey darken-4 white-text" style="height: 100vh;"> 
         <div class="row">
-            <div class="col s12 m10 offset-m1 white-text" style="height:100vh;" >
+          <div class="col s12">
+            <ul class="tabs grey darken-4 white-text">
+                <li class="tab col s4"><a href="#locker_tab">Lockers</a></li>
+                <li class="tab col s4"><a href="#rent_tab">Active Rents</a></li>
+                <li class="tab col s4"><a href="#rent_tab_complete">Completed Rents</a></li>
+              </ul>
+            </div>
+            <div class="col s12">
+              <br>
+            </div>
+            <div class="col s12 m10 offset-m1 white-text">
+              <div id="locker_tab">
               <div >
+                   <a id="refresh_btn" class="btn purple darken-4 center-align" onclick="window.location.reload()" >Refresh<i class="large material-icons center-align">refresh</i> </a>
                   <a id="options_btn" class="btn disabled center-align" >Options<i class="large material-icons center-align">arrow_drop_down</i> </a>
                   <ul id='locker_dropdown1' class='dropdown-content purple darken-4 white-text'>
 
@@ -84,12 +96,59 @@
 
                 </table>
             </div>
+            </div>
+            <div class="col s12 m10 offset-m1 grey darken-4 white-text" id="rent_tab">
+              <div >
+                <a id="refresh_btn" class="btn purple darken-4 center-align" onclick="window.location.reload()" >Refresh<i class="large material-icons center-align">refresh</i> </a>
+               <a id="rent_options_btn" class="btn disabled center-align" >Options<i class="large material-icons center-align">arrow_drop_down</i> </a>
+               <ul id='rent_dropdown1' class='dropdown-content purple darken-4 white-text'>
+
+               </ul>
+           </div>
+           
+           <table id="rentTable" class="purple darken-4 white-text">
+             <thead>
+               <th>Rent ID</th>
+               <th>Rented By</th>
+               <th>Key</th>
+               <th>Locker</th>
+               <th>Rent Type</th>
+               <th>Rented From </th>
+               <th>Rented To </th>
+               <th>Owed</th>
+               <th>Status </th>
+             </thead>
+             </table>
+         </div>
+
+         <div class="col s12 m10 offset-m1 grey darken-4 white-text" id="rent_tab_complete">
+          <div >
+            <a id="refresh_btn" class="btn purple darken-4 center-align" onclick="window.location.reload()" >Refresh<i class="large material-icons center-align">refresh</i> </a>
+       </div>
+       
+       <table id="rentTable_complete" class="purple darken-4 white-text">
+         <thead>
+           <th>Rent ID</th>
+           <th>Rented By</th>
+           <th>Key</th>
+           <th>Locker</th>
+           <th>Rent Type</th>
+           <th>Rented From </th>
+           <th>Rented To </th>
+           <th>Owed</th>
+           <th>Status </th>
+         </thead>
+         </table>
+     </div>
+            </div>
         </div>
       </div>
       <div class="fixed-action-btn">
         <a class="btn-floating btn-large waves-effect waves-light purple darken-4 modal-trigger"  href="#new_locker"><i class="material-icons">add </i></a>
       </div>
     </div>
+
+    
 
     <div class="row">
       <div class ="modal grey darken-3 white-text" id="new_locker">
@@ -158,7 +217,14 @@
     </div>
   </div>
 
-
+  <div class="modal grey darken-3 white-text" id="additional_modal">
+    <div class="modal-content" id="additional_content">
+      <h5>Add Additional Charge</h5>
+      <br>
+      <form id="additionalForm" class="col s12 m12">
+      </form>
+    </div>
+  </div>
 
     <div class="modal grey darken-3 white-text" id="delete_locker" >
       <div class="modal-content">
@@ -265,18 +331,26 @@
         <h6 style="font-weight: bold;">New Rent</h6>
         <form id="rentalForm" class="col s12 m12" method="POST" autocomplete="off">
           <div class="input-field col s12 m12"> 
-            <div class="col s6">
+            <div class="col s4">
               <p>Student ID</p>
               <input type="text" class="validate white-text", id="rent_student_id" name="student_id">
             </div>
             <input type="hidden" name="locker_code" id="locker_code_rent" value="">
-            <div class="col s6">
-              <p>Rent Type</p>
-              <select name="rent_type" style="display:inline;" id="rent_type">
-               
+            <div class="col s4">
+              <p>Rent Method</p>
+              <select name="rent_method" style="display:inline;" id="rent_method">
+               <option value=”” disabled selected>Select Rent Method</option>
+               <option value="Rate">Rate</option>
+               <option value="Fixed">Fixed</option>
               </select>
             </div>
-          </div>  
+
+            <div class="col s4">
+              <p>Rent Type</p>
+              <select name="rent_type" style="display:inline;" id="rent_type">
+              </select>
+            </div>
+          </div>
           
           <div class="input-field col s12 m12">
             <div class="col s6">  
@@ -308,6 +382,7 @@
         </div>
         </div>
 </div>
+</main>
 
      <script type="module" >
       import {Workbox} from 'https://storage.googleapis.com/workbox-cdn/releases/6.2.0/workbox-window.prod.mjs';
@@ -331,6 +406,8 @@
       var instancesColl = M.Collapsible.init(elemsColl);
       var elemsFxBtn = document.querySelectorAll('.fixed-action-btn');
       var instancesFxBtn = M.FloatingActionButton.init(elemsFxBtn);
+      var el= document.querySelectorAll('.tabs');
+      var instanceTabs = M.Tabs.init(el,);
       
       var elems = document.querySelectorAll('.modal');
       var instances = M.Modal.init(elems);

@@ -1,0 +1,192 @@
+{% extends "layout.html" %}
+{% block title %}Manage Users {% endblock %}
+{% block page %}Manage Users {% endblock %}
+
+{{ super() }}
+
+{% block content %}
+<div class="row">
+      <div class="row">
+            <div class="col s12 m8 offset-m7">
+              <form action="/users/search" id="search_form">
+                <div class="input-field col s12 m5 offset-m1">
+                 <div class = "search-wrapper">
+                  <input type="search" name="search_query" placeholder="Enter search query" required/>
+                  <i class="material-icons white-text" style="color:#4a148c; top:1vh; " id="submit_search">search</i>
+                 </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        <div class="col s12 m12 l12 xl12" style="height:80vh;">
+          <table class="container">
+            <tr>
+                <th>ID</th>
+                <th>Username </th>
+            </tr>
+    
+            {% if assistants %}
+            {% for a in assistants%}
+           <tr class="purple darken-4">
+            <td>{{a.id}}</td>
+            <td>{{a.username}}</td>
+            <td style="width: 120px;"><a href="#" onclick="editMode('{{a.id}}','{{a.username}}')" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">edit</i>Edit</a></td>
+            <td style="width: 120px;"><a href="#" onclick="removeMode('{{a.id}}','{{a.username}}')" class="purple darken-4 waves-effect waves-light btn-small"><i class="material-icons left">delete</i>Delete</a></td>
+           </tr>
+          {% endfor %}
+            {% endif %}
+          </table>
+        </div>
+      <div id="pag" class="col s12 center-align">
+        <ul class="pagination">
+
+          {% if query %}
+          {% if current_page == 1  %}
+            <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+            {% else %}
+
+            <li><a href="/locker/search/page/{{previous}}/?search_query={{query}}" id="previousPage"><i class="material-icons white-text">chevron_left</i></a></li>
+
+            {% endif %}
+            <li class="active purple darken-4"><a href="#">{{current_page}}</a></li>
+            {% if current_page == num_pages %}
+            <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+            {% else %}
+
+            <li><a href="/locker/search/page/{{next}}/?search_query={{query}}" id="nextPage"><i class="material-icons white-text">chevron_right</i></a></li>
+
+            {% endif %}
+        {% else %}
+        {% if current_page == 1  %}
+        <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+        {% else %}
+
+        <li><a href="/locker/page/{{previous}}" id="previousPage"><i class="material-icons white-text">chevron_left</i></a></li>
+
+        {% endif %}
+
+        <li class="active purple darken-4"><a href="#">{{current_page}}</a></li>
+       
+        {% if current_page == num_pages %}
+        <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+        {% else %}
+
+        <li><a href="/locker/page/{{next}}" id="nextPage"><i class="material-icons white-text">chevron_right</i></a></li>
+
+        {% endif %}
+      {% endif %}
+
+      </ul>
+    </div>
+        <div class="fixed-action-btn">
+         <a class="btn-floating btn-large waves-effect waves-light purple darken-4 modal-trigger"  href="#new_user"><i class="material-icons">add </i></a>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class ="modal grey darken-3 white-text" id="new_user">
+          <div class ="modal-content" id="content">
+            <form method="post" action="/users/assistant" autocomplete="off">
+              <div class="input-field col s12 m12"> 
+              <div class = "col s6">
+                <label for="username">
+                <span>Username</span>
+                <input type="text" id="username" name="username" class="white-text" required>
+              </label>
+              </div>
+              <div class="col s6">
+              <label for="password">
+                <span>Password</span> 
+                <input type="password" id="password" name="password" class="white-text" required>
+              </label> 
+            </div>
+              
+            </div>
+            <div class="col s12 m12 l12 xl12">
+              <div class="col s6 m3 l3 xl2 right">
+                <a class="btn red darken-4 white-text modal-close waves-light ">Cancel</a>
+              </div>
+              <div class="col s6 m3 l3 xl3 right">
+                <input type="submit" value="Add Assistant" class="btn purple darken-4 waves-light">
+              </div>
+            </div>
+          </form>
+            
+          </div>    
+        </div>
+
+        <div class="modal grey darken-3 white-text" id="delete_assistant" >
+          <div class="modal-content" id="delete_content">
+          </div>
+
+          <div class="modal-footer grey darken-3 white-text">
+            <a href="#" class="btn purple darken-4 waves-light" id="submit_delete">Delete Assistant</a>
+            <a href="#" class="btn red darken-4 white-text modal-close waves-light">Cancel</a>
+          </div>
+      </div>
+
+      <div class="modal grey darken-3 white-text" id="reset_assistant" >
+        <div class="modal-content" id="reset_content">
+        </div>
+
+        <div class="modal-footer grey darken-3 white-text">
+          <a href="#" class="btn purple darken-4 waves-light" id="submit_reset">Reset Password</a>
+          <a href="#" class="btn red darken-4 white-text modal-close waves-light">Cancel</a>
+        </div>
+    </div>
+
+      
+  </div>
+  </div>
+  </div>
+
+  <script>
+    function editMode(id,username){
+      html = document.getElementById('reset_content')
+      html.innerHTML = ` 
+          <form action="/users/assistant/${id}/reset" method="post" id="reset_assistant_form">
+            <div class="input-field col s12 m12 l12 xl12">
+              <div class="col s6 offset-s3"> 
+                <label for="r_password">
+                <span>New Password </span>
+                <input type="password" id="r_password" name="password" class="white-text">
+                </label>
+              </div>
+          </form>
+      `
+   elem = document.getElementById('reset_assistant');
+   instance = M.Modal.getInstance(elem) 
+   instance.open()
+  }
+   document.getElementById('submit_reset').addEventListener('click',()=>{
+    form = document.getElementById('reset_assistant_form')
+    input = document.getElementById('r_password')
+    
+    if(input.value != ''){
+      form.submit()
+    }
+  })
+
+  document.getElementById('submit_delete').addEventListener('click',()=>{
+    form = document.getElementById('delete_assistant_form')
+    form.submit()
+  })
+
+  function removeMode(id,username){
+    content = document.getElementById('delete_content')
+    content.innerHTML = 
+    `
+    <form action="/users/assistant/${id}/delete" method="post" id="delete_assistant_form">
+            <div class="input-field col s12 m12 l12 xl12">
+              <div class="col s6 offset-s3"> 
+                <p> Are you sure you want to delete "${username}" , this action cannot be undone <p>
+              </div>
+    </form>
+    `
+  elem = document.getElementById('delete_assistant');
+   instance = M.Modal.getInstance(elem) 
+   instance.open()
+  }
+  </script>
+
+{% endblock %}

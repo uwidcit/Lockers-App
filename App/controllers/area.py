@@ -3,7 +3,7 @@ from App.database import db
 from flask import flash
 from App.controllers.log import create_log
 from datetime import datetime
-from sqlalchemy import or_
+from sqlalchemy import and_, or_
 from sqlalchemy.exc import SQLAlchemyError
 
 def add_new_area(description, longitude, latitude):
@@ -211,3 +211,14 @@ def return_lockers(id,size,offset):
 
     return {"num_pages":num_pages,"data":a_list}
     
+def get_area_all_except(areaID):
+    areas = Area.query.filter(Area.id != areaID).all()
+    if not areas:
+        return None
+    return [a.toJSON() for a in areas]
+
+def get_lockers_all_except(areaID1, areaID2):
+    areas = Area.query.filter(and_(Area.id != areaID1, Area.id != areaID2)).all()
+    if not areas:
+        return None
+    return [a.getLockersInArea() for a in areas]

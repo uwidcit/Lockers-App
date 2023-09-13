@@ -1,30 +1,32 @@
 <!doctype html>
 <html>
   <head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='leaflet/leaflet.css') }}">
-    <script src="{{ url_for('static', filename='leaflet/leaflet.js') }}"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
      <!--Import Google Icon Font-->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    
+    <link rel="manifest" href="/static/manifest.json">
     <!-- Compiled and minified CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='materialize.css') }}">
     <!--Let browser know website is optimized for mobile-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>{% block title %}{% endblock %}</title>
   </head>
-  <nav class="grey darken-4">
-    <div class="nav-wrapper">
-      <ul>
-        <li><a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons white-text">menu</i></a></li>
-      </ul>
-    </div>
-  </nav> 
+  
 
  
  
-  <body style="display: flexbox; overflow-y: hidden;">
-    <ul id="slide-out" class="sidenav sidenav-fixed purple darken-4">
+  <body style="display: flexbox; overflow-y: hidden;" class="grey darken-4">
+    <header class="grey darken-4">
+    <div class="container">
+      <a href="#" data-target="nav-mobile" class="top-nav sidenav-trigger full hide-on-large-only"><i class="material-icons white-text">menu</i></a>
+    </div> 
+    <ul id="nav-mobile" class="sidenav sidenav-fixed purple darken-4">
       <li>
           <ul class="collapsible">
           <li><a class="white-text collapsible-header"><i class="material-icons white-text">key</i>Key Management</a>
@@ -37,16 +39,21 @@
         </li>
         </ul>
       </li>
+      
       <li><a class="white-text" href="/area"><i class="material-icons white-text">add_location</i><h7>Area</h7></a></li>
       <li><a class= "white-text" href="/locker" ><i class="material-icons white-text">assignment</i><h7>Lockers</h7></a></li>
       <li><a class="white-text" href="/rentType"><i class="material-icons white-text">attach_money</i><h7>Pricing</h7></a></li>
       <li ><a class="white-text" href="/student"><i class="material-icons white-text">person</i><h7></h7>Student</a></li>
       <li><a class="white-text" href="/transactionLog"><i class="material-icons white-text">book</i><h7>Transaction Log</h7></a></li>
       <li><a class="white-text" href="/export"><i class="material-icons white-text">cloud_download</i><h7>Import/Export</h7></a></li>
-      <li><a class="white-text" href="/report"><i class="material-icons white-text">person</i><h7>Reports</h7></a></li>
+      <li><a class="white-text" href="/report"><i class="material-icons white-text">trending_up</i><h7>Reports</h7></a></li>
+      <li><a class="white-text" href="/users/manage"><i class="material-icons white-text">group_add</i><h7>Assistant Management</h7></a></li>
+      <li><a class="white-text" href="/users/password"><i class="material-icons white-text">account_circle</i><h7>Account</h7></a></li>
       <li><a class="white-text" href="/logout"><i class="material-icons white-text">exit_to_app</i><h7>Logout</h7></a></li>
-    </ul>  
-    <div class="row" >
+    </ul>
+</header>
+ 
+    <div class="row grey darken-4 white-text" >
         
       {% with messages = get_flashed_messages() %}
       {% if messages %}
@@ -57,18 +64,26 @@
       {% endwith %}
 
    
-      <div class="grey darken-4 white-text" >
+      <main>
+      <div class="grey darken-4">
         {% block content %}{% endblock %}
       </div>
+    </main>
 
     </div>
-    
+    <script type="module" >
+      import {Workbox} from 'https://storage.googleapis.com/workbox-cdn/releases/6.2.0/workbox-window.prod.mjs';
+
+      if ('serviceWorker' in navigator) {
+        const wb = new Workbox('/static/sw.js', {scope:'/'});
+        wb.register();
+      }
+    </script>
 
     <script src="{{ url_for('static', filename='materialize.js') }}"></script>
     
 
     <script src="/static/util.js"></script>
-    <script src = "/static/keep_alive.js"></script>
     <script type="text/javascript">
       document.addEventListener('DOMContentLoaded', function() {
       var sideElems = document.querySelectorAll('.sidenav');
@@ -101,7 +116,7 @@
       .indentMenu {
         text-indent: 35px;
       }
-      .modal{
+      .modal,.modal-footer{
         border-radius: 25px;
         overflow-y: hidden;
         max-height: 100%;

@@ -1,6 +1,5 @@
 
-from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify,url_for,flash,make_response
-
+from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify,url_for,flash,make_response,stream_with_context
 from App.views.forms import  ConfirmDelete,SearchForm,LockerAdd,RentAdd,StudentAdd,TransactionAdd
 
 from datetime import datetime
@@ -126,14 +125,14 @@ def select_student_page_multi(id,offset):
     return render_template("locker_select_student.html",studentData=studentData['data'],num_pages=studentData["num_pages"], form=StudentAdd(),search=search,rent=rent,id = id,current_page=offset,next= next, previous= previous)
 
 #deprecated
-#@locker_views.route("/locker", methods=['POST'])
-#@login_required
+@locker_views.route("/locker", methods=['POST'])
+@login_required
 def add_locker():
     form = LockerAdd() # create form object
     if form.validate_on_submit:
         data = request.form # get data from form submission
         new_locker = add_new_locker(locker_code=data['locker_code'], locker_type=data['locker_type'], status=data['status'], key_id=data['key'],area=data['area'])
-        url = url_for('.manage_locker')
+        url = url_for('.return_offline_page')
         if request.args:
             callback = request.args.get('callback')
             callback_id = request.args.get('id')
@@ -299,13 +298,17 @@ def render_lockers_rent(id):
     form.rent_type.choices = get_All_rentType()
     return render_template("addrent.html", form=form,id=id)
 
-#deprecated
-#@locker_views.route("/locker/<id>", methods=["GET"])
-#@login_required
+
+@locker_views.route("/locker/<id>", methods=["GET"])
+@login_required
 def render_get_lockers(id):
     previous = 1 
     next = previous + 1
-    locker = get_locker_id(id)
+    locker = get_locker_id(id.upper())
+    if not locker:
+        flash("Locker doesn't exist")
+        return redirect(url_for('.return_offline_page'))
+    rents = None
     rents = get_locker_rent_history(id,2,1)
     current_rental = get_current_rental(id)
     form = LockerAdd()
@@ -313,9 +316,9 @@ def render_get_lockers(id):
     if rents:
         return render_template('lockerDetails.html', locker = locker, rents = rents['data'], previous= previous,current_page=1,next=next, locker_names= get_all_locker_names(), num_pages=rents['num_pages'],keys=get_all_keys_id(),trans=TransactionAdd(),current_rental= current_rental, form = form,delete=ConfirmDelete())
     return render_template('lockerDetails.html', locker = locker, rents = None, previous= previous,current_page=1,next=next,num_pages=1, locker_names= get_all_locker_names(),keys=get_all_keys_id(),trans=TransactionAdd(),current_rental= current_rental,form = form, delete=ConfirmDelete())
-#deprecated
-#@locker_views.route("/locker/<id>/page/<offset>", methods=["GET"])
-#@login_required
+
+@locker_views.route("/locker/<id>/page/<offset>", methods=["GET"])
+@login_required
 def render_get_lockers_multi(id,offset):
     offset= int(offset)
     locker = get_locker_id(id)
@@ -342,6 +345,8 @@ def render_get_lockers_multi(id,offset):
 def switch_key():
         locker2 = request.json.get("locker_code2")
         id = request.json.get("locker_code1")
+        if '' in [id,locker2]:
+            return jsonify({"message":"Error empty locker values"}),400
         lockers = swap_key(id, locker2)
         if lockers:
             data = []
@@ -361,11 +366,15 @@ def switch_key():
 @login_required
 def locker_api():
     return jsonify(get_all_lockers())
+    
 
 @locker_views.route('/api/locker', methods=['POST'])
 @login_required
 def create_new_locker_api():
     data = request.json     #get data from JSON 
+    if '' in data or data is None:
+         return jsonify({"message":"Invalid values"}),400
+    
     new_locker = add_new_locker(locker_code=data['locker_code'], locker_type=data['locker_type'], status=data['status'], key_id=data['key'],area=data['area'])
     if not new_locker:
         return jsonify({"message":"Locker already exist or some error has occurred"}),400
@@ -413,6 +422,5 @@ def update_locker_api():
 
 @locker_views.route('/locker', methods=['GET'])
 def return_offline_page():
-    get_all_rentals()
     return send_from_directory('static', 'manage_locker_offline.html')
      

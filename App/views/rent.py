@@ -5,13 +5,15 @@ from App.views.forms import SearchForm
 from App.controllers import (
     create_rent,
     create_comment,
-    get_rent_by_id,
     get_all_rentType_tuple,
     get_transactions,
     get_all_rentals,
     get_comments_offset,
     release_rental,
-    release_locker,
+    get_rentType_by_id,
+    rent_additional_payments,
+    get_all_rentals_active,
+    get_all_rentals_inactive,
     get_lockers_available,
     get_student_by_id,
     get_All_rentType,
@@ -45,9 +47,14 @@ def create_new_rent():
     s_id = request.json.get('student_id')
     locker_id = request.json.get('locker_id')
     rentType = request.json.get('rentType')
-    r_date_f = datetime.strptime(request.json.get('rent_date_from'),'%Y-%m-%dT%H:%M')
-    r_date_t = datetime.strptime(request.json.get('rent_date_to'),'%Y-%m-%dT%H:%M')
-    rental = create_rent(s_id,locker_id,rentType,r_date_f,r_date_t)
+    rent_method = request.json.get('rentMethod')
+    r_date_f = request.json.get('rent_date_from')
+    r_date_t = request.json.get('rent_date_to')
+    if '' in [s_id,locker_id,rentType, rent_method,r_date_f,r_date_t]:
+        return jsonify({"Message": "Empty values cannot create rent"}),400 
+    r_date_f = datetime.strptime(r_date_f,'%Y-%m-%dT%H:%M')
+    r_date_t = datetime.strptime(r_date_t,'%Y-%m-%dT%H:%M')
+    rental = create_rent(s_id,locker_id,rentType,r_date_f,r_date_t,rent_method)
     if not rental:
         return jsonify({"Message": "Rental not created"}),400
     return jsonify(rental.toJSON()),201
@@ -97,7 +104,7 @@ def get_all_rent():
 @login_required
 def release_locker(id):
     rental = update_rent(id)
-    url = url_for('locker_views.manage_locker')
+    url = url_for('locker_views.return_offline_page')
     if request.args:
             callback = request.args.get('callback')
             callback_id = request.args.get('id')
@@ -126,7 +133,7 @@ def release_locker(id):
 def return_locker_to_pool(id):
     rental = update_rent(id)
 
-    url = url_for('locker_views.manage_locker')
+    url = url_for('locker_views.return_offline_page')
     if request.args:
             callback = request.args.get('callback')
             callback_id = request.args.get('id')
@@ -134,7 +141,6 @@ def return_locker_to_pool(id):
                 url = url_for('.get_rent_id',id=callback_id)
             elif callback.lower() == 'student':
                 url = url_for('student_views.get_student_render',id=callback_id)
-
     if not rental:
         return redirect(url)
 
@@ -160,6 +166,36 @@ def notes_api(id):
     notes = get_comments_offset(id,3,1)
     return jsonify(notes),200
 
+@rent_views.route('/api/rent/active',methods=['GET'])
+@login_required
+def active_rents():
+    return jsonify(get_all_rentals_active()),200
+
+
+@rent_views.route('/api/rent/additional', methods=['POST'])
+@login_required
+def add_addtional_fees():
+    rent_id = request.json.get('rent_id')
+    rtType = request.json.get('rentType')
+    rentType = get_rentType_by_id(rtType)
+
+    if rentType:
+        try:
+            rent = rent_additional_payments(rent_id,rentType.price)
+            if rent:
+                return(jsonify(rent.toJSON())),200
+            else:
+                return jsonify({}),400
+        except Exception as e:
+            return jsonify({'message': str(e)}),400
+    else:
+        return {},400
+
+
+@rent_views.route('/api/rent/inactive',methods=['GET'])
+@login_required
+def inactive_rents():
+    return jsonify(get_all_rentals_inactive()),200
 
 @rent_views.route('/api/rent/<id>/notes/<offset>',methods=['GET'])
 @login_required
@@ -173,7 +209,8 @@ def notes_api_multi(id,offset):
 def new_note_api(id):
     data = request.json
     new_comment = create_comment(id,data['comment'],datetime.now().date())
-
+    if '' in [data]:
+        return jsonify({'error':'Not created'}),400
     if new_comment:
         return jsonify(new_comment.toJSON(),200)
 

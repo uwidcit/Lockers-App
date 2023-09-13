@@ -1,18 +1,37 @@
 from App.database import db
-from App.models import KeyHistory
+from App.models import KeyHistory,Active
 from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
 
 def new_keyHistory(key_id,locker_id,date_moved):
     try:
-        newkeyHistory = KeyHistory(key_id,locker_id,date_moved)
+        newkeyHistory = KeyHistory(key_id,locker_id,date_moved,"Active")
         db.session.add(newkeyHistory)
         db.session.commit()
         return newkeyHistory
     except SQLAlchemyError:
         db.session.rollback()
         return None
- 
+    
+def deactivate(id):
+    keyH = getKeyHistory(id)
+    if not keyH:
+        return None
+    keyH.isActive = Active.INACTIVE
+    try:
+        db.session.commit()
+        return keyH
+    except:
+        db.session.rollback()
+        return None
+
+def getKeyHistory(id):
+    key = KeyHistory.query.filter_by(id=id).first()
+
+    if not key:
+        return None
+    return key
+
 def getKeyHistory_by_id(id, size,offset):
     keys = KeyHistory.query.filter(or_(KeyHistory.locker_id.like(id),KeyHistory.key_id.like(id))).all()
 

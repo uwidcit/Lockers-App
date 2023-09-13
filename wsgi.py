@@ -1,16 +1,20 @@
 import click, pytest, sys, csv
 from datetime import datetime
 from flask import Flask
+from flaskwebgui import FlaskUI
 from flask.cli import with_appcontext, AppGroup
 
 from App.database import db, get_migrate
 from App.main import create_app
-from App.controllers import ( create_user, get_all_users_json, get_all_users, add_new_locker, add_new_area, new_key, new_masterkey, new_rentType, add_new_student)
+from App.controllers import ( create_user, create_assistant, get_all_users_json, get_all_assistant_json,get_all_users, add_new_locker, add_new_area, new_key, new_masterkey, new_rentType, add_new_student)
 
 # This commands file allow you to create convenient CLI commands for testing controllers
 
 app = create_app()
 migrate = get_migrate(app)
+
+if __name__ == "__main__":
+    FlaskUI(app=app, server="flask").run()
 
 # This command creates and initializes the database
 @app.cli.command("init", help="Creates and initializes the database")
@@ -18,9 +22,11 @@ def initialize():
     db.drop_all()
     db.create_all()
     # insert sample data into database
+    print('Beginning Initalization')
     create_user('rob', 'robpass')
     create_user('bob', 'bobpass')
-    print('database intialized')
+    create_assistant('student1','studentpass')
+    
     
     with open('area.csv', mode="r") as csv_file:
         reader = csv.DictReader(csv_file)
@@ -30,12 +36,12 @@ def initialize():
     with open('masterkey.csv', mode="r") as csv_file:
         reader = csv.DictReader(csv_file)
         for r in reader:
-            new_masterkey(r["masterkey_id"],r["series"],r["key_type"], r["date_added"])
+            new_masterkey(r["masterkey_id"],r["series"],r["key_type"],datetime.strptime(r['date_added'], '%Y-%m-%d'))
 
     with open('lockerkeytables.csv', mode="r") as csv_file:
         reader = csv.DictReader(csv_file)
         for r in reader:
-            new_key(r["\ufeffkey_id"], r["masterkey_id"], r["key_status"], r["date_added"])
+            new_key(r["key_id"], r["masterkey_id"], r["key_status"], datetime.strptime(r['date_added'], '%Y-%m-%d'))
     
     with open('lockers.csv', mode="r") as csv_file:
         reader = csv.DictReader(csv_file)
@@ -50,7 +56,9 @@ def initialize():
     with open('students.csv', mode="r") as csv_file:
         reader = csv.DictReader(csv_file)
         for r in reader:
-            add_new_student(r["\ufeffstudent_id"],r["first_name"],r["last_name"],r["faculty"],r["phone_number"], r["email"])
+            add_new_student(r["student_id"],r["first_name"],r["last_name"],r["faculty"],r["phone_number"], r["email"])
+    
+    print('database intialized')
 
     #add_new_area("SAC Downstairs", 12, 10)
     #add_new_area("Library West(Blue)", 5, 9)
@@ -104,6 +112,11 @@ def list_user_command(format):
         print(get_all_users())
     else:
         print(get_all_users_json())
+
+@user_cli.command("assistant", help="Lists assistants in the database")
+@click.argument("format", default="string")
+def list_user_command(format):
+        print(get_all_assistant_json())
 
 app.cli.add_command(user_cli) # add the group to the cli
 

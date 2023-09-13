@@ -20,12 +20,11 @@ async function addLocker(event){
     let result = await sendRequest('/api/locker','POST', data).then((response)=>{
         if (response.status == 201){
             toast("Success");
-            locker_list.push(result)
-            table = $('#lockerTable').DataTable();
-            table.row.add(result).draw()
+            window.location.reload()
         }
     }).catch((response)=>{
         toast("Adding locker failed");
+        window.location.reload()
     })
 }
 
@@ -54,8 +53,7 @@ async function updateLocker(event){
         (response)=>{
             if(response.status === 200){
              toast("Success");
-             table = $('#lockerTable').DataTable();
-             table.row(row_id).data(result).draw()
+             window.location.reload()
             }
         }
     ).catch((response)=>{
@@ -189,6 +187,7 @@ function editMode(locker){
 var student_list = []
 var locker_list = []
 var rentType_list = []
+var add_list = []
 var lockerRow_list = []
 var row_id = 0
 
@@ -199,8 +198,19 @@ async function getAllStudents(){
         }
     })
 }
+async function getActiveRents(){
+    let result = await sendRequest('/api/rent/active','GET')
+    initRentTable(result)
+}
+
+async function getInactiveRents(){
+    let result = await sendRequest('/api/rent/inactive','GET')
+    initRentTableC(result)
+}
+
 async function getLockers(){
     let result = await sendRequest('/api/locker','GET')
+    
     for (r in result){
         locker_list.push(result[r])
     }
@@ -209,16 +219,26 @@ async function getLockers(){
 }
 
 async function getAllRentTypes(){
-    let result = await sendRequest('/api/rentType','GET').then((result)=>{
+    let result = await sendRequest('/api/rentType/group','GET').then((result)=>{
         for(r in result){
             rentType_list.push(result[r])
         }
     })
 }
+
+async function getAllAdditionalRentTypes(){
+    let result = await sendRequest('/api/rentType/addition','GET').then((result)=>{
+        for(r in result){
+            add_list.push(result[r])
+        }
+    })
+}
+
 function initTable(data){
     let table = new DataTable('#lockerTable',{
         "responsive":true,
         select:"multi",
+        
         data:data,
         "columns":[
             {"data":"locker_code"},
@@ -266,7 +286,7 @@ function initTable(data){
                 else if(lockerRow_list[1] == indexes[0]){
                     lockerRow_list.pop()
                 }
-                enableOptions(table.rows(lockerRow_list).data())
+                enableOptions(table.rows(lockerRow_list).data()[0])
             }
         }
     } );
@@ -280,15 +300,6 @@ function enableOptions(d){
     html= ``
     if(d.status === "Free"){
         html += `<li><a href="#" onclick="rentInit('${d.locker_code}')" class="white-text"><i class="material-icons left white-text">check</i>Rent</a></li>`
-    }
-    else if (d.status === "Rented"){
-        html += ` <li><a href="#" onclick="loadComments(${d.current_rental.id},1)" class="white-text"><i class="material-icons left white-text">check</i>Note</a></li>
-        <li><a href="#" onclick="releaseMode({'amount_owed':${d.current_rental.amount_owed}, 'id':${d.current_rental.id},'locker_id':'${d.current_rental.locker_id}'})" class="white-text"><i class="material-icons left white-text">close</i>Release</a></li>`
-    }
-
-    else if (d.status == "Not Verified"){
-        html += `<li><a href="#" onclick="loadComments(${d.current_rental.id},1)" class="white-text"><i class="material-icons left white-text">check</i>Note</a></li>
-        <li><a href="/rent/${d.current_rental.id}/release/verify" class="white-text"><i class="material-icons left white-text">verified_user</i>Verify</a></li>`
     }
     html +=`
         <li><a href="#edit" onclick="editMode({'locker_code':'${d.locker_code}','locker_type':'${d.locker_type}','area':${d.area},'key':'${d.key}','status':'${d.status}'})" class="white-text"><i class="material-icons left white-text">edit</i>Edit</a></li>
@@ -332,12 +343,11 @@ function passStudent (locker_code,student){
 
 async function rentInit(locker_code){
     const lock = locker_code
-    await getAllStudents().then(()=>{
-        elem = document.querySelector('#rent_modal')
-        if ( $.fn.dataTable.isDataTable( '#studentTable' ) ) {
-            table = $('#studentTable').DataTable();
-        }
-        else{
+    elem = document.querySelector('#rent_modal')
+    if ( $.fn.dataTable.isDataTable( '#studentTable' ) ) {
+        table = $('#studentTable').DataTable();
+    }
+    else{
         table = new DataTable('#studentTable',{
         "responsive":true,
         select:true,
@@ -369,8 +379,7 @@ async function rentInit(locker_code){
 
     instance = M.Modal.getInstance(elem)
     instance.open()
-    }) 
-}
+} 
 
 function createRent(studentID,locker_code){
     form = document.getElementById("rentalForm")
@@ -385,30 +394,85 @@ function createRent(studentID,locker_code){
             student_id: fields['student_id'].value,
             locker_id:  fields['locker_code'].value,
             rentType: fields['rent_type'].value,
+            rentMethod: fields['rent_method'].value,
             rent_date_from: fields['rent_date_from'].value,
             rent_date_to: fields['rent_date_to'].value   
         }
         elem = document.getElementById('new_Rent');
         instance = M.Modal.getInstance(elem)
+        instance.close()
         form.reset()
         let result = await sendRequest('/api/locker/rent','POST', data).then((response)=>{
-            toast("Success");
+            toast("Success")
+            window.location.reload()
         }).catch((response)=>{
              toast("Rental failed");
+             window.location.reload()
         })
     })
     studentIDBox = document.getElementById("rent_student_id")
     studentIDBox.value = studentID
 
     rentTypes = document.getElementById("rent_type")
-    html = ' <option value=”” disabled selected>Select Rental Plan</option>'
-    for (r in rentType_list){
-        html+= `<option value=${rentType_list[r].id}>${rentType_list[r].type}: $${rentType_list[r].price} Period: ${rentType_list[r].period_from} to ${rentType_list[r].period_to}</option>`
-    }
+    html = ' <option value=”” disabled selected>Select Rental Method First </option>'
+   
    rentTypes.innerHTML = html
    elem = document.getElementById('new_Rent');
    instance = M.Modal.getInstance(elem)
    instance.open()
+  }
+
+  function additionalCharge(id){
+    form = document.getElementById("additionalForm")
+    html = `<input type="hidden" value="${id}" name="rent_id">
+    <select id="rType" name="rentType" style="display:inline;" required>
+    <option value=”” disabled selected>Select Additional Charge </option>
+    `
+    for(r in add_list){
+         html+= `<option value=${add_list[r].id}>${add_list[r].type}: $${add_list[r].price} Period: ${add_list[r].period_from} to ${add_list[r].period_to}</option>`
+    }
+    html+=`
+    </select>
+    <div class="input-field col s8 m8 offset-m4" style="display:inline;">
+
+    <div class="col s4 offset-s4">
+       <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
+    </div>
+
+    <div class="col s4">
+     <input type="submit" class="right purple darken-4 waves-light btn" id="l_submit" value="Add Charge">
+    </div>
+   </div>    `
+    form.innerHTML = html 
+
+    form.addEventListener('submit',async (event) => {
+        event.preventDefault()
+        let form = event.target
+        let fields = event.target.elements
+    
+        let data = {
+            rent_id: fields['rent_id'].value,
+            rentType:  fields['rentType'].value,  
+        }
+        elem = document.getElementById('additional_modal');
+        instance = M.Modal.getInstance(elem)
+        instance.close()
+        form.reset()
+        let result = await sendRequest('/api/rent/additional','POST', data).then((response)=>{
+            toast("Success")
+            window.location.reload()
+        }).catch((response)=>{
+             toast("failed");
+             window.location.reload()
+        })
+    })
+    
+
+    
+    elem = document.getElementById('additional_modal');
+    instance = M.Modal.getInstance(elem)
+    instance.open()
+
   }
 
   async function swapKey(event){
@@ -429,16 +493,14 @@ function createRent(studentID,locker_code){
 
     let result = await sendRequest('/api/locker/swap','PUT', data).then((response)=>{
         toast("Success");
-        table = $('#lockerTable').DataTable();
-        table.row(lockerRow_list[0]).data(response[0]).draw()
-        table.row(lockerRow_list[1]).data(response[1]).draw()
+        window.location.reload()
     }).catch((response)=>{
         toast("Updating locker failed");
+        window.location.reload()
     })
 }
 
 function enableOptionsSwap(d){
-    console.log(d)
     btn = document.querySelector('#options_btn')
     btn.className="dropdown-trigger btn purple darken-4 waves-effect"
     btn.dataset.target ="locker_dropdown1"
@@ -474,12 +536,118 @@ function OpenSwapKey(locker1, locker2){
     elem = document.getElementById('swap_key');
     instance = M.Modal.getInstance(elem)
     instance.open()
-  }
+}
+
+function initRentTable(data){
+    let table = new DataTable('#rentTable',{
+        "responsive":true,
+        select:"multi",
+        data:data,
+        "columns":[
+            {"data":"id"},
+            {"data":"student_id"},
+            {"data":"key"},
+            {"data":"locker_code"},
+            {"data":"rent_types"},
+            {"data":"rent_date_from"},
+            {"data":"rent_date_to"},
+            {"data":"amount_owed"},
+            {"data":"status"},
+        ]
+    })
+     table.on( 'select', function ( e, dt, type, indexes ) {
+        if ( type === 'row' ) {
+            var data = table.rows( indexes ).data();
+            row_id = indexes
+            rentOptions(data[0])
+        }
+    } );
+
+    table.on( 'deselect', function ( e, dt, type, indexes ) {
+        if ( type === 'row' ) {
+            var data = table.rows( indexes ).data();
+        }
+    } );
+}
+
+function initRentTableC(data){
+    let table = new DataTable('#rentTable_complete',{
+        "responsive":true,
+        select:"multi",
+        data:data,
+        "columns":[
+            {"data":"id"},
+            {"data":"student_id"},
+            {"data":"key"},
+            {"data":"locker_code"},
+            {"data":"rent_types"},
+            {"data":"rent_date_from"},
+            {"data":"rent_date_to"},
+            {"data":"amount_owed"},
+            {"data":"status"},
+        ]
+    })
+}
+
+function rentOptions(d){
+    btn = document.querySelector('#rent_options_btn')
+    btn.className="dropdown-trigger btn purple darken-4 waves-effect"
+    btn.dataset.target ="rent_dropdown1"
+    data_dropdown = document.querySelector('#rent_dropdown1')
+    html = ``
+    
+    if (d.status !== "Returned"){
+        html += ` <li><a href="#" onclick="loadComments(${d.id},1)" class="white-text"><i class="material-icons left white-text">check</i>Note</a></li>
+        <li><a href="#" onclick="releaseMode({'amount_owed':${d.amount_owed}, 'id':${d.id},'locker_id':'${d.locker_id}'})" class="white-text"><i class="material-icons left white-text">close</i>Release</a></li>
+        <li><a href="#" onclick="additionalCharge(${d.id})" class="white-text"><i class="material-icons left white-text">add_circle_outline</i>Add Charge</a></li>
+        `
+    }
+
+    else if (d.status === "Returned"){
+        html += `<li><a href="#" onclick="loadComments(${d.id},1)" class="white-text"><i class="material-icons left white-text">check</i>Note</a></li>
+        <li><a href="/rent/${d.id}/release/verify" class="white-text"><i class="material-icons left white-text">verified_user</i>Verify</a></li>`
+    }
+    data_dropdown.innerHTML = html
+    var elemsBtn = document.querySelectorAll('.dropdown-trigger');
+      var instancesBtn = M.Dropdown.init(elemsBtn,{
+        hover:true,
+        constrainWidth:false
+    });
+}
 
 //Add event listener to object later
 document.addEventListener('DOMContentLoaded',getLockers)
 document.addEventListener('DOMContentLoaded',getAllAreas)
 document.addEventListener('DOMContentLoaded',getAllRentTypes)
+document.addEventListener('DOMContentLoaded',getAllAdditionalRentTypes)
 document.addEventListener('DOMContentLoaded',getAllStudents)
+document.addEventListener('DOMContentLoaded',getActiveRents)
+document.addEventListener('DOMContentLoaded',getInactiveRents)
 document.getElementById('newLocker').addEventListener('submit',addLocker)
 document.getElementById('swapKey_form').addEventListener('submit',swapKey)
+
+document.getElementById('rent_method').addEventListener('change',(event)=>{
+    table = $('#lockerTable').DataTable();
+    var data = table.rows( lockerRow_list[0]).data();
+    rentTypes = document.getElementById("rent_type")
+    html = ' <option value=”” disabled selected>Select Rental Type </option>'
+    
+    if(event.target.value === "Rate"){
+        for (r in rentType_list[0]){
+            html+= `<option value=${rentType_list[0][r].id}>${rentType_list[0][r].type}: $${rentType_list[0][r].price} Period: ${rentType_list[0][r].period_from} to ${rentType_list[0][r].period_to}</option>`
+       }
+    }
+    else{
+        for (r in rentType_list[1]){
+            if(rentType_list[1][r].type.toLowerCase().includes(data[0].locker_type.toLowerCase())){
+            html+= `<option value=${rentType_list[1][r].id}>${rentType_list[1][r].type}: $${rentType_list[1][r].price} Period: ${rentType_list[1][r].period_from} to ${rentType_list[1][r].period_to}</option>`
+        }
+    }
+    }
+    
+   
+    
+    rentTypes.innerHTML = html
+})
+
+

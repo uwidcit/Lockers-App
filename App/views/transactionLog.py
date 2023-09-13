@@ -42,16 +42,21 @@ def render_transaction_page_student(id):
 def create_new_transaction():
     form = TransactionAdd()
     if form.validate_on_submit:
-        
         rent_id = request.form.get('rent_id')
         currency = request.form.get('currency')
         transaction_date = datetime.strptime(request.form.get('transaction_date'),'%Y-%m-%dT%H:%M')
-        
         amount = request.form.get('amount')
         description = request.form.get('description')
         t_type =request.form.get('t_type')
         receipt_number = request.form.get('receipt_number')
-        
+
+        if t_type == "CREDIT":
+            if amount > 0:
+                amount = amount * - 1
+        else:
+            if amount < 0:
+                amount = amount * -1
+
         newTransaction = add_new_transaction (rent_id,currency,transaction_date,amount,description, t_type, receipt_number)
         
         if not newTransaction:

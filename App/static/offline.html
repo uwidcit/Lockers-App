@@ -31,39 +31,39 @@
     }
   </script>
 
-  <nav class="grey darken-4">
-    <div class="nav-wrapper">
-      <ul>
-        <li><a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons white-text">menu</i></a></li>
-      </ul>
-    </div>
-  </nav> 
  
-  <body style="display: flexbox; overflow-y: hidden;" class="grey darken-4 white-text">
-    <ul id="slide-out" class="sidenav sidenav-fixed purple darken-4">
-      <li>
-          <ul class="collapsible">
-          <li><a class="white-text collapsible-header"><i class="material-icons white-text">key</i>Key Management</a>
-          <div class="collapsible-body grey darken-4">
-            <ul>
-            <li><a class="white-text" href="/masterkey"><h7>Master Key</h7></a></li>
-            <li><a class="white-text" href="/key"><h7>Key</h7></a></li>
-            </ul>
-          </div>
+  <body style="display: flexbox; overflow-y: hidden;">
+    <header class="grey darken-4">
+      <div class="container">
+        <a href="#" data-target="nav-mobile" class="top-nav sidenav-trigger full hide-on-large-only"><i class="material-icons white-text">menu</i></a>
+      </div> 
+      <ul id="nav-mobile" class="sidenav sidenav-fixed purple darken-4">
+        <li>
+            <ul class="collapsible">
+            <li><a class="white-text collapsible-header"><i class="material-icons white-text">key</i>Key Management</a>
+            <div class="collapsible-body grey darken-4">
+              <ul>
+              <li><a class="white-text" href="/masterkey"><h7>Master Key</h7></a></li>
+              <li><a class="white-text" href="/key"><h7>Key</h7></a></li>
+              </ul>
+            </div>
+          </li>
+          </ul>
         </li>
-        </ul>
-      </li>
-      <li><a class="white-text" href="/area"><i class="material-icons white-text">add_location</i><h7>Area</h7></a></li>
-      <li><a class= "white-text" href="/locker" ><i class="material-icons white-text">assignment</i><h7>Lockers</h7></a></li>
-      <li><a class="white-text" href="/rentType"><i class="material-icons white-text">attach_money</i><h7>Pricing</h7></a></li>
-      <li ><a class="white-text" href="/student"><i class="material-icons white-text">person</i><h7></h7>Student</a></li>
-      <li><a class="white-text" href="/transactionLog"><i class="material-icons white-text">book</i><h7>Transaction Log</h7></a></li>
-      <li><a class="white-text" href="/export"><i class="material-icons white-text">cloud_download</i><h7>Import/Export</h7></a></li>
-      <li><a class="white-text" href="/report"><i class="material-icons white-text">person</i><h7>Reports</h7></a></li>
-      <li><a class="white-text" href="/"><i class="material-icons white-text">exit_to_app</i><h7>Logout</h7></a></li>
-    </ul>  
+        <li><a class="white-text" href="/area"><i class="material-icons white-text">add_location</i><h7>Area</h7></a></li>
+        <li><a class= "white-text" href="/locker" ><i class="material-icons white-text">assignment</i><h7>Lockers</h7></a></li>
+        <li><a class="white-text" href="/rentType"><i class="material-icons white-text">attach_money</i><h7>Pricing</h7></a></li>
+        <li ><a class="white-text" href="/student"><i class="material-icons white-text">person</i><h7></h7>Student</a></li>
+        <li><a class="white-text" href="/transactionLog"><i class="material-icons white-text">book</i><h7>Transaction Log</h7></a></li>
+        <li><a class="white-text" href="/export"><i class="material-icons white-text">cloud_download</i><h7>Import/Export</h7></a></li>
+        <li><a class="white-text" href="/report"><i class="material-icons white-text">trending_up</i><h7>Reports</h7></a></li>
+        <li><a class="white-text" href="/users/manage"><i class="material-icons white-text">group_add</i><h7>Assistant Management</h7></a></li>
+        <li><a class="white-text" href="/users/password"><i class="material-icons white-text">account_circle</i><h7>Account</h7></a></li>
+        <li><a class="white-text" href="/logout"><i class="material-icons white-text">exit_to_app</i><h7>Logout</h7></a></li>
+      </ul>
+  </header>
     <div class="row" >   
-      <div class="center-align">
+      <div class="container center-align">
         <h1>Offline Mode</h1>
         <p>Cannot navigate to this page while offline</p>
         <a href="/locker" class="btn purple darken-4">Return to Locker Page</a>

@@ -10,12 +10,13 @@ from sqlalchemy.exc import SQLAlchemyError
 def add_new_transaction(rent_id, currency, transaction_date, amount, description, t_type,receipt_number):
     try:
         new_transaction = TransactionLog(rent_id, currency,transaction_date, amount, description, t_type,receipt_number)
+        rent = Rent.query.filter_by(id=rent_id).first()
+        rent.update_payments(amount)
         db.session.add(new_transaction)
+        db.session.add(rent)
         db.session.commit()
         return new_transaction
     except SQLAlchemyError as e:
-        create_log(rent_id, type(e), datetime.now())
-        flash("Unable to Add new Transaction.Check Error Log for more Details")
         db.session.rollback()
         return None
 

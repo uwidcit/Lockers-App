@@ -143,12 +143,40 @@ def delete_rent_type(id):
         return []    
 
 def get_All_rentType():
-    rentType = RentTypes.query.all()
+    rentType = RentTypes.query.filter(RentTypes.type != Types.KEYREPLACEMENT).all()
 
     if not rentType:
         return None
         
     return [r.toJSON() for r in rentType]
+
+def get_All_rentType_group():
+    rentType = RentTypes.query.filter(RentTypes.type != Types.KEYREPLACEMENT).all()
+
+    if not rentType:
+        return None
+
+    fixed = []
+    rates = []
+
+    for r in rentType:
+        if r.type == Types.DAILY or r.type == Types.HOURLY:
+            fixed.append(r.toJSON())
+        else:
+            rates.append(r.toJSON())
+    data = {
+        'fixed':fixed,
+        'rates': rates
+    }
+    return data
+
+def get_addtional_rentTypes():
+    rentType = RentTypes.query.filter(RentTypes.type == Types.KEYREPLACEMENT).all()
+
+    if not rentType:
+        return None
+
+    return [rt.toJSON() for rt in rentType]
 
 def get_all_rentType_tuple():
     rentType = get_All_rentType()
@@ -176,7 +204,19 @@ def get_all_rentType_current():
 
 
 def get_rt_Type():
-    return [rt.value for rt in Types]
+    data = {
+        "Semester":[],
+        "Rate":[],
+        "Yearly":[]
+    }
+    for rt in Types:
+        if rt.value.__contains__("Semester"):
+            data["Semester"].append((rt.name, rt.value))
+        elif rt.value.__contains__("Yearly"):
+            data["Yearly"].append((rt.name, rt.value))
+        else:
+           data["Rate"].append((rt.name, rt.value))
+    return data
 
 def get_rentType_by_offset(size,offset):
     l_offset = (offset * size) - size

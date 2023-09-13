@@ -38,7 +38,11 @@ def create_new_masterkey():
     form = masterKeyForm()
     if form.validate_on_submit():
         masterkeyData = request.form
-        d_added = datetime.strptime(request.form.get('date_added'),'%Y-%m-%d')
+        if '' in masterkeyData or masterkeyData is None:
+            flash("Empty values master Key not created")
+            return redirect(url_for(".render_masterkey_page"))
+        d_added = request.form.get('date_added')
+        d_added = datetime.strptime(d_added,'%Y-%m-%d')
         masterkey = new_masterkey(masterkey_id = masterkeyData["masterkey_id"], series = masterkeyData["series"], key_type = masterkeyData["key_type"], date_added = d_added)
         if not masterkey:
             flash("Master Key not created")
@@ -163,9 +167,8 @@ def create_key():
         key_id = request.form.get('key_id')
         masterkey_id = request.form.get('masterkey_id')
         key_status = request.form.get('key_status')
-        date_added = datetime.strptime(request.form.get('date_added'),'%Y-%m-%d')
-        key = new_key(key_id,masterkey_id,key_status,date_added)
-
+        date_added = request.form.get('date_added')
+    
         url = url_for('.render_masterkey_page')
         if request.args:
             callback = request.args.get('callback')
@@ -175,6 +178,13 @@ def create_key():
                 url = url_for('.render_get_masterkey_page',id=callback_id)
             elif callback.lower()== 'key' and callback_id is None:
                 url = url_for('key_views.render_keys_page')
+                
+        if '' in [key_id,masterkey_id,key_status,date_added]:
+            flash('Key not created')
+            return redirect(url) 
+        
+        date_added = datetime.strptime(date_added,'%Y-%m-%d')
+        key = new_key(key_id,masterkey_id,key_status,date_added)
 
         if not key:
             flash('Key not created')
@@ -194,7 +204,7 @@ def render_get_masterkey_page(id):
         flash('Not found or does not exist')
         return redirect(url_for('.render_masterkey_page'))
     
-    keyData = get_key_masterkey_offset(id,1,3)
+    keyData = get_key_masterkey_offset(id,1,5)
     previous = 1
     next = previous + 1
     search = SearchForm()
@@ -212,7 +222,9 @@ def render_get_masterkey_page_offset(id,offset):
         flash('Not found or does not exist')
         return redirect(url_for('.render_masterkey_page'))
     
-    keyData = get_key_masterkey_offset(id,offset,3)
+    keyData = get_key_masterkey_offset(id,offset,5)
+    if offset > keyData["num_pages"]:
+        return redirect(url_for('.render_get_masterkey_page',id=id))
     previous = 1
     if offset - 1 <= 0:
         previous = 1
