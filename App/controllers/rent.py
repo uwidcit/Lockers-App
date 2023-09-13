@@ -40,7 +40,7 @@ def period_elapsed(type, rent_date_from, rent_date_to):
     elif type.type.value == "Daily":
         time = rent_date_to - rent_date_from   
         return  time.days
-    elif type.type.value == "Semester" or type.type.value == "Yearly":
+    else:
         return 1
 
 def init_amount_owed(rentType_id, rent_date_from, rent_date_to):
@@ -68,31 +68,21 @@ def recal_amount_owed(rent,rentType_id,date_returned,rent_date_from,rent_date_to
     
     if date_returned_1.date() <= semester_period.period_to:
         if return_duration > orignal_duration:
-            rent.late_fees = late_fees(semester_period,date_returned,rent_date_from,rent_date_to)
-            rent.cal_amount_owed()
+            rent.late_fees = late_fees(semester_period, return_duration, original_duration)
             return rent
         else:
             return rent
     else:
-        rent.late_fees = late_fees(semester_period,semester_period.period_to,rent_date_from,rent_date_to)
+        rent.late_fees = late_fees(semester_period, return_duration, original_duration)
         return rent   
 
-def late_fees(type, date_returned, rent_date_from, rent_date_to):
+def late_fees(type, duration, original_duration):
     
     timestamp = datetime.now()
     if not type:
         return -1
-    orignal_duration = period_elapsed(type,rent_date_from,rent_date_to)
-
-    if date_returned:
-        duration = period_elapsed(type,rent_date_from,date_returned)
-    else:
-        duration = period_elapsed(type,rent_date_from,timestamp)
-
-    if duration > orignal_duration:
-        return (duration - orignal_duration) * type.price
-    else:
-        return 0.00
+    
+    return (duration - orignal_duration) * type.price
 
 def cal_fixed_price(rentType_id):
     type = get_rentType_by_id(rentType_id)
