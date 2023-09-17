@@ -27,7 +27,6 @@ def initialize():
     create_user('bob', 'bobpass')
     create_assistant('student1','studentpass')
     
-    
     with open('area.csv', mode="r") as csv_file:
         reader = csv.DictReader(csv_file)
         for r in reader:
