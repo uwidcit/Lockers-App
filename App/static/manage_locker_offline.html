@@ -81,7 +81,6 @@
                    <a id="refresh_btn" class="btn purple darken-4 center-align" onclick="window.location.reload()" >Refresh<i class="large material-icons center-align">refresh</i> </a>
                   <a id="options_btn" class="btn disabled center-align" >Options<i class="large material-icons center-align">arrow_drop_down</i> </a>
                   <ul id='locker_dropdown1' class='dropdown-content purple darken-4 white-text'>
-
                   </ul>
               </div>
               
@@ -93,54 +92,52 @@
                   <th>Key</th>
                   <th>Area</th>
                 </thead>
-
                 </table>
             </div>
             </div>
-            <div class="col s12 m10 offset-m1 grey darken-4 white-text" id="rent_tab">
-              <div >
-                <a id="refresh_btn" class="btn purple darken-4 center-align" onclick="window.location.reload()" >Refresh<i class="large material-icons center-align">refresh</i> </a>
+            <div class="col s12 m10 offset-m1 grey darken-4 white-text">
+              <div id="rent_tab">
+              <div>
+               <a id="refresh_btn" class="btn purple darken-4 center-align" onclick="window.location.reload()" >Refresh<i class="large material-icons center-align">refresh</i> </a>
                <a id="rent_options_btn" class="btn disabled center-align" >Options<i class="large material-icons center-align">arrow_drop_down</i> </a>
                <ul id='rent_dropdown1' class='dropdown-content purple darken-4 white-text'>
-
                </ul>
-           </div>
+              </div>
            
-           <table id="rentTable" class="purple darken-4 white-text">
+           <table id="rentTable" class="compact purple darken-4 white-text" style="width:100%; font-size: 12px;">
              <thead>
                <th>Rent ID</th>
                <th>Rented By</th>
-               <th>Key</th>
                <th>Locker</th>
                <th>Rent Type</th>
-               <th>Rented From </th>
-               <th>Rented To </th>
+               <tH>Rented From</tH>
+               <th>Rented To</th>
                <th>Owed</th>
                <th>Status </th>
              </thead>
              </table>
          </div>
+      </div>
 
          <div class="col s12 m10 offset-m1 grey darken-4 white-text" id="rent_tab_complete">
-          <div >
+          <div>
             <a id="refresh_btn" class="btn purple darken-4 center-align" onclick="window.location.reload()" >Refresh<i class="large material-icons center-align">refresh</i> </a>
-       </div>
+          </div>
        
-       <table id="rentTable_complete" class="purple darken-4 white-text">
+       <table id="rentTable_complete" class="compact purple darken-4 white-text" style="width:100%; font-size: 12px;">
          <thead>
            <th>Rent ID</th>
            <th>Rented By</th>
            <th>Key</th>
            <th>Locker</th>
            <th>Rent Type</th>
-           <th>Rented From </th>
-           <th>Rented To </th>
-           <th>Owed</th>
+           <th>Rent From</th>
+           <th>Rent To</th>
            <th>Status </th>
          </thead>
          </table>
      </div>
-            </div>
+    </div>
         </div>
       </div>
       <div class="fixed-action-btn">
