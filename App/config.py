@@ -13,6 +13,7 @@ def load_config():
         delta = JWT_ACCESS_TOKEN_EXPIRES
     else:
         config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
+        print(os.environ.get('SQLALCHEMY_DATABASE_URI'))
         config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
         config['RAWG_TOKEN'] = os.environ.get('RAWG_TOKEN')
         config['DEBUG'] = config['ENV'].upper() != 'PRODUCTION'
