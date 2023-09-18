@@ -55,7 +55,7 @@ def render_manage_student():
 
 @student_views.route('/student/page/<offset>',methods=['GET'])
 @login_required
-def render_manage_student_multi():
+def render_manage_student_multi(offset):
     offset = int(offset)
     query = request.args.get('search_query')
     studentData = get_students_by_offset(size,offset)

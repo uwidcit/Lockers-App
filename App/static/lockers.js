@@ -546,7 +546,6 @@ function initRentTable(data){
         "columns":[
             {"data":"id"},
             {"data":"student_id"},
-            {"data":"key"},
             {"data":"locker_code"},
             {"data":"rent_types"},
             {"data":"rent_date_from"},
@@ -583,7 +582,6 @@ function initRentTableC(data){
             {"data":"rent_types"},
             {"data":"rent_date_from"},
             {"data":"rent_date_to"},
-            {"data":"amount_owed"},
             {"data":"status"},
         ]
     })
@@ -597,10 +595,19 @@ function rentOptions(d){
     html = ``
     
     if (d.status !== "Returned"){
-        html += ` <li><a href="#" onclick="loadComments(${d.id},1)" class="white-text"><i class="material-icons left white-text">check</i>Note</a></li>
+        if(d.amount_owed !==0) {
+            html += ` <li><a href="#" onclick="loadComments(${d.id},1)" class="white-text"><i class="material-icons left white-text">check</i>Note</a></li>
+        <li><a href="#" onclick="releaseMode({'amount_owed':${d.amount_owed}, 'id':${d.id},'locker_id':'${d.locker_id}'})" class="white-text"><i class="material-icons left white-text">attach_money</i>Open Transaction Log</a></li>
+        <li><a href="#" onclick="additionalCharge(${d.id})" class="white-text"><i class="material-icons left white-text">add_circle_outline</i>Add Charge</a></li>
+        `
+        }
+        else{
+            html += ` <li><a href="#" onclick="loadComments(${d.id},1)" class="white-text"><i class="material-icons left white-text">check</i>Note</a></li>
         <li><a href="#" onclick="releaseMode({'amount_owed':${d.amount_owed}, 'id':${d.id},'locker_id':'${d.locker_id}'})" class="white-text"><i class="material-icons left white-text">close</i>Release</a></li>
         <li><a href="#" onclick="additionalCharge(${d.id})" class="white-text"><i class="material-icons left white-text">add_circle_outline</i>Add Charge</a></li>
         `
+        }
+        
     }
 
     else if (d.status === "Returned"){
