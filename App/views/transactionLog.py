@@ -45,7 +45,7 @@ def create_new_transaction():
         rent_id = request.form.get('rent_id')
         currency = request.form.get('currency')
         transaction_date = datetime.strptime(request.form.get('transaction_date'),'%Y-%m-%dT%H:%M')
-        amount = request.form.get('amount')
+        amount = int(request.form.get('amount'))
         description = request.form.get('description')
         t_type =request.form.get('t_type')
         receipt_number = request.form.get('receipt_number')
