@@ -68,12 +68,12 @@ def recal_amount_owed(rent,rentType_id,date_returned,rent_date_from,rent_date_to
     
     if date_returned_1.date() <= semester_period.period_to:
         if return_duration > orignal_duration:
-            rent.late_fees = late_fees(semester_period, return_duration, original_duration)
+            rent.late_fees = late_fees(semester_period, return_duration, orignal_duration)
             return rent
         else:
             return rent
     else:
-        rent.late_fees = late_fees(semester_period, return_duration, original_duration)
+        rent.late_fees = late_fees(semester_period, return_duration, orignal_duration)
         return rent   
 
 def late_fees(type, duration, original_duration):
@@ -82,7 +82,7 @@ def late_fees(type, duration, original_duration):
     if not type:
         return -1
     
-    return (duration - orignal_duration) * type.price
+    return (duration - original_duration) * type.price
 
 def cal_fixed_price(rentType_id):
     type = get_rentType_by_id(rentType_id)

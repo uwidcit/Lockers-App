@@ -206,7 +206,7 @@ def get_students_by_offset(size,offset):
 
 
 def search_student(query,size,offset):
-    data = Student.query.filter(or_(Student.student_id.like(query), Student.first_name.like(query), Student.last_name.like(query), Student.faculty.like(query), Student.rentStanding.like(query))).all()
+    data = Student.query.filter(or_(Student.student_id == query, Student.first_name.like(query), Student.last_name.like(query), Student.faculty.like(query), Student.rentStanding.like(query))).all()
     
     if not data:
         return {"num_pages":1,"data":[]}
