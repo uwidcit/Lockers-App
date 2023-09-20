@@ -110,7 +110,15 @@ def getT_Type():
     return [ e.value for e in TransactionType ]
 
 def search_transaction(query,size,offset):
-    data = db.session.query(TransactionLog,Rent).join(Rent).filter(or_(TransactionLog.id.like(query),TransactionLog.rent_id.like(query), Rent.student_id.like(query), TransactionLog.currency.like(query), TransactionLog.receipt_number.like(query), TransactionLog.amount.like(query), TransactionLog.description.like(query))).all()
+    try:
+        int_query = int(query)
+        data = db.session.query(TransactionLog,Rent).join(Rent).filter(or_(TransactionLog.id == int_query,TransactionLog.rent_id == int_query, Rent.student_id == int_query, TransactionLog.receipt_number == int_query, TransactionLog.amount== int_query)).all()
+    except:
+        if query.upper() in TransactionType:
+            data = db.session.query(TransactionLog,Rent).join(Rent).filter(or_(TransactionLog.type == TransactionType(query.upper()),TransactionLog.currency.contains(query), TransactionLog.description.contains(query))).all()
+        else:
+            data = db.session.query(TransactionLog,Rent).join(Rent).filter(or_(TransactionLog.currency.contains(query), TransactionLog.description.contains(query))).all()
+
 
     if not data:
         return None

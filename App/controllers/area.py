@@ -38,7 +38,7 @@ def get_area_by_coordinates(long,lat):
     return [a.toJSON() for a in areas]
 
 def get_area_by_description(description):
-    areas = Area.query.filter(Area.description.like(description)).all()
+    areas = Area.query.filter(Area.description.contains(description)).all()
     if not areas:
         return None
     return areas
@@ -158,7 +158,11 @@ def get_area_by_offset(size,offset):
      return [a.toJSON() for a in areas]
 
 def search_area(query, offset,size):
-    data = Area.query.filter(or_(Area.id.like(query), Area.description.like(query), Area.longitude.like(query), Area.latitude.like(query))).all()
+    try:
+        int_query = int(query)
+        data = Area.query.filter(or_(Area.id == int_query,Area.longitude == query, Area.latitude == query)).all()
+    except:
+        data = Area.query.filter(Area.description.contains(query)).all()
 
     if not data:
         return None
