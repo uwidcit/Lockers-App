@@ -44,7 +44,7 @@ def get_all_keys(size,offset):
     
 
 def get_key_by_id(id):
-    key = Key.query.filter(Key.key_id.like(id)).first()
+    key = Key.query.filter(Key.key_id.contains(id)).first()
 
     if not key:
         return None
