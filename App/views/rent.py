@@ -54,7 +54,17 @@ def create_new_rent():
         return jsonify({"Message": "Empty values cannot create rent"}),400 
     r_date_f = datetime.strptime(r_date_f,'%Y-%m-%dT%H:%M')
     r_date_t = datetime.strptime(r_date_t,'%Y-%m-%dT%H:%M')
-    rental = create_rent(s_id,locker_id,rentType,r_date_f,r_date_t,rent_method)
+    if date_returned != '':
+        date_returned = datetime.strptime(date_returned,'%Y-%m-%dT%H:%M')
+    else:
+        date_returned = None
+    rental = create_rent(s_id,locker_id,rentType,r_date_f,r_date_t,rent_method,date_returned)
+    currency = request.json.get('currency')
+    amount = request.json.get('amount')
+    r_number= request.json.get('r_number')
+    t_date=request.json.get('t_date')
+    t_type=request.json.get('t_type')
+    t_date = datetime.strptime(t_date,'%Y-%m-%dT%H:%M')
     if not rental:
         return jsonify({"Message": "Rental not created"}),400
     return jsonify(rental.toJSON()),201
