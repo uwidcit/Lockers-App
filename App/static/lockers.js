@@ -559,7 +559,7 @@ function rentOptions(d){
         }
         else{
             html += ` <li><a href="#" onclick="loadComments(${d.id},1)" class="white-text"><i class="material-icons left white-text">check</i>Note</a></li>
-            <li><a href="#" onclick="editRent(${d.id},${d.rent_method},${r.rent_type},${d.rent_date_from},${d.rent_date_to},${d.date_returned},${d.late_fees},${d.additional_fees})" class="white-text"><i class="material-icons left white-text">edit</i>Edit</a></li>
+            <li><a href="#" onclick="editRent({'id':${d.id},'rent_method':'${d.rent_method}','rent_type':${d.rent_type},'rent_date_from':'${d.rent_date_from}','rent_date_to':'${d.rent_date_to}','date_return':'${d.date_returned}','late_fees':${d.late_fees},'additional_fees':${d.additional_fees},'rent_types':'${d.rent_types}'})" class="white-text"><i class="material-icons left white-text">edit</i>Edit</a></li>
         <li><a href="#" onclick="releaseMode({'amount_owed':${d.amount_owed}, 'id':${d.id},'locker_id':'${d.locker_id}'})" class="white-text"><i class="material-icons left white-text">close</i>Release</a></li>
         <li><a href="#" onclick="additionalCharge(${d.id})" class="white-text"><i class="material-icons left white-text">add_circle_outline</i>Add Charge</a></li>
         `
