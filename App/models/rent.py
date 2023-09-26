@@ -31,7 +31,7 @@ class Rent(db.Model):
     status = db.Column(db.Enum(RentStatus), nullable = False)
     Transactions = db.relationship('TransactionLog', backref='rent', lazy=True, cascade="all, delete-orphan")
 
-    def __init__(self, student_id,  keyHistory_id, rent_type, rent_date_from, rent_date_to,amount_owed,rent_method):
+    def __init__(self, student_id,  keyHistory_id, rent_type, rent_date_from, rent_date_to,amount_owed,rent_method,date_returned):
         self.student_id = student_id
         self.keyHistory_id = keyHistory_id
         self.rent_type =  rent_type
@@ -39,6 +39,7 @@ class Rent(db.Model):
         self.rent_date_to  =  rent_date_to
         self.amount_owed = amount_owed
         self.amount_paid  = 0
+        self.date_returned = date_returned
         self.status = self.check_status()
         if rent_method.upper() in RentMethod.__members__:
             self.rent_method = RentMethod[rent_method.upper()]
@@ -82,6 +83,8 @@ class Rent(db.Model):
             "rent_date_from": datetime.strftime(self.rent_date_from,'%Y-%m-%d %H:%M:%S'),
             "rent_date_to": datetime.strftime(self.rent_date_to,'%Y-%m-%d %H:%M:%S'),
             "amount_owed":self.cal_amount_owed(),
+            "additional_fees":self.additional_fees,
+            "late_fees":self.late_fees,
             "status":self.check_status().value
             }
         if not self.date_returned:

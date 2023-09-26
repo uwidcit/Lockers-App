@@ -79,7 +79,7 @@ def get_lockers_by_area_description(description):
 
 
 def get_locker_id(id):
-    locker = db.session.query(Locker,Area).join(Area).filter(Locker.locker_code == id).first()
+    locker = db.session.query(Locker,Area,KeyHistory).join(Area,KeyHistory).filter(Locker.locker_code == id,KeyHistory.isActive == Active.ACTIVE).first()
     if not locker:
         return None
     
@@ -273,9 +273,11 @@ def update_key(id, new_key):
     if get_current_rental(id):
         return None
     else:
-        keyH1 = locker.KeyH.order_by(KeyHistory.id.desc()).first().id
-        keyH2 = KeyHistory.query.filter(KeyHistory.key_id == new_key).order_by(KeyHistory.id.desc()).first().id
-        swap_key(keyH1,keyH2)
+        keyH1 = locker.KeyH.order_by(KeyHistory.id.desc()).first()
+        keyH2 = KeyHistory.query.filter(KeyHistory.key_id == new_key).order_by(KeyHistory.id.desc()).first()
+        if get_current_rental(keyH2.locker_id):
+            return None
+        swap_key(keyH1.locker_id,keyH2.locker_id)
         return locker
 
 def update_locker_status(id, new_status):
@@ -351,6 +353,7 @@ def getLockerTypes():
 def swap_key(id1, id2):
     locker1 = get_locker_id_locker(id1)
     locker2 = get_locker_id_locker(id2)
+    
     if locker1 is None or locker2 is None:
         return None
     temp = locker1.KeyH.order_by(KeyHistory.id.desc()).first()
