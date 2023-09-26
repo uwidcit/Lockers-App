@@ -5,6 +5,7 @@ from App.views.forms import SearchForm
 from App.controllers import (
     create_rent,
     create_comment,
+    add_new_transaction,
     get_all_rentType_tuple,
     get_transactions,
     get_all_rentals,
@@ -18,6 +19,7 @@ from App.controllers import (
     get_student_by_id,
     get_All_rentType,
     update_rent,
+    update_rent_values,
     verify_rental
     )
 from App.views.forms import  RentAdd, TransactionAdd
@@ -50,6 +52,7 @@ def create_new_rent():
     rent_method = request.json.get('rentMethod')
     r_date_f = request.json.get('rent_date_from')
     r_date_t = request.json.get('rent_date_to')
+    date_returned = request.json.get('date_returned')
     if '' in [s_id,locker_id,rentType, rent_method,r_date_f,r_date_t]:
         return jsonify({"Message": "Empty values cannot create rent"}),400 
     r_date_f = datetime.strptime(r_date_f,'%Y-%m-%dT%H:%M')
@@ -67,6 +70,18 @@ def create_new_rent():
     t_date = datetime.strptime(t_date,'%Y-%m-%dT%H:%M')
     if not rental:
         return jsonify({"Message": "Rental not created"}),400
+    if ''in [currency,amount,r_number,t_date,t_type]:
+       x = 1
+    else:
+        amount=int(amount)
+        if t_type == "CREDIT":
+            if amount > 0:
+                amount = amount * - 1
+        else:
+            if amount < 0:
+                amount = amount * -1
+        newTransaction = add_new_transaction (rental.id,currency,t_date,amount,"Payment", t_type, r_number)
+        update_rent(rental.id)
     return jsonify(rental.toJSON()),201
 
 @rent_views.route('/rent/<id>', methods=['GET'])
@@ -214,6 +229,35 @@ def notes_api_multi(id,offset):
     notes = get_comments_offset(id,3,offset)
     return jsonify(notes),200
 
+@rent_views.route('/api/rent/<id>/update',methods=['POST'])
+@login_required
+def update_rent_api(id):
+    rent_type = request.json.get('rentType')
+    rent_method =  request.json.get('rentMethod')
+    rent_date_from =  request.json.get('rent_date_from')
+    rent_date_to =  request.json.get('rent_date_to')
+    date_returned =  request.json.get('date_returned')
+    late_fees = request.json.get('late_fees')
+    additional_fees = request.json.get('additional_fees')
+    if '' in [rent_type,rent_method,rent_date_from,rent_date_to,late_fees,additional_fees]:
+        return jsonify({"Error":"Updated values cannot be null"})
+    rent_date_from = datetime.strptime(rent_date_from,'%Y-%m-%dT%H:%M')
+    rent_date_to = datetime.strptime(rent_date_to,'%Y-%m-%dT%H:%M')
+    if date_returned != '':
+        date_returned = datetime.strptime(date_returned,'%Y-%m-%dT%H:%M')
+    else:
+        date_returned = None
+    late_fees = float(late_fees)
+    additional_fees = float(additional_fees)
+    if late_fees < 0:
+        late_fees = late_fees * -1
+    if additional_fees < 0:
+        additional_fees = additional_fees * -1
+    u_rent = update_rent_values(id,rent_type,rent_method,rent_date_from,rent_date_to,date_returned,late_fees,additional_fees)
+    if u_rent:
+        return jsonify({'message':"Success"}),200
+    return jsonify({'error':'Something went wrong'})
+        
 @rent_views.route('/api/rent/<id>/notes',methods=['POST'])
 @login_required
 def new_note_api(id):

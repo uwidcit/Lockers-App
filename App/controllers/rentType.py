@@ -246,7 +246,11 @@ def get_rentType_by_offset(size,offset):
     return {"num_pages":count, "data":r_list}
 
 def search_rentType(query,size,offset):
-    data = RentTypes.query.filter(or_(RentTypes.id.like(query), RentTypes.price.like(query))).all()
+    try:
+        int_query = int(query)
+        data = RentTypes.query.filter(RentTypes.id == int_query, RentTypes.price == query).all()
+    except:
+        raise Exception('Invalid search data entered')
 
     if not data:
         return None

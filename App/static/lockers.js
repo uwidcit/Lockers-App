@@ -12,7 +12,6 @@ async function addLocker(event){
         key: fields['key'].value
     }
 
-    form.reset()
     elem = document.getElementById('new_locker');
     instance = M.Modal.getInstance(elem)
     instance.close()
@@ -33,7 +32,6 @@ async function updateLocker(event){
 
     let form = event.target
     let fields = event.target.elements
-    tData = document.querySelector('#td_'+fields['locker_code'].value)
 
     let data = {
         locker_code: fields['locker_code'].value,
@@ -47,7 +45,6 @@ async function updateLocker(event){
     elem = document.getElementById('new_locker');
     instance = M.Modal.getInstance(elem)
     instance.close()
-    form.reset()
 
     let result = await sendRequest('/api/locker','PUT', data).then(
         (response)=>{
@@ -61,53 +58,7 @@ async function updateLocker(event){
     })
 
 }
-async function getAllLockers(){
-    let html = ""
-    let result = await sendRequest('/api/locker','GET')
-    
-    data = document.querySelector('#lockerTable')
-    
-    if (result.error){
-        html = ` <p> There are no lockers </p>`
-    }
-    else{ 
-        for (let d of result){
-            html += 
-            `<tr class="purple darken-4 white-text" id="td_${d.locker_code}"> 
-            <td><a href="/locker/${d.locker_code}"> ${d.locker_code} </a> </td>
-            <td>${d.locker_type}</td>
-            <td>${d.status}</td>
-            <td> <a href="/key/${d.key}">${d.key} <a></td>
-            <td><a href="/area/${d.area}">${d.area_description}</a></td>
-            <div style=" position: relative;display: inline-flex;">
-                    <td>
-                        <a class="dropdown-trigger btn-floating purple darken-4 waves-effect" data-target="${d.locker_code}_dropdown1"><i class="large material-icons">list</i></a>
-                        <ul id='${d.locker_code}_dropdown1' class='dropdown-content purple darken-4 white-text'>`
-                if(d.status === "Free"){
-                    html += `<li><a href="/locker/rent/${d.locker_code}/student" class="white-text"><i class="material-icons left white-text">check</i>Rent</a></li>`
-                }
-                else if (d.status === "Rented"){
-                    html += ` <li><a href="#" onclick="loadComments(${d.current_rental.id},1)" class="white-text"><i class="material-icons left white-text">check</i>Note</a></li>
-                    <li><a href="#" onclick="releaseMode()" class="white-text"><i class="material-icons left white-text">close</i>Release</a></li>`
-                }
-    
-                else if (d.status == "Not Verified"){
-                    html += `<li><a href="#" onclick="loadComments(${d.current_rental.id},1)" class="white-text"><i class="material-icons left white-text">check</i>Note</a></li>
-                    <li><a href="/rent/(${d.current_rental.id}/release/verify" class="white-text"><i class="material-icons left white-text">verified_user</i>Verify</a></li>`
-                }
-                html +=`
-                    <li><a href="#edit" onclick="editMode({'locker_code':'${d.locker_code}','locker_type':'${d.locker_type}','area':${d.area},'key':'${d.key}','status':'${d.status}'})" class="white-text"><i class="material-icons left white-text">edit</i>Edit</a></li>
-                    <li><a href="#delete" onclick="removeMode({'locker_code':'${d.locker_code}','locker_type':'${d.locker_type}','area':${d.area},'key':'${d.key}','status':'${d.status}'})" class="white-text"><i class="material-icons left white-text">delete</i>Delete</a></li>
-                    <li><a href="#delete" onclick="OpenswapKey({})" class="white-text"><i class="material-icons left white-text">swap_horiz</i>Swap</a></li>
-                </ul>
-                </div>
-                </td>
-            </tr>`
-        }
-    }
-    data.innerHTML += html
-    
-}
+
 async function getAllAreas(){
     let html = `<option value=”” disabled selected>Select a Area Status</option>`
     let result = await sendRequest('/api/area','GET')
@@ -174,7 +125,6 @@ function editMode(locker){
         onCloseEnd:()=>{
             form = document.getElementById('newLocker')
             form.action = "/api/locker"
-            form.reset()
             button = document.getElementById('l_submit')
             button.value = "Add Locker"
             form.removeEventListener('submit',updateLocker)
@@ -382,26 +332,33 @@ async function rentInit(locker_code){
 } 
 
 function createRent(studentID,locker_code){
-    form = document.getElementById("rentalForm")
+    btn = document.getElementById("rent_form_submit")
     l_code_form = document.getElementById("locker_code_rent")
     l_code_form.value = locker_code
-    form.addEventListener('submit',async (event) => {
+    btn.addEventListener('click',async (event) => {
         event.preventDefault()
-        let form = event.target
-        let fields = event.target.elements
-    
+        let form = document.getElementById("rentalForm")
+        let form2 = document.getElementById("RentTransaction")
+        let fields = form.elements
+        let fields2 = form2.elements
         let data = {
             student_id: fields['student_id'].value,
             locker_id:  fields['locker_code'].value,
             rentType: fields['rent_type'].value,
             rentMethod: fields['rent_method'].value,
             rent_date_from: fields['rent_date_from'].value,
-            rent_date_to: fields['rent_date_to'].value   
+            rent_date_to: fields['rent_date_to'].value,
+            date_returned: fields['date_returned'].value,
+            currency:fields2['currency'].value,
+            amount:fields2['t_amount'].value,
+            r_number:fields2['receipt_number'].value,
+            t_date:fields2['transaction_date'].value,
+            t_type:fields2['t_type'].value
         }
         elem = document.getElementById('new_Rent');
         instance = M.Modal.getInstance(elem)
         instance.close()
-        form.reset()
+       
         let result = await sendRequest('/api/locker/rent','POST', data).then((response)=>{
             toast("Success")
             window.location.reload()
@@ -457,7 +414,6 @@ function createRent(studentID,locker_code){
         elem = document.getElementById('additional_modal');
         instance = M.Modal.getInstance(elem)
         instance.close()
-        form.reset()
         let result = await sendRequest('/api/rent/additional','POST', data).then((response)=>{
             toast("Success")
             window.location.reload()
@@ -489,7 +445,6 @@ function createRent(studentID,locker_code){
     elem = document.getElementById('swap_key');
     instance = M.Modal.getInstance(elem)
     instance.close()
-    form.reset()
 
     let result = await sendRequest('/api/locker/swap','PUT', data).then((response)=>{
         toast("Success");
@@ -523,8 +478,8 @@ function enableOptionsSwap(d){
 function OpenSwapKey(locker1, locker2){
     form = document.getElementById("swapKey_form")
     form.innerHTML = `<p> Do you want to swap ${locker1} with ${locker2} <p>
-    <input type = "hidden" value = ${locker1} name = locker_code1>
-    <input type = "hidden" value = ${locker2} name = locker_code2>
+    <input type = "hidden" value = '${locker1}' name = locker_code1>
+    <input type = "hidden" value = '${locker2}' name = locker_code2>
     <div class="input-field col s8 m8 offset-m4" style="display:inline;">
         <div class="col s4 offset-s4">
         <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
@@ -597,12 +552,14 @@ function rentOptions(d){
     if (d.status !== "Returned"){
         if(d.amount_owed !==0) {
             html += ` <li><a href="#" onclick="loadComments(${d.id},1)" class="white-text"><i class="material-icons left white-text">check</i>Note</a></li>
+        <li><a href="#" onclick="editRent({'id':${d.id},'rent_method':'${d.rent_method}','rent_type':${d.rent_type},'rent_date_from':'${d.rent_date_from}','rent_date_to':'${d.rent_date_to}','date_return':'${d.date_returned}','late_fees':${d.late_fees},'additional_fees':${d.additional_fees},'rent_types':'${d.rent_types}'})" class="white-text"><i class="material-icons left white-text">edit</i>Edit</a></li>
         <li><a href="#" onclick="releaseMode({'amount_owed':${d.amount_owed}, 'id':${d.id},'locker_id':'${d.locker_id}'})" class="white-text"><i class="material-icons left white-text">attach_money</i>Open Transaction Log</a></li>
         <li><a href="#" onclick="additionalCharge(${d.id})" class="white-text"><i class="material-icons left white-text">add_circle_outline</i>Add Charge</a></li>
         `
         }
         else{
             html += ` <li><a href="#" onclick="loadComments(${d.id},1)" class="white-text"><i class="material-icons left white-text">check</i>Note</a></li>
+            <li><a href="#" onclick="editRent({'id':${d.id},'rent_method':'${d.rent_method}','rent_type':${d.rent_type},'rent_date_from':'${d.rent_date_from}','rent_date_to':'${d.rent_date_to}','date_return':'${d.date_returned}','late_fees':${d.late_fees},'additional_fees':${d.additional_fees},'rent_types':'${d.rent_types}'})" class="white-text"><i class="material-icons left white-text">edit</i>Edit</a></li>
         <li><a href="#" onclick="releaseMode({'amount_owed':${d.amount_owed}, 'id':${d.id},'locker_id':'${d.locker_id}'})" class="white-text"><i class="material-icons left white-text">close</i>Release</a></li>
         <li><a href="#" onclick="additionalCharge(${d.id})" class="white-text"><i class="material-icons left white-text">add_circle_outline</i>Add Charge</a></li>
         `
@@ -620,6 +577,93 @@ function rentOptions(d){
         hover:true,
         constrainWidth:false
     });
+}
+
+function editRent(rent){
+    form = document.getElementById('editRentalForm')
+    form.action = "/rent/"+rent.id+"/update"
+    form.removeEventListener('submit',addLocker)
+    //document.forms['editRentalForm'].addEventListener('submit','')
+
+    u_rent_method = document.getElementById('u_rent_method')
+    temp_rm = '';
+    if (rent.rent_method === 'Period'){
+        temp_rm = 'Fixed'
+    }
+    else{
+        temp_rm = rent.rent_method
+    }
+
+    u_rentTypes = document.getElementById("u_rent_type")
+    html = ' <option value=”” disabled selected>Select Rental Type </option>'
+    if(temp_rm === "Rate"){
+        for (r in rentType_list[0]){
+            html+= `<option value=${rentType_list[0][r].id}>${rentType_list[0][r].type}: $${rentType_list[0][r].price} Period: ${rentType_list[0][r].period_from} to ${rentType_list[0][r].period_to}</option>`
+       }
+    }
+    else{
+        for (r in rentType_list[1]){
+            if(rentType_list[1][r].type.toLowerCase().includes(rent.rent_types.substring(rent.rent_types.indexOf(' ')+1).toLowerCase())){
+            html+= `<option value=${rentType_list[1][r].id}>${rentType_list[1][r].type}: $${rentType_list[1][r].price} Period: ${rentType_list[1][r].period_from} to ${rentType_list[1][r].period_to}</option>`
+        }
+    }}
+    u_rentTypes.innerHTML = html
+    
+   
+    for(i=0; i<u_rent_method.options.length;i++){
+        if(u_rent_method.options[i].value === temp_rm){
+            u_rent_method.selectedIndex = i
+        }
+    }
+    for(i=0; i<u_rentTypes.options.length;i++){
+        if(u_rentTypes.options[i].value == rent.rent_type){    
+              u_rentTypes.selectedIndex = i
+        }
+    }
+
+    u_rent_date_from = document.getElementById('u_r_date_from')
+    u_rent_date_to = document.getElementById('u_r_date_to')
+    u_add_fee = document.getElementById('u_add_fee')
+    u_late_fee = document.getElementById('u_late_fee')
+
+    u_rent_date_from.value = rent.rent_date_from
+    u_rent_date_to.value = rent.rent_date_to
+    u_add_fee.value = rent.additional_fees
+    u_late_fee.value = rent.late_fees
+
+    if(rent.date_returned){
+        u_date_return = document.getElementById('u_date_return')
+        u_date_return.value = rent.date_returned
+    }
+    btn = document.getElementById('update_rent_form_submit')
+    btn.addEventListener('click',async (event) => {
+        let form = document.getElementById("editRentalForm")
+        let fields = form.elements
+        let data = {
+            rentType: fields['rent_type'].value,
+            rentMethod: fields['rent_method'].value,
+            rent_date_from: fields['rent_date_from'].value,
+            rent_date_to: fields['rent_date_to'].value,
+            date_returned: fields['date_returned'].value,
+            late_fees: fields['u_late_fee'].value,
+            additional_fees: fields['u_add_fee'].value,
+        }
+        elem = document.getElementById('edit_rent');
+        instance = M.Modal.getInstance(elem)
+        instance.close()
+       
+        let result = await sendRequest('/api/rent/'+rent.id+'/update','POST', data).then((response)=>{
+            toast("Success")
+            window.location.reload()
+        }).catch((response)=>{
+             toast("Rental failed");
+             window.location.reload()
+        })
+    })
+  
+    elem = document.getElementById('edit_rent');
+    instance = M.Modal.getInstance(elem)
+    instance.open()
 }
 
 //Add event listener to object later

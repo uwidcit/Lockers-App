@@ -33,7 +33,7 @@ def getKeyHistory(id):
     return key
 
 def getKeyHistory_by_id(id, size,offset):
-    keys = KeyHistory.query.filter(or_(KeyHistory.locker_id.like(id),KeyHistory.key_id.like(id))).all()
+    keys = KeyHistory.query.filter(or_(KeyHistory.locker_id.contains(id),KeyHistory.key_id.contains(id))).all()
 
     if not keys:
         return None
