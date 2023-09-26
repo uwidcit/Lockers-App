@@ -79,6 +79,7 @@ def create_new_rent():
             if amount < 0:
                 amount = amount * -1
         newTransaction = add_new_transaction (rental.id,currency,t_date,amount,"Payment", t_type, r_number)
+        update_rent(rental.id)
     return jsonify(rental.toJSON()),201
 
 @rent_views.route('/rent/<id>', methods=['GET'])
