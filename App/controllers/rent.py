@@ -92,7 +92,7 @@ def cal_fixed_price(rentType_id):
 
     return float(type.price)
 
-def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to,rent_method):
+def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to,rent_method,date_returned):
     if get_overdue_rent_by_student(student_id) or get_owed_rent_by_student(student_id):
         flash("Unable to create rent. Rent Owed")
         return []
@@ -107,7 +107,7 @@ def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to,ren
                     amount_owed = init_amount_owed(rentType, rent_date_from, rent_date_to)
                 else:
                     return None
-                rent = Rent(student_id, locker_instance.id, rentType,rent_date_from,rent_date_to,amount_owed,rent_method)
+                rent = Rent(student_id, locker_instance.id, rentType,rent_date_from,rent_date_to,amount_owed,rent_method,date_returned)
                 db.session.add(rent)
                 db.session.commit()
                 rent_locker(locker_id)
@@ -171,8 +171,8 @@ def update_rent(id):
     if rent.status is Status.VERIFIED:
         return rent
          
-    if rent.rent_method == Method.RATE:
-        rent = recal_amount_owed(rent,rent.rent_type,rent.date_returned,rent.rent_date_from,rent.rent_date_to)
+    #if rent.rent_method == Method.RATE:
+        #rent = recal_amount_owed(rent,rent.rent_type,rent.date_returned,rent.rent_date_from,rent.rent_date_to)
     
     rent.status = rent.check_status()
     if rent.status.value == "Overdue":
@@ -321,6 +321,32 @@ def get_all_rentals_inactive():
         data.append(d)
 
     return data
+def update_rent_values(id,rent_type,rent_method,rent_date_from,rent_date_to,date_returned,late_fees,additional_fees):
+    rent = update_rent(id)
+    if rent:
+        if rent.rent_date_from != rent_date_from:
+            rent.rent_date_from = rent_date_from
+        
+        if rent.rent_date_to != rent_date_to:
+            rent.rent_date_to = rent_date_to
+        
+        if rent.rent_method.value.upper() != rent_method:
+             if rent_method.upper() in Method.__members__:
+                 rent.rent_method = Method[rent_method.upper()]
+        if rent.rent_type != rent_type:
+            rent.rent_type = rent_type
+            rent.amount_owed = init_amount_owed(rent_type,rent.rent_date_from,rent.rent_date_to)
+        rent.date_returned = date_returned
+        rent.late_fees = late_fees
+        rent.additional_fees = additional_fees
+        try:
+            db.session.add(rent)
+            db.session.commit()
+            return rent
+        except Exception as e:
+            db.session.rollback()
+            return None
+
 
 def get_transactions(id,size,offset):
     data = update_rent(id)
