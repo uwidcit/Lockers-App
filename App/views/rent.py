@@ -67,12 +67,13 @@ def create_new_rent():
     r_number= request.json.get('r_number')
     t_date=request.json.get('t_date')
     t_type=request.json.get('t_type')
-    t_date = datetime.strptime(t_date,'%Y-%m-%dT%H:%M')
+    
     if not rental:
         return jsonify({"Message": "Rental not created"}),400
     if ''in [currency,amount,r_number,t_date,t_type]:
        x = 1
     else:
+        t_date = datetime.strptime(t_date,'%Y-%m-%dT%H:%M')
         amount=int(amount)
         if t_type == "CREDIT":
             if amount > 0:

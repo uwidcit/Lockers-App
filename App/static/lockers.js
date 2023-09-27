@@ -360,11 +360,15 @@ function createRent(studentID,locker_code){
         instance.close()
        
         let result = await sendRequest('/api/locker/rent','POST', data).then((response)=>{
-            toast("Success")
+            if (response.Message){
+                toast(response.Message)
+            }
+            else{
+            toast("Success")  
             window.location.reload()
-        }).catch((response)=>{
-             toast("Rental failed");
-             window.location.reload()
+            }
+           
+        }).catch((error)=>{
         })
     })
     studentIDBox = document.getElementById("rent_student_id")
@@ -695,10 +699,10 @@ document.getElementById('rent_method').addEventListener('change',(event)=>{
         }
     }
     }
-    
-   
-    
+
     rentTypes.innerHTML = html
 })
+
+    
 
 
