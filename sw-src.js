@@ -11,11 +11,11 @@ const {offlineFallback} = workbox.recipes;
 const {BackgroundSyncPlugin,Queue} = workbox.backgroundSync;
 const {registerRoute,setDefaultHandler} = workbox.routing;
 const {CacheFirst, StaleWhileRevalidate, NetworkOnly,NetworkFirst} = workbox.strategies;
-const {precacheAndRoute,cleanupOutdatedCaches} = workbox.precaching;
+const {precacheAndRoute,cleanupOutdatedCaches,addRoute} = workbox.precaching;
 const {CacheableResponse, CacheableResponsePlugin} = workbox.cacheableResponse;
 
 cleanupOutdatedCaches()
-precacheAndRoute([ { url: '/locker', revision: null }, ...self.__WB_MANIFEST]);
+precacheAndRoute(self.__WB_MANIFEST);
 
 setDefaultHandler(new NetworkFirst());
 

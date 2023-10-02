@@ -396,17 +396,12 @@ def update_locker_api():
     if not locker:
         return jsonify({"message": "Locker does not exist"}),404
     id = data['locker_code']
-    if locker.locker_type != data['locker_type'] and data['locker_type']  is not None:
-        if not update_locker_type(id,data['locker_type']):
-            return jsonify({"message": "Error updating locker type"}),500
-    
-    if locker.status != data['status'] and data['status'] is not None:
-        if not update_locker_status(id,data['status']):
-            return jsonify({"message": "Error updating status"}),500
-
-    if data['key'] is not None or data['key'] == '':
-        if not update_key(id,data['key']):
-            return jsonify({"message": "Error updating key"}),500
+    try:
+        locker = update_locker_type(id,data['locker_type'])
+        locker = update_locker_status(id,data['status'])
+        update_key(id,data['key'])
+    except Exception as e:
+        return jsonify({"message": str(e)}),500
     locker = get_locker_id(data['locker_code'])
     locker_json={
         'locker_code': locker[0].locker_code,
