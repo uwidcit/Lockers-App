@@ -517,6 +517,10 @@ function openSwapRent(old_locker_code,new_locker_code){
     nl_code_form = document.getElementById("new_locker_code")
     nl_code_form.value = new_locker_code
 
+    u_rentTypes = document.getElementById("s_rent_type")
+    html = ' <option value=”” disabled selected>Select Rental Type </option>'
+    u_rentTypes.innerHTML = html
+
     btn = document.getElementById('s_rent_form_submit')
     btn.addEventListener('click',async (event) => {
         let form = document.getElementById("swaprentForm")
