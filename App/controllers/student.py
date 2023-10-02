@@ -158,7 +158,7 @@ def update_student_status(id,status):
 def get_available_student(size,offset):
     s_offset = (offset *size) - size
 
-    students = Student.query.filter_by(rentStanding = RentStanding.GOOD).limit(size).offset(s_offset)
+    students = Student.query.filter(Student.rentStanding != RentStanding.OVERDUE).limit(size).offset(s_offset)
 
     if not students:
         return {"num_pages":1,"data":[]}
@@ -291,7 +291,7 @@ def get_rental_student(id,size,offset):
     return {"num_pages":num_pages,"data":r_list}
     
 def get_all_available_student():
-    students = Student.query.filter_by(rentStanding = RentStanding.GOOD).all()
+    students = Student.query.filter(Student.rentStanding != RentStanding.OVERDUE).all()
     if not students:
         return {}
     return [S.toJSON() for S in students]

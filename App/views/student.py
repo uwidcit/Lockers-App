@@ -200,4 +200,4 @@ def get_student_render_multi(id,offset):
 @student_views.route('/api/student/available', methods=['GET'])
 @login_required
 def get_students_api():
-    return jsonify(get_all_available_student())
+    return jsonify(get_all_students())

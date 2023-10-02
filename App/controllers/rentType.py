@@ -23,7 +23,6 @@ def get_rentType_by_id(id):
     rentType = RentTypes.query.filter_by(id = id).first()
 
     if not rentType:
-        flash("Rent Type does not exist")
         return None
 
     return rentType
