@@ -46,16 +46,16 @@ async function updateLocker(event){
     instance = M.Modal.getInstance(elem)
     instance.close()
 
-    let result = await sendRequest('/api/locker','PUT', data).then(
-        (response)=>{
-            if(response.status === 200){
-             toast("Success");
-             window.location.reload()
-            }
+    let result = await sendRequest('/api/locker','PUT', data).then((response)=>{
+        if (response.Message){
+            toast(response.Message)
         }
-    ).catch((response)=>{
-        toast("Updating locker failed");
-    })
+        else{
+        toast("Success")  
+        window.location.reload()
+        }
+       
+    }).catch((error)=>{})
 
 }
 
