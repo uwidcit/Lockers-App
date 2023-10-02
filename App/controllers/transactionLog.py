@@ -114,8 +114,8 @@ def search_transaction(query,size,offset):
         int_query = int(query)
         data = db.session.query(TransactionLog,Rent).join(Rent).filter(or_(TransactionLog.id == int_query,TransactionLog.rent_id == int_query, Rent.student_id == int_query, TransactionLog.receipt_number == int_query, TransactionLog.amount== int_query)).all()
     except:
-        if query.upper() in TransactionType:
-            data = db.session.query(TransactionLog,Rent).join(Rent).filter(or_(TransactionLog.type == TransactionType(query.upper()),TransactionLog.currency.contains(query), TransactionLog.description.contains(query))).all()
+        if query.upper() in TransactionType.__members__:
+            data = db.session.query(TransactionLog,Rent).join(Rent).filter((TransactionLog.type == TransactionType[query.upper()])).all()
         else:
             data = db.session.query(TransactionLog,Rent).join(Rent).filter(or_(TransactionLog.currency.contains(query), TransactionLog.description.contains(query))).all()
 

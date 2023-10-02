@@ -191,6 +191,15 @@ def get_current_rental(id):
     if current_rental:
         return current_rental.toJSON()
     return None
+def get_current_rental_c(id):
+    locker = get_locker_id_locker(id)
+    if locker is None:
+        return None
+    keyH = locker.KeyH.order_by(KeyHistory.id.desc()).first().id
+    current_rental =  Rent.query.filter(and_(Rent.keyHistory_id == keyH, Rent.status != RStatus.VERIFIED)).first()
+    if current_rental:
+        return current_rental
+    return None
 
 def get_current_locker_instance(id):
     locker = get_locker_id_locker(id)

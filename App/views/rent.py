@@ -20,7 +20,8 @@ from App.controllers import (
     get_All_rentType,
     update_rent,
     update_rent_values,
-    verify_rental
+    verify_rental,
+    swap_rent
     )
 from App.views.forms import  RentAdd, TransactionAdd
 from flask_login import login_required
@@ -61,7 +62,10 @@ def create_new_rent():
         date_returned = datetime.strptime(date_returned,'%Y-%m-%dT%H:%M')
     else:
         date_returned = None
-    rental = create_rent(s_id,locker_id,rentType,r_date_f,r_date_t,rent_method,date_returned)
+    try:
+        rental = create_rent(s_id,locker_id,rentType,r_date_f,r_date_t,rent_method,date_returned)
+    except Exception as e:
+        return jsonify({"Message": str(e)}),400 
     currency = request.json.get('currency')
     amount = request.json.get('amount')
     r_number= request.json.get('r_number')
@@ -333,4 +337,26 @@ def rent_locker_student(student_id):
         flash('Student doesn''t exist add them')
         return redirect(url)
 
-
+@rent_views.route('/api/rent/swap', methods=['POST'])
+@login_required
+def rent_switch():
+    rented_locker_id = request.json.get('rented_locker_id')
+    locker_id = request.json.get('locker_id')
+    rentType = request.json.get('rentType')
+    rent_method = request.json.get('rentMethod')
+    r_date_f = request.json.get('rent_date_from')
+    r_date_t = request.json.get('rent_date_to')
+    date_returned = request.json.get('date_returned')
+    if '' in [locker_id,rentType, rent_method,r_date_f,r_date_t]:
+        return jsonify({"Message": "Empty values cannot swap rent"}),400 
+    r_date_f = datetime.strptime(r_date_f,'%Y-%m-%dT%H:%M')
+    r_date_t = datetime.strptime(r_date_t,'%Y-%m-%dT%H:%M')
+    if date_returned != '':
+        date_returned = datetime.strptime(date_returned,'%Y-%m-%dT%H:%M')
+    else:
+        date_returned = None
+    try:
+        swap_rent(rented_locker_id,locker_id,rentType,r_date_f,r_date_t,rent_method,date_returned)
+    except Exception as e:
+         return jsonify({"Message": str(e)}),400
+    return jsonify({'message':'Success'}),200
