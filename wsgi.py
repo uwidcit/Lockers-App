@@ -89,6 +89,7 @@ User Commands
 '''
 @app.cli.command("append", help="Appends data the database")
 def append_info():
+ print("Beginning Append")
  with open('keys_append.csv', mode="r") as csv_file:
     reader = csv.DictReader(csv_file)
     for r in reader:
@@ -97,6 +98,7 @@ def append_info():
         reader = csv.DictReader(csv_file)
         for r in reader:
             add_new_locker(r["locker_code"],r["locker_type"],r["status"],r["key"],r["area"])
+ print("Completed")
 
 # Commands can be organized using groups
 
