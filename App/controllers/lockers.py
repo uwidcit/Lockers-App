@@ -286,8 +286,6 @@ def update_key(id, new_key):
     else:
         keyH1 = locker.KeyH.order_by(KeyHistory.id.desc()).first()
         keyH2 = KeyHistory.query.filter(KeyHistory.key_id == new_key).order_by(KeyHistory.id.desc()).first()
-        print(keyH1.toJSON())
-        print(keyH2.toJSON())
         if get_current_rental(keyH2.locker_id):
             return None
         swap_key(keyH1.locker_id,keyH2.locker_id)

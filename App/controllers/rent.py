@@ -40,7 +40,9 @@ def period_elapsed(type, rent_date_from, rent_date_to):
             period = 1
         return period
     elif type.type.value == "Daily":
-        time = rent_date_to - rent_date_from   
+        time = rent_date_to - rent_date_from
+        if time.days < 1:
+            return 1   
         return  time.days
     else:
         return 1

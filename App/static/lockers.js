@@ -388,7 +388,7 @@ function createRent(studentID,locker_code){
     form = document.getElementById("additionalForm")
     html = `<input type="hidden" value="${id}" name="rent_id">
     <select id="rType" name="rentType" style="display:inline;" required>
-    <option value=”” disabled selected>Select Additional Charge </option>
+    <option disabled selected>Select Additional Charge </option>
     `
     for(r in add_list){
          html+= `<option value=${add_list[r].id}>${add_list[r].type}: $${add_list[r].price} Period: ${add_list[r].period_from} to ${add_list[r].period_to}</option>`
@@ -518,7 +518,7 @@ function openSwapRent(old_locker_code,new_locker_code){
     nl_code_form.value = new_locker_code
 
     u_rentTypes = document.getElementById("s_rent_type")
-    html = ' <option value=”” disabled selected>Select Rental Type </option>'
+    html = ' <option disabled selected>Select Rental Type </option>'
     u_rentTypes.innerHTML = html
 
     btn = document.getElementById('s_rent_form_submit')
@@ -666,7 +666,7 @@ function editRent(rent){
     }
 
     u_rentTypes = document.getElementById("u_rent_type")
-    html = ' <option value=”” disabled selected>Select Rental Type </option>'
+    html = ' <option disabled selected>Select Rental Type </option>'
     if(temp_rm === "Rate"){
         for (r in rentType_list[0]){
             html+= `<option value=${rentType_list[0][r].id}>${rentType_list[0][r].type}: $${rentType_list[0][r].price} Period: ${rentType_list[0][r].period_from} to ${rentType_list[0][r].period_to}</option>`
@@ -752,7 +752,7 @@ document.getElementById('rent_method').addEventListener('change',(event)=>{
     table = $('#lockerTable').DataTable();
     var data = table.rows( lockerRow_list[0]).data();
     rentTypes = document.getElementById("rent_type")
-    html = ' <option value=”” disabled selected>Select Rental Type </option>'
+    html = ' <option disabled selected>Select Rental Type </option>'
     
     if(event.target.value === "Rate"){
         for (r in rentType_list[0]){
@@ -774,7 +774,7 @@ document.getElementById('u_rent_method').addEventListener('change',(event)=>{
     table = $('#rentTable').DataTable();
     var data = table.rows(actRent_list[0]).data();
     rentTypes = document.getElementById("u_rent_type")
-    html = ' <option value=”” disabled selected>Select Rental Type </option>'
+    html = ' <option  disabled selected>Select Rental Type </option>'
     
     if(event.target.value === "Rate"){
         for (r in rentType_list[0]){
@@ -805,7 +805,7 @@ document.getElementById('s_rent_method').addEventListener('change',(event)=>{
     }
 
     rentTypes = document.getElementById("s_rent_type")
-    html = ' <option value=”” disabled selected>Select Rental Type </option>'
+    html = ' <option disabled selected>Select Rental Type </option>'
     
     if(event.target.value === "Rate"){
         for (r in rentType_list[0]){

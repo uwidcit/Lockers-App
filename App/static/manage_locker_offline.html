@@ -329,7 +329,7 @@
           <li class="active">
             <div class="collapsible-header grey darken-3"> Rent </div>
             <div class="collapsible-body col s12 m12 grey darken-3">
-              <form id="rentalForm" method="POST" autocomplete="off">
+              <form onsubmit="event.preventDefault()" id="rentalForm" method="POST" autocomplete="off">
                 <div class="input-field col s12 m12"> 
                   <div class="col s4">
                     <p>Student ID</p>
@@ -373,7 +373,7 @@
           <li>
             <div class="collapsible-header grey darken-3"> Transaction </div>
             <div class="collapsible-body col s12 m12 grey darken-3">
-                <form id="RentTransaction" class="col s12 m12 white-text" method="POST" action="" >
+                <form onsubmit="event.preventDefault()" id="RentTransaction" class="col s12 m12 white-text" method="POST" action="" >
                   <div class="input-field col s12 m12">
                   <div class="col s4">
                     <p> Currency </p>

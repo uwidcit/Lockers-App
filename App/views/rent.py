@@ -56,6 +56,8 @@ def create_new_rent():
     date_returned = request.json.get('date_returned')
     if '' in [s_id,locker_id,rentType, rent_method,r_date_f,r_date_t]:
         return jsonify({"Message": "Empty values cannot create rent"}),400 
+    if rentType == '””':
+        return jsonify({"Message": "Invalid Rent Type"}),400 
     r_date_f = datetime.strptime(r_date_f,'%Y-%m-%dT%H:%M')
     r_date_t = datetime.strptime(r_date_t,'%Y-%m-%dT%H:%M')
     if date_returned != '':
