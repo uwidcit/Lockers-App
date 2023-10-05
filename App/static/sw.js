@@ -6,14 +6,16 @@ importScripts(
 
 self.skipWaiting()
 
+
 const {offlineFallback} = workbox.recipes;
 const {BackgroundSyncPlugin,Queue} = workbox.backgroundSync;
 const {registerRoute,setDefaultHandler} = workbox.routing;
 const {CacheFirst, StaleWhileRevalidate, NetworkOnly,NetworkFirst} = workbox.strategies;
-const {precacheAndRoute} = workbox.precaching;
+const {precacheAndRoute,cleanupOutdatedCaches,addRoute} = workbox.precaching;
 const {CacheableResponse, CacheableResponsePlugin} = workbox.cacheableResponse;
 
-precacheAndRoute([ { url: '/locker', revision: null }, ...[{"revision":"bc56a6869ac03cd8815461a8a58ca256","url":"autocomplete.js"},{"revision":"9d295ec8b213fdfaac1595e739a950ef","url":"keep_alive.js"},{"revision":"ae5d4fc40c2d7ba2ecc288dd042eca00","url":"lockers.js"},{"revision":"870b5ea4295065881458d40c6df53a78","url":"main.js"},{"revision":"3d586d16ccee11e5177ad7fe7c23ef29","url":"manage_locker_offline.html"},{"revision":"5c939ef677a57602e5e12eaa34058ead","url":"map_init.js"},{"revision":"b0663391a6dd5efed956259f29fa18dd","url":"materialize.css"},{"revision":"74ac8fd1cd0b94f532c54d4c707a86ae","url":"materialize.js"},{"revision":"ec1df3ba49973dcb9ff212f052d39483","url":"materialize.min.css"},{"revision":"5dcfc8944ed380b2215dc28b3f13835f","url":"materialize.min.js"},{"revision":"b7a97dc36dffb61a3b3e165b9dbe20d2","url":"offline.html"},{"revision":"7a2b4050bd5b0159ba5101b00d60b40f","url":"static-user.html"},{"revision":"ceac046cad1656146e8d521968b87cda","url":"style.css"},{"revision":"1d8179f18fcc6c658c386f9f30ef126b","url":"util.js"},{"revision":"2cd1cbbe5f9d94f135c89263d2eb4d2b","url":"workbox-a482575e.js"}]]);
+cleanupOutdatedCaches()
+precacheAndRoute([{"revision":"bc56a6869ac03cd8815461a8a58ca256","url":"autocomplete.js"},{"revision":"9d295ec8b213fdfaac1595e739a950ef","url":"keep_alive.js"},{"revision":"1d6a464bd635cfa32159e75e38fbf7f9","url":"lockers.js"},{"revision":"870b5ea4295065881458d40c6df53a78","url":"main.js"},{"revision":"aad73053d83e5d54ab5df4b6781dea51","url":"manage_locker_offline.html"},{"revision":"5c939ef677a57602e5e12eaa34058ead","url":"map_init.js"},{"revision":"b0663391a6dd5efed956259f29fa18dd","url":"materialize.css"},{"revision":"74ac8fd1cd0b94f532c54d4c707a86ae","url":"materialize.js"},{"revision":"ec1df3ba49973dcb9ff212f052d39483","url":"materialize.min.css"},{"revision":"5dcfc8944ed380b2215dc28b3f13835f","url":"materialize.min.js"},{"revision":"b7a97dc36dffb61a3b3e165b9dbe20d2","url":"offline.html"},{"revision":"7a2b4050bd5b0159ba5101b00d60b40f","url":"static-user.html"},{"revision":"ceac046cad1656146e8d521968b87cda","url":"style.css"},{"revision":"1d8179f18fcc6c658c386f9f30ef126b","url":"util.js"},{"revision":"2cd1cbbe5f9d94f135c89263d2eb4d2b","url":"workbox-a482575e.js"}]);
 
 setDefaultHandler(new NetworkFirst());
 

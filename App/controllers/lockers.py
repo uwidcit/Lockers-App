@@ -191,6 +191,15 @@ def get_current_rental(id):
     if current_rental:
         return current_rental.toJSON()
     return None
+def get_current_rental_c(id):
+    locker = get_locker_id_locker(id)
+    if locker is None:
+        return None
+    keyH = locker.KeyH.order_by(KeyHistory.id.desc()).first().id
+    current_rental =  Rent.query.filter(and_(Rent.keyHistory_id == keyH, Rent.status != RStatus.VERIFIED)).first()
+    if current_rental:
+        return current_rental
+    return None
 
 def get_current_locker_instance(id):
     locker = get_locker_id_locker(id)
@@ -266,6 +275,8 @@ def delete_locker(id):
             return None
     
 def update_key(id, new_key):
+    if len(new_key) == 0 or new_key is None:
+        raise Exception('Key cannot be empty')
     locker = get_locker_id_locker(id)
     if not locker:
         return None
@@ -281,6 +292,8 @@ def update_key(id, new_key):
         return locker
 
 def update_locker_status(id, new_status):
+    if len(new_status) == 0 or new_status is None:
+        raise Exception('Locker Status cannot be set to empty')
     locker = get_locker_id_locker(id)
     if not locker:
         return None
@@ -288,6 +301,8 @@ def update_locker_status(id, new_status):
     if get_current_rental(id):
         return None
     else:
+        if locker.status.value == new_status:
+            return locker
         try:
             if new_status.upper() in Status.__members__:
                 locker.status = Status[new_status.upper()]
@@ -299,6 +314,8 @@ def update_locker_status(id, new_status):
             return None
 
 def update_locker_type(id, new_type):
+    if len(new_type) == 0 or new_type is None:
+        raise Exception('Locker Type cannot be empty')
     locker = get_locker_id_locker(id)
     if not locker:
         return None
@@ -306,6 +323,8 @@ def update_locker_type(id, new_type):
     if get_current_rental(id):
         return None
     else:
+        if locker.locker_type.value == new_type:
+            return locker
         try:
             if new_type.upper() in LockerTypes.__members__:
                 locker.locker_type = LockerTypes[new_type.upper()]

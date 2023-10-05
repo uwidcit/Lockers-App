@@ -1,4 +1,5 @@
 from App.models import Rent,RentTypes,KeyHistory
+from App.models.locker import Locker
 from App.models.rent import RentStatus as Status, RentMethod as Method
 from math import ceil,floor
 
@@ -13,12 +14,13 @@ from App.controllers.lockers import(
     rent_locker,
     release_locker,
     get_current_locker_instance,
+    get_current_rental_c,
     not_verified
 )
 
 from App.controllers.student import update_student_status
 
-from App.controllers.transactionLog import cal_transaction_amount
+from App.controllers.key_history import getKeyHistory
 from App.controllers.log import create_log
 from flask import flash
 from datetime import datetime,timedelta
@@ -38,7 +40,9 @@ def period_elapsed(type, rent_date_from, rent_date_to):
             period = 1
         return period
     elif type.type.value == "Daily":
-        time = rent_date_to - rent_date_from   
+        time = rent_date_to - rent_date_from
+        if time.days < 1:
+            return 1   
         return  time.days
     else:
         return 1
@@ -93,11 +97,15 @@ def cal_fixed_price(rentType_id):
     return float(type.price)
 
 def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to,rent_method,date_returned):
-    if get_overdue_rent_by_student(student_id) or get_owed_rent_by_student(student_id):
+    if get_overdue_rent_by_student(student_id): 
         flash("Unable to create rent. Rent Owed")
         return []
     locker = get_locker_id(locker_id)
-    if locker: 
+    if get_rentType_by_id(rentType) is None:
+        raise Exception('Rent Type does not exist')
+    if locker:
+        if locker[0].status.value != "Free":
+            raise Exception('Locker is already rented')
         try:
             locker_instance = get_current_locker_instance(locker_id)
             if locker_instance:
@@ -137,7 +145,38 @@ def import_verified_rent(student_id,locker_id,rentType,rent_date_from,rent_date_
             return None
     else:
         return None
-    
+
+def swap_rent(old_locker,new_locker,rentType, rent_date_from, rent_date_to,rent_method,date_returned):
+    rent = get_current_rental_c(old_locker)
+    if not rent:
+        raise Exception("Rent doesn't exist")
+    locker = get_locker_id(new_locker)
+    original_locker = rent.keyHistory_id
+    if locker[0].status.value != "Free":
+        raise Exception('Locker is already rented')
+    locker_instance = get_current_locker_instance(new_locker)
+
+    rent.keyHistory_id = locker_instance.id
+    rent.rent_type = rentType
+    rent.rent_date_from = rent_date_from
+    rent.rent_date_to = rent_date_to
+    if rent_method.upper() == "FIXED":
+        rent.amount_owed = cal_fixed_price(rentType)
+    elif rent_method.upper() == "RATE":
+        rent.amount_owed = init_amount_owed(rentType, rent_date_from, rent_date_to)
+    else:
+        raise Exception ("Invalid Rent Method")
+    if date_returned:
+        rent.date_returned = date_returned
+    try:
+        db.session.add(rent)
+        db.session.commit()
+        release_locker(original_locker)
+        rent_locker(new_locker)
+        return rent
+    except:
+        db.session.rollback()
+        return None
 
 def get_rent_by_id(id):
     rent = Rent.query.filter_by(id=id).first()
@@ -285,13 +324,13 @@ def get_all_rentals():
     return data
 
 def get_all_rentals_active():
-    rents = db.session.query(Rent,KeyHistory,RentTypes).filter(Rent.status != Status.VERIFIED,KeyHistory.id == Rent.keyHistory_id, RentTypes.id == Rent.rent_type).all()
+    rents = db.session.query(Rent,KeyHistory,Locker,RentTypes).filter(Rent.status != Status.VERIFIED,KeyHistory.id == Rent.keyHistory_id, RentTypes.id == Rent.rent_type, Locker.locker_code == KeyHistory.locker_id).all()
     date = datetime.now()
     if not rents:
         return []
 
     data = []
-    for r,kh,rt in rents:
+    for r,kh,l,rt in rents:
         if date > r.rent_date_to:
             d = update_rent(r.id).toJSON()
         else:
@@ -299,6 +338,7 @@ def get_all_rentals_active():
         d['key'] = kh.key_id
         d['locker_code'] = kh.locker_id
         d['rent_types'] = rt.type.value
+        d['rent_size'] = l.locker_type.value
         data.append(d)
 
     return data
@@ -335,7 +375,7 @@ def update_rent_values(id,rent_type,rent_method,rent_date_from,rent_date_to,date
                  rent.rent_method = Method[rent_method.upper()]
         if rent.rent_type != rent_type:
             rent.rent_type = rent_type
-            rent.amount_owed = init_amount_owed(rent_type,rent.rent_date_from,rent.rent_date_to)
+        rent.amount_owed = init_amount_owed(rent_type,rent.rent_date_from,rent.rent_date_to)
         rent.date_returned = date_returned
         rent.late_fees = late_fees
         rent.additional_fees = additional_fees
