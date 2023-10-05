@@ -87,6 +87,16 @@ def initialize():
 '''
 User Commands
 '''
+@app.cli.command("append", help="Appends data the database")
+def append_info():
+ with open('keys_append.csv', mode="r") as csv_file:
+    reader = csv.DictReader(csv_file)
+    for r in reader:
+        new_key(r["key_id"], r["masterkey_id"], r["key_status"], datetime.strptime(r['date_added'], '%Y-%m-%d'))
+ with open('lockers_append.csv', mode="r") as csv_file:
+        reader = csv.DictReader(csv_file)
+        for r in reader:
+            add_new_locker(r["locker_code"],r["locker_type"],r["status"],r["key"],r["area"])
 
 # Commands can be organized using groups
 
