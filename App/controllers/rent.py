@@ -97,9 +97,6 @@ def cal_fixed_price(rentType_id):
     return float(type.price)
 
 def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to,rent_method,date_returned):
-    if get_overdue_rent_by_student(student_id): 
-        flash("Unable to create rent. Rent Owed")
-        return []
     locker = get_locker_id(locker_id)
     if get_rentType_by_id(rentType) is None:
         raise Exception('Rent Type does not exist')
