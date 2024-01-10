@@ -28,10 +28,14 @@ class Key(db.Model):
     def toJSON(self):
         from App.models import KeyHistory
         keyHistory = self.KeyH.order_by(KeyHistory.id.desc()).first()
+        if keyHistory:
+            historyJSON = keyHistory.toJSON()
+        else:
+            historyJSON = None
         return{
             'key_id':self.key_id,
             'masterkey_id':self.masterkey_id,
             'key_status':self.key_status.value,
             'date_added': datetime.strftime(self.date_added,'%Y-%m-%d'),
-            'KeyHistory': keyHistory.toJSON(),
+            'KeyHistory': historyJSON,
         }

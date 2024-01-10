@@ -3,6 +3,7 @@ from App.database import db
 import pandas as pd
 import io,os
 from App.models import *
+from App.models.rentTypes import Types as RType
 from App.controllers import (
     new_masterkey,
     new_key,
@@ -14,6 +15,10 @@ from App.controllers import (
     create_rent,
     new_rentType,
     create_comment,
+    create_user,
+    create_assistant,
+    changeDateMove,
+    update_key,
     add_new_transaction
 )
 
@@ -65,7 +70,7 @@ def import_all(uploaded_file):
     import_area(uploaded_file)
     import_student(uploaded_file)
     import_locker(uploaded_file)
-    import_keyHistory(uploaded_file)
+    #import_keyHistory(uploaded_file)
     import_rentTypes(uploaded_file)
     import_rent(uploaded_file)
     import_notes(uploaded_file)
@@ -97,19 +102,29 @@ def import_student(uploaded_file):
     reader = pd.read_excel(uploaded_file,"student")
     student_json = reader.to_dict('records')
     for s in student_json:
+        if len(str(s['faculty'])) > 3:
+            s['faculty'] = str(s['faculty'])[0:2].upper()
         add_new_student(s['student_id'], s['first_name'], s['last_name'], s['faculty'], s['phone_number'],s['email'])
     return True
 
 
 def import_locker(uploaded_file):
     reader = pd.read_excel(uploaded_file,"locker")
+    reader2 = pd.read_excel(uploaded_file,"key_history")
     locker_json = reader.to_dict('records')
-    for l in locker_json:
+    keyH_json = reader2.to_dict('records')
+    start = 0
+    for l,kh in zip(locker_json,keyH_json):
         if l['status'] == 'Rented':
-            add_new_locker(l['locker_code'], l['locker_type'],'Free',l['key'],l['area'])
+            add_new_locker(l['locker_code'], l['locker_type'],'Free',kh['key_id'],l['area'])
+            changeDateMove(kh['id'],kh['date_moved'])
         else:
-            add_new_locker(l['locker_code'], l['locker_type'],l['status'],l['key'],l['area'])
-            
+            add_new_locker(l['locker_code'], l['locker_type'],l['status'],kh['key_id'],l['area'])
+        start += 1
+    if(start < len(keyH_json)):
+        for kh in keyH_json[start:]:
+            update_key(kh['locker_id'],kh['key_id'])
+            changeDateMove(kh['id'],kh['date_moved'])
     return True
 
 def import_keyHistory(uploaded_file):
@@ -123,20 +138,26 @@ def import_rentTypes(uploaded_file):
     reader = pd.read_excel(uploaded_file,"rental_types")
     rentTypes_json = reader.to_dict('records')
     for rT in rentTypes_json:
+        for r in RType.__members__:
+            if (rT['type'] == RType[r].value):
+                 rT['type'] = RType[r].name
         new_rentType(datetime.strptime(rT['period_from'],'%Y-%m-%d'),datetime.strptime(rT['period_to'],'%Y-%m-%d'),rT['type'],rT['price'])
     return True
 
 def import_rent(uploaded_file):
     reader = pd.read_excel(uploaded_file,"rent")
     rent_json = reader.to_dict('records')
+    r_dfrom= None
+    r_dto= None
+    d_return = None
     for r in rent_json:
-        r_dfrom = datetime.strptime(r['rent_date_to'],'%Y-%m-%d %H:%M:%S')
-        r_dto = datetime.strptime(r['rent_date_from'],'%Y-%m-%d %H:%M:%S')
-        if r['status'] == 'Verified':
+        try:
+            r_dfrom = datetime.strptime(r['rent_date_to'],'%Y-%m-%d %H:%M:%S')
+            r_dto = datetime.strptime(r['rent_date_from'],'%Y-%m-%d %H:%M:%S')
             d_return = datetime.strptime(r['date_returned'],'%Y-%m-%d %H:%M:%S')
-            import_verified_rent(r['student_id'],r['locker_id'], r['rent_type'],r_dfrom,r_dto,r['amount_owed'],r['status'],d_return)
-        else:
-            create_rent(r['student_id'],r['locker_id'], r['rent_type'],r_dfrom,r_dto)
+        except:
+            d_return = None
+        import_verified_rent(r['student_id'],r['keyHistory_id'], r['rent_type'],r_dfrom,r_dto,r['amount_owed'],r['status'],d_return,r['rent_method'])
     return True
 
 def import_notes(uploaded_file):
@@ -155,15 +176,13 @@ def import_transactionLog(uploaded_file):
     reader = pd.read_excel(uploaded_file,"transaction_log")
     tLog_json = reader.to_dict('records')
     for tL in tLog_json:
-        if type(tL['transaction_date']) is not datetime:
+        try:
             tL['transaction_date'] = datetime.strptime(tL['transaction_date'],'%Y-%m-%d')
+        except:
+            print('Invalid date conversation')
         add_new_transaction(tL['rent_id'], tL['currency'],tL['transaction_date'], tL['amount'], tL['description'], tL['type'], tL['receipt_number'])
     return True
 
-def delete_all():
-    db.drop_all()
-    db.create_all()
-    return True
         
 
 
