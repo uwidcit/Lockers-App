@@ -126,21 +126,23 @@ def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to,ren
             db.session.rollback()   
             return None
         
-def import_verified_rent(student_id,locker_id,rentType,rent_date_from,rent_date_to,amount_owed,status,date_returned,rent_method):
-    locker_instance = get_current_locker_instance(locker_id)
-    rent = Rent(student_id, locker_instance.id, rentType,rent_date_from,rent_date_to,amount_owed,rent_method)
-    if status == 'Verified':
+def import_verified_rent(student_id,keyHistory_id,rentType,rent_date_from,rent_date_to,amount_owed,status,date_returned,rent_method):
+    if rent_method == "Period":
+        rent_method = "FIXED"
+    rent = Rent(student_id,keyHistory_id,rentType,rent_date_from,rent_date_to,amount_owed,rent_method,date_returned)
+    if status == 'Verified':        
+        rent.amount_paid = amount_owed
         rent.status = Status.VERIFIED
-        rent.date_returned = date_returned
-        try:
-            db.session.add(rent)
-            db.session.commit()
-            return rent
-        except SQLAlchemyError as e:
-            print(e)
-            db.session.rollback()   
-            return None
     else:
+        keyH = getKeyHistory(keyHistory_id)
+        rent_locker(keyH.locker_id)
+    try:
+        db.session.add(rent)
+        db.session.commit()
+        return rent
+    except SQLAlchemyError as e:
+        print(e)
+        db.session.rollback()   
         return None
 
 def swap_rent(old_locker,new_locker,rentType, rent_date_from, rent_date_to,rent_method,date_returned):

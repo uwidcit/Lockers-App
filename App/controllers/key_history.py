@@ -56,6 +56,22 @@ def getKeyHistory_by_id(id, size,offset):
         k_list.append(d.toJSON())
     return {'num_pages':num_pages, "data":k_list}
 
+def changeDateMove(id,newDate):
+    key = KeyHistory.query.filter_by(id = id).first()
+
+    if not key:
+        return None
+
+    try:
+         key.date_moved = newDate
+         db.session.add(key)
+         db.session.commit()
+         return key
+    except:
+        db.session.rollback()
+        return None
+
+
 def getKeyHistory_all(size,offset):
     keys = KeyHistory.query.all()
 

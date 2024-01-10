@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
-{% block title %}Rent {% endblock %}
-{% block page %}Rent{% endblock %}
+{% block title %}Import/Export {% endblock %}
+{% block page %}Import/Export{% endblock %}
 
 {{ super() }}
 
@@ -27,25 +27,6 @@
       </div>   
     </form>
     </div>
-
-    <div class="col s12 m8 offset-m1">
-      <h6>Delete All Data</h6>
-      <a class="btn purple darken-4 waves-light modal-trigger"  href="#delete_all">Fresh Start</a>   
-    </div>
-
-    <div class="modal" id="delete_all" style="max-height: 100%;border-radius: 25px; height: 35vh;">
-      <div class="modal-content">
-        <h6 style="font-weight: bold;">Delete All Data </h6>
-        <p>Warning this process will erase all data and is irreversible unless you have a backup. Do you wish to proceed</p>
-        </div>
-        <form id="newLocker" class="col s12 m12" method="GET" action="/delete/all">
-          <div class="col s12 m12" style="padding: 10px;" >
-            <input type="submit" id="export_btn" value="Delete All" class="purple darken-4 waves-light btn">
-            <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
-          </div>
-        </form>
-    </div>
-    
 
   </div>
 </div>
