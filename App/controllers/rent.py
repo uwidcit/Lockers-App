@@ -126,12 +126,14 @@ def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to,ren
             db.session.rollback()   
             return None
         
-def import_verified_rent(student_id,keyHistory_id,rentType,rent_date_from,rent_date_to,amount_owed,status,date_returned,rent_method):
+def import_verified_rent(id,student_id,keyHistory_id,rentType,rent_date_from,rent_date_to,amount_owed,status,date_returned,rent_method,additional_fees,late_fees):
     if rent_method == "Period":
         rent_method = "FIXED"
     rent = Rent(student_id,keyHistory_id,rentType,rent_date_from,rent_date_to,amount_owed,rent_method,date_returned)
+    rent.id = id
+    rent.additional_fees = additional_fees
+    rent.late_fees = late_fees
     if status == 'Verified':        
-        rent.amount_paid = amount_owed
         rent.status = Status.VERIFIED
     else:
         keyH = getKeyHistory(keyHistory_id)

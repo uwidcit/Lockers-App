@@ -9,7 +9,18 @@ def new_keyHistory(key_id,locker_id,date_moved):
         db.session.add(newkeyHistory)
         db.session.commit()
         return newkeyHistory
-    except SQLAlchemyError:
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return None
+    
+def restore_keyHistory(id,key_id,locker_id,date_moved):
+    try:
+        keyHistory = KeyHistory(key_id,locker_id,date_moved,"Active")
+        keyHistory.id = id 
+        db.session.add(keyHistory)
+        db.session.commit()
+        return keyHistory
+    except SQLAlchemyError as e:
         db.session.rollback()
         return None
     
