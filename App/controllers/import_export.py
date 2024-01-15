@@ -7,12 +7,12 @@ from App.models.rentTypes import Types as RType
 from App.controllers import (
     new_masterkey,
     new_key,
-    new_keyHistory,
+    restore_keyHistory,
     add_new_area,
     add_new_student,
-    add_new_locker,
+    restore_locker,
     import_verified_rent,
-    create_rent,
+    init_amount_owed,
     new_rentType,
     create_comment,
     create_user,
@@ -70,7 +70,7 @@ def import_all(uploaded_file):
     import_area(uploaded_file)
     import_student(uploaded_file)
     import_locker(uploaded_file)
-    #import_keyHistory(uploaded_file)
+    import_keyHistory(uploaded_file)
     import_rentTypes(uploaded_file)
     import_rent(uploaded_file)
     import_notes(uploaded_file)
@@ -110,28 +110,21 @@ def import_student(uploaded_file):
 
 def import_locker(uploaded_file):
     reader = pd.read_excel(uploaded_file,"locker")
-    reader2 = pd.read_excel(uploaded_file,"key_history")
+    
     locker_json = reader.to_dict('records')
-    keyH_json = reader2.to_dict('records')
-    start = 0
-    for l,kh in zip(locker_json,keyH_json):
+    for l in locker_json:
         if l['status'] == 'Rented':
-            add_new_locker(l['locker_code'], l['locker_type'],'Free',kh['key_id'],l['area'])
-            changeDateMove(kh['id'],kh['date_moved'])
+            restore_locker(l['locker_code'], l['locker_type'],'Free',l['area'])
         else:
-            add_new_locker(l['locker_code'], l['locker_type'],l['status'],kh['key_id'],l['area'])
-        start += 1
-    if(start < len(keyH_json)):
-        for kh in keyH_json[start:]:
-            update_key(kh['locker_id'],kh['key_id'])
-            changeDateMove(kh['id'],kh['date_moved'])
+            restore_locker(l['locker_code'], l['locker_type'],l['status'],l['area'])
+       
     return True
 
 def import_keyHistory(uploaded_file):
     reader = pd.read_excel(uploaded_file,"key_history")
     keyH_json = reader.to_dict('records')
     for kh in keyH_json:
-        new_keyHistory(kh['key_id'], kh['locker_id'],kh['date_moved'])
+        k = restore_keyHistory(kh['id'],kh['key_id'], kh['locker_id'],kh['date_moved'])
     return True
 
 def import_rentTypes(uploaded_file):
@@ -157,7 +150,8 @@ def import_rent(uploaded_file):
             d_return = datetime.strptime(r['date_returned'],'%Y-%m-%d %H:%M:%S')
         except:
             d_return = None
-        import_verified_rent(r['student_id'],r['keyHistory_id'], r['rent_type'],r_dfrom,r_dto,r['amount_owed'],r['status'],d_return,r['rent_method'])
+        amount_owed = init_amount_owed(r['rent_type'],r_dfrom,r_dto)
+        import_verified_rent(r['id'],r['student_id'],r['keyHistory_id'], r['rent_type'],r_dfrom,r_dto,amount_owed,r['status'],d_return,r['rent_method'],r['additional_fees'], r['late_fees'])
     return True
 
 def import_notes(uploaded_file):

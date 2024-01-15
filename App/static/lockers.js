@@ -140,6 +140,7 @@ var rentType_list = []
 var add_list = []
 var lockerRow_list = []
 var actRent_list = []
+var comRent_list = []
 var row_id = 0
 
 async function getAllStudents(){
@@ -611,7 +612,43 @@ function initRentTableC(data){
             {"data":"status"},
         ]
     })
+
+    table.on( 'select', function ( e, dt, type, indexes ) {
+        if ( type === 'row' ) {
+            var data = table.rows( indexes ).data();
+            row_id = indexes
+            if (comRent_list.length < 1){
+                comRent_list.push(indexes[0])
+            }
+            else{
+                p = comRent_list.shift()
+                table.rows(p).deselect()
+                comRent_list.push(indexes[0])
+            }
+        }
+        enableRentDetails(data[0].id)
+    } );
+
+    table.on( 'deselect', function ( e, dt, type, indexes ) {
+        if ( type === 'row' ) {
+            var data = table.rows( indexes ).data();
+            comRent_list.shift()
+            disableRentDetails()
+    }});
 }
+
+function enableRentDetails(id){
+    btn = document.querySelector('#crent_details_btn')
+    btn.className="btn purple darken-4 waves-effect"
+    btn.href = '/rent/'+id
+}
+
+function disableRentDetails(){
+    btn = document.querySelector('#crent_details_btn')
+    btn.className="btn disabled center-align"
+    btn.href = '#'
+}
+
 
 function rentOptions(d){
     btn = document.querySelector('#rent_options_btn')
@@ -623,6 +660,7 @@ function rentOptions(d){
     if (d.status !== "Returned"){
         if(d.amount_owed !==0) {
             html += ` <li><a href="#" onclick="loadComments(${d.id},1)" class="white-text"><i class="material-icons left white-text">check</i>Note</a></li>
+        <li><a href="/rent/${d.id}" class="white-text" > <i class="material-icons left white-text">list</i>Rent Details</a></li>
         <li><a href="#" onclick="editRent({'id':${d.id},'rent_method':'${d.rent_method}','rent_type':${d.rent_type},'rent_date_from':'${d.rent_date_from}','rent_date_to':'${d.rent_date_to}','date_return':'${d.date_returned}','late_fees':${d.late_fees},'additional_fees':${d.additional_fees},'rent_types':'${d.rent_types}'})" class="white-text"><i class="material-icons left white-text">edit</i>Edit</a></li>
         <li><a href="#" onclick="releaseMode({'amount_owed':${d.amount_owed}, 'id':${d.id},'locker_id':'${d.locker_id}'})" class="white-text"><i class="material-icons left white-text">attach_money</i>Open Transaction Log</a></li>
         <li><a href="#" onclick="additionalCharge(${d.id})" class="white-text"><i class="material-icons left white-text">add_circle_outline</i>Add Charge</a></li>
@@ -630,6 +668,7 @@ function rentOptions(d){
         }
         else{
             html += ` <li><a href="#" onclick="loadComments(${d.id},1)" class="white-text"><i class="material-icons left white-text">check</i>Note</a></li>
+            <li><a href="/rent/${d.id}" class="white-text" > <i class="material-icons left white-text">list</i>Rent Details</a></li>
             <li><a href="#" onclick="editRent({'id':${d.id},'rent_method':'${d.rent_method}','rent_type':${d.rent_type},'rent_date_from':'${d.rent_date_from}','rent_date_to':'${d.rent_date_to}','date_return':'${d.date_returned}','late_fees':${d.late_fees},'additional_fees':${d.additional_fees},'rent_types':'${d.rent_types}'})" class="white-text"><i class="material-icons left white-text">edit</i>Edit</a></li>
         <li><a href="#" onclick="releaseMode({'amount_owed':${d.amount_owed}, 'id':${d.id},'locker_id':'${d.locker_id}'})" class="white-text"><i class="material-icons left white-text">close</i>Release</a></li>
         <li><a href="#" onclick="additionalCharge(${d.id})" class="white-text"><i class="material-icons left white-text">add_circle_outline</i>Add Charge</a></li>
@@ -640,6 +679,7 @@ function rentOptions(d){
 
     else if (d.status === "Returned"){
         html += `<li><a href="#" onclick="loadComments(${d.id},1)" class="white-text"><i class="material-icons left white-text">check</i>Note</a></li>
+        <li><a href="/rent/${d.id}" class="white-text" > <i class="material-icons left white-text">list</i>Rent Details</a></li>
         <li><a href="/rent/${d.id}/release/verify" class="white-text"><i class="material-icons left white-text">verified_user</i>Verify</a></li>`
     }
     data_dropdown.innerHTML = html

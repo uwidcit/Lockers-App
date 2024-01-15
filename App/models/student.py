@@ -13,7 +13,7 @@ class Student(db.Model):
     last_name = db.Column(db.String, nullable= False)	
     faculty = db.Column(db.String(3), nullable= False)	
     phone_number = db.Column(db.String, nullable= False) 	
-    email = db.Column(db.String, nullable= False, unique = True)
+    email = db.Column(db.String, nullable= False)
     rentStanding = db.Column(db.Enum(RentStanding), nullable=False)
     rentals = db.relationship('Rent', backref='student',lazy=True, cascade="all, delete-orphan")
     

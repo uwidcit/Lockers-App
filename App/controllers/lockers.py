@@ -24,6 +24,16 @@ def add_new_locker(locker_code,locker_type,status,key_id,area):
         db.session.rollback()
         return None
 
+def restore_locker(locker_id,locker_type,status,area):
+    try:
+        locker = Locker(locker_id,locker_type,status,area)
+        db.session.add(locker)
+        db.session.commit()
+        return locker
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return None
+
 def get_lockers_available():
     locker_list = Locker.query.filter(Locker.status == Status.FREE).all()
     if not locker_list:
@@ -286,9 +296,10 @@ def update_key(id, new_key):
     else:
         keyH1 = locker.KeyH.order_by(KeyHistory.id.desc()).first()
         keyH2 = KeyHistory.query.filter(KeyHistory.key_id == new_key).order_by(KeyHistory.id.desc()).first()
-        if get_current_rental(keyH2.locker_id):
-            return None
-        swap_key(keyH1.locker_id,keyH2.locker_id)
+        if keyH2:
+            swap_key(keyH1.locker_id,keyH2.locker_id)
+        else:
+            new_keyHistory(new_key,id,datetime.now())
         return locker
 
 def update_locker_status(id, new_status):
