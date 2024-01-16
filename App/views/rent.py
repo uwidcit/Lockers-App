@@ -1,7 +1,6 @@
 from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify,url_for,flash
 from datetime import datetime
 from App.models.rent import RentStatus as Status
-from App.views.forms import SearchForm
 from App.controllers import (
     create_rent,
     create_comment,
@@ -15,7 +14,6 @@ from App.controllers import (
     rent_additional_payments,
     get_all_rentals_active,
     get_all_rentals_inactive,
-    get_lockers_available,
     get_student_by_id,
     get_All_rentType,
     update_rent,
@@ -28,22 +26,6 @@ from flask_login import login_required
 
 rent_views = Blueprint('rent_views', __name__, template_folder='../templates')
 
-@rent_views.route('/rentpage',methods=['GET'])
-def rent_page():
-  return render_template('rent.html', lockers= get_lockers_available(),search=SearchForm())
-
-
-@rent_views.route('/rentpage/search',methods=['POST'])
-def rent_search():
-    form = SearchForm()
-    if form.validate_on_submit:
-        query = request.form.get("search_query")
-        result = get_locker_id(query)
-        if result:
-           return render_template('rent.html', lockers=[result], search=SearchForm()) 
-        else:
-            flash('Record doesn''t exist')
-            return redirect(url_for('.rent_page'))
 @rent_views.route('/api/locker/rent', methods=['POST'])
 @login_required
 def create_new_rent():

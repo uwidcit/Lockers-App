@@ -1,7 +1,7 @@
 from datetime import datetime
 from App.database import db
 import pandas as pd
-import io,os
+import io
 from App.models import *
 from App.models.rentTypes import Types as RType
 from App.controllers import (
@@ -15,10 +15,6 @@ from App.controllers import (
     init_amount_owed,
     new_rentType,
     create_comment,
-    create_user,
-    create_assistant,
-    changeDateMove,
-    update_key,
     add_new_transaction
 )
 

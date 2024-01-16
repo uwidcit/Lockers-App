@@ -2,12 +2,10 @@ from flask import Blueprint, redirect, render_template, request, current_app as 
 from App.database import db
 from App.controllers import export_all,login
 import uuid
-import io
 from flask_login import login_required
 from sqlalchemy import exc
 import flask_login
 from App.views.admin import admin_only
-from werkzeug.utils import secure_filename
 import os
 from os import path
 index_views = Blueprint('index_views', __name__, template_folder='../templates')

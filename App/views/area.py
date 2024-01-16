@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify,url_for,flash
+from flask import Blueprint, redirect, render_template, request,jsonify,url_for,flash
 from flask_login import login_required
 
 from App.controllers import (

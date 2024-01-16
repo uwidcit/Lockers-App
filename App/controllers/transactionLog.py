@@ -1,8 +1,5 @@
 from App.database import db 
 from App.models import TransactionLog,Rent
-from datetime import datetime
-from flask import flash
-from App.controllers.log import create_log
 from App.models.transactionLog import TransactionType
 from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
@@ -24,7 +21,6 @@ def get_transaction_id(id):
     transaction = TransactionLog.query.filter_by(id = id).first()
 
     if not transaction:
-        flash("Transaction does not exist")
         return None
     return transaction
 
@@ -35,43 +31,6 @@ def get_transaction_json(id):
         return None
     return transaction.toJSON()
 
-def get_transaction_by_receipt_number(receipt_no):
-    transaction = TransactionLog.query.filter_by(receipt_no = receipt_no).first()
-
-    if not transaction:
-        return None
-    return transaction
-
-def get_transaction_by_receipt_number_json(id):
-    transaction = get_transaction_by_receipt_number(id)
-
-    if not transaction:
-        return None
-    return transaction.toJSON()
-    
-def get_all_transactions_by_rent(rent_id):
-    transactions = TransactionLog.query.filter_by(rent_id= rent_id)
-
-    if not transactions:
-        return None
-    return transactions
-
-def get_all_transactions_by_rent_json(rent_id):
-    transactions = get_all_transactions_by_rent(rent_id=rent_id)
-    if not transactions:
-        return None
-    return [t.toJSON() for t in transactions]
-
-def cal_transaction_amount(rent_id):
-    transactions = get_all_transactions_by_rent(rent_id)
-
-    if not transactions:
-        return 0.00
-    
-    amount = 0
-    for t in transactions:
-        amount =  amount + t.amount
-    return round(amount,2)
 
 def get_all_transactions():
     transactions = TransactionLog.query.all()

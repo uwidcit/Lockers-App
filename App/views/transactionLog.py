@@ -1,11 +1,10 @@
-from flask import Blueprint, redirect, render_template, request, send_from_directory,jsonify,flash,url_for
+from flask import Blueprint, redirect, render_template, request,jsonify,flash,url_for
 from App.views.forms import TransactionAdd,SearchForm
 from flask_login import login_required
 from datetime import datetime
 from App.controllers import (
   add_new_transaction,
   get_student_by_id,
-  get_area_choices,
   get_student_current_rental,
   get_all_transactions,
   get_num_transactions_page,
