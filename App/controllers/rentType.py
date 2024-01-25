@@ -1,7 +1,7 @@
 from App.models import RentTypes,Rent
 from App.models.rentTypes import Types
 from App.database import db
-from sqlalchemy import and_,or_
+from sqlalchemy import and_,Sequence
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 
@@ -9,6 +9,19 @@ def new_rentType(period_from, period_to, type, price):
     try:
         rentType = RentTypes(period_from,period_to,type,price)
         db.session.add(rentType)
+        db.session.commit()
+        return rentType
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return None
+    
+def restore_rentType(id,period_from, period_to, type, price):
+    seq = Sequence(name='rental_types_id_seq')
+    try:
+        rentType = RentTypes(period_from,period_to,type,price)
+        rentType.id = id
+        db.session.add(rentType)
+        db.session.execute(seq)
         db.session.commit()
         return rentType
     except SQLAlchemyError as e:

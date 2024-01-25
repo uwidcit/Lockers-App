@@ -2,7 +2,6 @@ import os
 import importlib
 from datetime import timedelta
 
-# must be updated to inlude addtional secrets/ api keys & use a gitignored custom-config file instad
 def load_config():
     config = {'ENV': os.environ.get('ENV', 'DEVELOPMENT')}
     delta = 7
@@ -28,8 +27,3 @@ def load_config():
     return config
 
 config = load_config()
-
-#SQLALCHEMY_DATABASE_URI = "sqlite:///temp-database.db"
-#SECRET_KEY = "secret key"
-#JWT_EXPIRATION_DELTA = 7
-#ENV = "DEVELOPMENT"

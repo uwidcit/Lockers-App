@@ -129,7 +129,7 @@ def create_new_locker_api():
         'locker_code': locker[0].locker_code,
         'locker_type':locker[0].locker_type.value,
         'status': locker[0].status.value,
-        'key':locker[0].toJSON()['key'],
+        'key':locker[2].key_id,
         'area': locker[0].area,
         'area_description':locker[1].description
         }

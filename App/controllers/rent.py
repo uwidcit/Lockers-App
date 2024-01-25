@@ -22,7 +22,7 @@ from App.controllers.student import update_student_status
 from App.controllers.key_history import getKeyHistory
 from datetime import datetime
 from App.database import db 
-from sqlalchemy import and_
+from sqlalchemy import and_, Sequence
 from sqlalchemy.exc import SQLAlchemyError
 
 def period_elapsed(type, rent_date_from, rent_date_to):
@@ -123,6 +123,7 @@ def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to,ren
             
         
 def import_verified_rent(id,student_id,keyHistory_id,rentType,rent_date_from,rent_date_to,amount_owed,status,date_returned,rent_method,additional_fees,late_fees):
+    seq = Sequence(name='rent_id_seq')
     if rent_method == "Period":
         rent_method = "FIXED"
     rent = Rent(student_id,keyHistory_id,rentType,rent_date_from,rent_date_to,amount_owed,rent_method,date_returned)
@@ -136,6 +137,7 @@ def import_verified_rent(id,student_id,keyHistory_id,rentType,rent_date_from,ren
         rent_locker(keyH.locker_id)
     try:
         db.session.add(rent)
+        db.session.execute(seq)
         db.session.commit()
         return rent
     except SQLAlchemyError as e:

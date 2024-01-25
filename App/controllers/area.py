@@ -1,12 +1,25 @@
 from App.models import Area
 from App.database import db
-from sqlalchemy import and_, or_
+from sqlalchemy import and_, or_, Sequence
 from sqlalchemy.exc import SQLAlchemyError
 
 def add_new_area(description, longitude, latitude):
     try:
         new_area = Area(description,longitude, latitude)
         db.session.add(new_area)
+        db.session.commit()
+        return new_area
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        raise("Unable to add new Area")
+
+def restore_area(id,description, longitude, latitude):
+    seq = Sequence(name='area_id_seq')
+    try:
+        new_area = Area(description,longitude, latitude)
+        new_area.id = id
+        db.session.add(new_area)
+        db.session.execute(seq)
         db.session.commit()
         return new_area
     except SQLAlchemyError as e:

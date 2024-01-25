@@ -18,8 +18,8 @@ async function addLocker(event){
 
     let result = await sendRequest('/api/locker','POST', data).then((response)=>{
         if (response.status == 201){
-            toast("Success");
             window.location.reload()
+            toast("Success");
         }
     }).catch((response)=>{
         toast("Adding locker failed");

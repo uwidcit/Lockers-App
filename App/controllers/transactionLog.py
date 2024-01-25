@@ -1,16 +1,34 @@
 from App.database import db 
 from App.models import TransactionLog,Rent
 from App.models.transactionLog import TransactionType
-from sqlalchemy import or_
+from sqlalchemy import or_,Sequence
 from sqlalchemy.exc import SQLAlchemyError
 
 def add_new_transaction(rent_id, currency, transaction_date, amount, description, t_type,receipt_number):
+    seq = Sequence(name='transaction_log_id_seq')
     try:
         new_transaction = TransactionLog(rent_id, currency,transaction_date, amount, description, t_type,receipt_number)
         rent = Rent.query.filter_by(id=rent_id).first()
         rent.update_payments(amount)
         db.session.add(new_transaction)
         db.session.add(rent)
+        db.session.execute(seq)
+        db.session.commit()
+        return new_transaction
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return None
+
+def restore_transaction(id,rent_id, currency, transaction_date, amount, description, t_type,receipt_number):
+    try:
+        new_transaction = TransactionLog(rent_id, currency,transaction_date, amount, description, t_type,receipt_number)
+        new_transaction.id = id
+        rent = Rent.query.filter_by(id=rent_id).first()
+        rent.update_payments(amount)
+        db.session.add(new_transaction)
+        db.session.add(rent)
+        seq = Sequence(name='transaction_log_id_seq')
+        key = db.session.execute(seq)
         db.session.commit()
         return new_transaction
     except SQLAlchemyError as e:
