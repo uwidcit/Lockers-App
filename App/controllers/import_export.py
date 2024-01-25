@@ -1,25 +1,21 @@
 from datetime import datetime
-from App.database import db
 import pandas as pd
-import io,os
+import io
 from App.models import *
+from sqlalchemy import Sequence
 from App.models.rentTypes import Types as RType
 from App.controllers import (
     new_masterkey,
     new_key,
     restore_keyHistory,
-    add_new_area,
+    restore_area,
     add_new_student,
     restore_locker,
     import_verified_rent,
     init_amount_owed,
-    new_rentType,
+    restore_rentType,
     create_comment,
-    create_user,
-    create_assistant,
-    changeDateMove,
-    update_key,
-    add_new_transaction
+    restore_transaction
 )
 
 model_list = [
@@ -95,7 +91,14 @@ def import_area(uploaded_file):
     reader = pd.read_excel(uploaded_file,"area")
     area_json = reader.to_dict('records')
     for a in area_json:
-        add_new_area(a["description"], a['longitude'], a['latitude'])
+        restore_area(a['id'],a["description"], a['longitude'], a['latitude'])
+    
+    seq = Sequence(name='area_id_seq')
+    key = db.session.execute(seq)
+    
+    while (key < area_json[len(area_json)-1]['id']):
+        key = db.session.execute(seq)
+    
     return True
 
 def import_student(uploaded_file):
@@ -122,9 +125,15 @@ def import_locker(uploaded_file):
 
 def import_keyHistory(uploaded_file):
     reader = pd.read_excel(uploaded_file,"key_history")
+    seq = Sequence(name='key_history_id_seq')
     keyH_json = reader.to_dict('records')
     for kh in keyH_json:
         k = restore_keyHistory(kh['id'],kh['key_id'], kh['locker_id'],kh['date_moved'])
+    key = db.session.execute(seq)
+    
+    while (key < keyH_json[len(keyH_json)-1]['id']):
+        key = db.session.execute(seq)
+
     return True
 
 def import_rentTypes(uploaded_file):
@@ -134,7 +143,13 @@ def import_rentTypes(uploaded_file):
         for r in RType.__members__:
             if (rT['type'] == RType[r].value):
                  rT['type'] = RType[r].name
-        new_rentType(datetime.strptime(rT['period_from'],'%Y-%m-%d'),datetime.strptime(rT['period_to'],'%Y-%m-%d'),rT['type'],rT['price'])
+        restore_rentType(rT['id'],datetime.strptime(rT['period_from'],'%Y-%m-%d'),datetime.strptime(rT['period_to'],'%Y-%m-%d'),rT['type'],rT['price'])
+    seq = Sequence(name='rental_types_id_seq')
+    key = db.session.execute(seq)
+    
+    while (key < rentTypes_json[len(rentTypes_json)-1]['id']):
+        key = db.session.execute(seq)
+    
     return True
 
 def import_rent(uploaded_file):
@@ -152,7 +167,12 @@ def import_rent(uploaded_file):
             d_return = None
         amount_owed = init_amount_owed(r['rent_type'],r_dfrom,r_dto)
         import_verified_rent(r['id'],r['student_id'],r['keyHistory_id'], r['rent_type'],r_dfrom,r_dto,amount_owed,r['status'],d_return,r['rent_method'],r['additional_fees'], r['late_fees'])
-    return True
+    seq = Sequence(name='rent_id_seq')
+    key = db.session.execute(seq)
+    
+    while (key < rent_json[len(rent_json)-1]['id']):
+        key = db.session.execute(seq)
+        return True
 
 def import_notes(uploaded_file):
     reader = pd.read_excel(uploaded_file,"notes")
@@ -174,7 +194,13 @@ def import_transactionLog(uploaded_file):
             tL['transaction_date'] = datetime.strptime(tL['transaction_date'],'%Y-%m-%d')
         except:
             print('Invalid date conversation')
-        add_new_transaction(tL['rent_id'], tL['currency'],tL['transaction_date'], tL['amount'], tL['description'], tL['type'], tL['receipt_number'])
+        restore_transaction(tL['id'],tL['rent_id'], tL['currency'],tL['transaction_date'], tL['amount'], tL['description'], tL['type'], tL['receipt_number'])
+    seq = Sequence(name='transaction_log_id_seq')
+    key = db.session.execute(seq)
+    
+    while (key < tLog_json[len(tLog_json)-1]['id']):
+        key = db.session.execute(seq)
+
     return True
 
         

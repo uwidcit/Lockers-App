@@ -1,8 +1,7 @@
-from App.models import MasterKey,Key,KeyHistory
+from App.models import MasterKey,Key
 from App.database import db
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import and_, or_
-from datetime import datetime
+from sqlalchemy import or_
 from App.models.masterkey import Key_Type
 
 def new_masterkey(masterkey_id, series,key_type,date_added):

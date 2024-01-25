@@ -1,11 +1,10 @@
 from App.models import Rent,RentTypes,KeyHistory
 from App.models.locker import Locker
 from App.models.rent import RentStatus as Status, RentMethod as Method
-from math import ceil,floor
+from math import floor
 
 from App.controllers.rentType import (
     get_rentType_by_id,
-    get_rentType_daily_period,
     )
 
 
@@ -21,11 +20,9 @@ from App.controllers.lockers import(
 from App.controllers.student import update_student_status
 
 from App.controllers.key_history import getKeyHistory
-from App.controllers.log import create_log
-from flask import flash
-from datetime import datetime,timedelta
+from datetime import datetime
 from App.database import db 
-from sqlalchemy import and_
+from sqlalchemy import and_, Sequence
 from sqlalchemy.exc import SQLAlchemyError
 
 def period_elapsed(type, rent_date_from, rent_date_to):
@@ -121,12 +118,12 @@ def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to,ren
             return None
         except SQLAlchemyError as e:
             print(e)
-            create_log(student_id, type(e), datetime.now())
-            flash("Unable to create rent. Check Error Log for more Details")
             db.session.rollback()   
-            return None
+            raise("Unable to create rent. Check Error Log for more Details")
+            
         
 def import_verified_rent(id,student_id,keyHistory_id,rentType,rent_date_from,rent_date_to,amount_owed,status,date_returned,rent_method,additional_fees,late_fees):
+    seq = Sequence(name='rent_id_seq')
     if rent_method == "Period":
         rent_method = "FIXED"
     rent = Rent(student_id,keyHistory_id,rentType,rent_date_from,rent_date_to,amount_owed,rent_method,date_returned)
@@ -140,6 +137,7 @@ def import_verified_rent(id,student_id,keyHistory_id,rentType,rent_date_from,ren
         rent_locker(keyH.locker_id)
     try:
         db.session.add(rent)
+        db.session.execute(seq)
         db.session.commit()
         return rent
     except SQLAlchemyError as e:
@@ -183,8 +181,7 @@ def get_rent_by_id(id):
     rent = Rent.query.filter_by(id=id).first()
 
     if not rent:
-        flash("Rent does not exist")
-        return None
+        raise("Rent does not exist")
     
     return rent
 
@@ -230,10 +227,8 @@ def update_rent(id):
         return rent
 
     except SQLAlchemyError as e:
-        create_log(id, type(e), datetime.now())
-        flash("Unable to create rent. Check Error Log for more Details")
         db.session.rollback()
-        return None
+        raise("Unable to create rent. Check Error Log for more Details")
 
 
 def get_overdue_rent_by_student(s_id):
@@ -285,10 +280,8 @@ def release_rental(id,d_returned):
         return rent
 
     except SQLAlchemyError as e:
-        create_log(id, type(e), datetime.now())
-        flash("Unable to release Rental. Check Error Log for more Details")
         db.session.rollback()
-        return None
+        raise("Unable to release Rental. Check Error Log for more Details")
 
 def verify_rental(id):
     rent = update_rent(id)
@@ -307,10 +300,9 @@ def verify_rental(id):
         update_student_status(rent.student_id,"GOOD")
         return rent
     except SQLAlchemyError as e:
-        create_log(id, type(e), datetime.now())
-        flash("Unable to verify Rental. Check Error Log for more Details")
         db.session.rollback()
-        return None
+        raise("Unable to verify Rental. Check Error Log for more Details")
+        
         
 def get_all_rentals():
     rents = Rent.query.all()

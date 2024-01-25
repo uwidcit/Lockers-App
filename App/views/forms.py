@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, SubmitField,DecimalField, DateField,DateTimeLocalField,IntegerField
-from wtforms.validators import InputRequired, EqualTo, Email
+from wtforms.validators import InputRequired, Email
 
 from App.controllers import (
     getT_Type,

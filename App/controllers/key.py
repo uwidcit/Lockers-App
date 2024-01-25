@@ -2,8 +2,8 @@ from App.models import Key
 from App.models.key import Key_Status
 from App.database import db
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import and_, or_
-from datetime import datetime
+
+
 
 def new_key(key_id, masterkey_id,key_status,date_added):
     try:

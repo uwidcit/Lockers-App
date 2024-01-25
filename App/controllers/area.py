@@ -1,9 +1,6 @@
 from App.models import Area
 from App.database import db
-from flask import flash
-from App.controllers.log import create_log
-from datetime import datetime
-from sqlalchemy import and_, or_
+from sqlalchemy import and_, or_, Sequence
 from sqlalchemy.exc import SQLAlchemyError
 
 def add_new_area(description, longitude, latitude):
@@ -13,41 +10,34 @@ def add_new_area(description, longitude, latitude):
         db.session.commit()
         return new_area
     except SQLAlchemyError as e:
-        flash("Unable to add new Area")
         db.session.rollback()
-        return None
+        raise("Unable to add new Area")
+
+def restore_area(id,description, longitude, latitude):
+    seq = Sequence(name='area_id_seq')
+    try:
+        new_area = Area(description,longitude, latitude)
+        new_area.id = id
+        db.session.add(new_area)
+        db.session.execute(seq)
+        db.session.commit()
+        return new_area
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        raise("Unable to add new Area")
+    
 
 def get_area_by_id(id):
     area = Area.query.filter_by(id = id).first()
     if not area:
-        flash("Area does not exist") 
-        return None
+        raise("Area does not exist") 
     return area
 
 def get_lockers_in_area(id):
     area = Area.query.filter_by(id = id).first()
     if not area:
-        flash("Area does not exist")
-        return None
+        raise("Area does not exist")
     return area.getLockersInArea()
-
-def get_area_by_coordinates(long,lat):
-    areas =Area.query.filter_by(longitude = long,latitude = lat)
-    if not areas:
-        return None
-    return [a.toJSON() for a in areas]
-
-def get_area_by_description(description):
-    areas = Area.query.filter(Area.description.contains(description)).all()
-    if not areas:
-        return None
-    return areas
-
-def get_area_by_description_toJSON(description):
-    areas = get_area_by_description(description)
-    if not areas:
-        return None
-    return [a.toJSON() for a in areas]
 
 
 def set_description(id,new_description):
@@ -60,10 +50,8 @@ def set_description(id,new_description):
         db.session.commit()
         return area
     except SQLAlchemyError as e:
-        create_log(id, type(e), datetime.now())
-        flash("Unable to set description. Check Error Log for more Details")
         db.session.rollback()
-        return None
+        raise("Unable to set description. Check Error Log for more Details")
 
 def set_latitude(id, new_latitude):
     area = get_area_by_id(id)
@@ -75,10 +63,9 @@ def set_latitude(id, new_latitude):
         db.session.commit()
         return area
     except SQLAlchemyError as e:
-        create_log(id, type(e), datetime.now())
-        flash("Unable to set latitude. Check Error Log for more Details")
         db.session.rollback()
-        return None
+        raise("Unable to set latitude. Check Error Log for more Details")
+        
 
 def set_longitude(id,new_longitude):
     area = get_area_by_id(id)
@@ -90,27 +77,26 @@ def set_longitude(id,new_longitude):
         db.session.commit()
         return area
     except SQLAlchemyError as e:
-        create_log(id, type(e), datetime.now())
-        flash("Unable to set longitude. Check Error Log for more Details")
         db.session.rollback()
-        return None
+        raise("Unable to set longitude. Check Error Log for more Details")
+        
+        
 
 def delete_area(id):
     area = get_area_by_id(id)
     if not area: 
         return None
     if area.locker:
-        flash('Unable to delete area with lockers in it')
-        return None
+        raise('Unable to delete area with lockers in it')
+    
     try:
         db.session.delete(area)
         db.session.commit()
         return area
     except SQLAlchemyError as e:
-        create_log(id, type(e), datetime.now())
-        flash("Unable to delete Area. Check Error Log for more Details")
         db.session.rollback()
-        return None
+        raise("Unable to delete Area. Check Error Log for more Details")
+        
 def get_area_choices():
     areas = Area.query.with_entities(Area.id, Area.description).all()
 
@@ -128,15 +114,10 @@ def get_area_all():
 def get_num_areas():
     areas = Area.query.all()
 
-    count = 0
-    
-    for a in areas:
-        count += 1
-
-    if not count or count == 0:
-        db.session.rollback()
-        return 1
-    return count
+    if areas is None:
+        return 0 
+    else:
+        return len(areas)
 
 def get_num_area_page(size):
     count = get_num_areas()

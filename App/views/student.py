@@ -17,7 +17,6 @@ from App.controllers import (
     update_student_phone_number,
     update_student_email,
     update_student_faculty,
-    get_all_available_student
 
     )
 from App.views.forms import StudentAdd, SearchForm, TransactionAdd,RentAdd

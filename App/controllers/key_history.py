@@ -1,6 +1,6 @@
 from App.database import db
 from App.models import KeyHistory,Active
-from sqlalchemy import or_
+from sqlalchemy import or_, Sequence
 from sqlalchemy.exc import SQLAlchemyError
 
 def new_keyHistory(key_id,locker_id,date_moved):
@@ -14,9 +14,11 @@ def new_keyHistory(key_id,locker_id,date_moved):
         return None
     
 def restore_keyHistory(id,key_id,locker_id,date_moved):
+    seq = Sequence(name='key_history_id_seq')
     try:
         keyHistory = KeyHistory(key_id,locker_id,date_moved,"Active")
         keyHistory.id = id 
+        db.session.execute(seq)
         db.session.add(keyHistory)
         db.session.commit()
         return keyHistory
