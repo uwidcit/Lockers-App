@@ -4,15 +4,13 @@ from App.models.transactionLog import TransactionType
 from sqlalchemy import or_,Sequence
 from sqlalchemy.exc import SQLAlchemyError
 
-def add_new_transaction(rent_id, currency, transaction_date, amount, description, t_type,receipt_number):
-    seq = Sequence(name='transaction_log_id_seq')
+def add_new_transaction(rent_id, currency, transaction_date, amount, description, t_type):
     try:
-        new_transaction = TransactionLog(rent_id, currency,transaction_date, amount, description, t_type,receipt_number)
+        new_transaction = TransactionLog(rent_id, currency,transaction_date, amount, description, t_type)
         rent = Rent.query.filter_by(id=rent_id).first()
         rent.update_payments(amount)
         db.session.add(new_transaction)
         db.session.add(rent)
-        db.session.execute(seq)
         db.session.commit()
         return new_transaction
     except SQLAlchemyError as e:
@@ -21,14 +19,17 @@ def add_new_transaction(rent_id, currency, transaction_date, amount, description
 
 def restore_transaction(id,rent_id, currency, transaction_date, amount, description, t_type,receipt_number):
     try:
-        new_transaction = TransactionLog(rent_id, currency,transaction_date, amount, description, t_type,receipt_number)
+        new_transaction = TransactionLog(rent_id, currency,transaction_date, amount, description, t_type)
         new_transaction.id = id
+        new_transaction.receipt_number = id
         rent = Rent.query.filter_by(id=rent_id).first()
         rent.update_payments(amount)
         db.session.add(new_transaction)
         db.session.add(rent)
         seq = Sequence(name='transaction_log_id_seq')
-        key = db.session.execute(seq)
+        seq2 = Sequence(name='transaction_log_receipt_number_seq')
+        db.session.execute(seq)
+        db.session.execute(seq2)
         db.session.commit()
         return new_transaction
     except SQLAlchemyError as e:

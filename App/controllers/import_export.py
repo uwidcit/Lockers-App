@@ -195,12 +195,15 @@ def import_transactionLog(uploaded_file):
         except:
             print('Invalid date conversation')
         restore_transaction(tL['id'],tL['rent_id'], tL['currency'],tL['transaction_date'], tL['amount'], tL['description'], tL['type'], tL['receipt_number'])
-    seq = Sequence(name='transaction_log_id_seq')
+    seq = Sequence(name='transaction_log_id_seq') 
+    seq2 = Sequence(name='transaction_log_receipt_number_seq')
     key = db.session.execute(seq)
+    key2 = db.session.execute(seq2)
     
     while (key < tLog_json[len(tLog_json)-1]['id']):
         key = db.session.execute(seq)
-
+        db.session.execute(seq2)
+    
     return True
 
         
