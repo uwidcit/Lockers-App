@@ -47,7 +47,7 @@ def create_new_transaction():
         amount = int(request.form.get('amount'))
         description = request.form.get('description')
         t_type =request.form.get('t_type')
-        receipt_number = request.form.get('receipt_number')
+        #receipt_number = request.form.get('receipt_number')
 
         if t_type == "CREDIT":
             if amount > 0:
@@ -56,7 +56,7 @@ def create_new_transaction():
             if amount < 0:
                 amount = amount * -1
 
-        newTransaction = add_new_transaction (rent_id,currency,transaction_date,amount,description, t_type, receipt_number)
+        newTransaction = add_new_transaction (rent_id,currency,transaction_date,amount,description, t_type)
         
         if not newTransaction:
             flash('Error adding transaction')
@@ -103,7 +103,7 @@ def manage_transaction_pages_multi(offset):
         next = num_pages
     else:
         next = offset + 1
-    return render_template('transactionLog.html', transaction_data = transaction_data, form = TransactionAdd(), search=SearchForm(),searchMode=False, num_pages= num_pages,current_page=1, next=next, previous= previous)
+    return render_template('transactionLog.html', transaction_data = transaction_data, form = TransactionAdd(), search=SearchForm(),searchMode=False, num_pages= num_pages,current_page=offset, next=next, previous= previous)
 
 @transactionLog_views.route('/transactionLog/search/', methods=['GET'])
 @login_required
@@ -151,9 +151,9 @@ def create_new_transaction_api():
         amount = request.json.get('amount')
         description = request.json.get('description')
         t_type =request.json.get('t_type')
-        receipt_number = request.json.get('receipt_number')
+        #receipt_number = request.json.get('receipt_number')
         
-        newTransaction = add_new_transaction (rent_id,currency,transaction_date,amount,description, t_type, receipt_number)
+        newTransaction = add_new_transaction (rent_id,currency,transaction_date,amount,description, t_type)
         
         if not newTransaction:
             return jsonify({"error": "Rental not created"}),400

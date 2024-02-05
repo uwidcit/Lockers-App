@@ -353,7 +353,6 @@ function createRent(studentID,locker_code){
             date_returned: fields['date_returned'].value,
             currency:fields2['currency'].value,
             amount:fields2['t_amount'].value,
-            r_number:fields2['receipt_number'].value,
             t_date:fields2['transaction_date'].value,
             t_type:fields2['t_type'].value
         }

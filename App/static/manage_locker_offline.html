@@ -311,10 +311,6 @@
             <option value="credit">credit</option>
           </select>
         </div>
-        <div class="col s6">
-          <p> Receipt Number </p>
-          <input type="number" class="validate white-text" id="t_receipt" name="receipt_number">
-        </div>
         <div class="input-field col s8 m8 offset-m4" style="display:inline;">
           <input type="submit" class="right purple darken-4 waves-light btn">
           <a class="red darken-4 white-text right modal-close waves-light btn">Cancel</a>
@@ -761,7 +757,6 @@
             amount: fields['amount'].value,
             description:fields['description'].value,
             t_type:fields['t_type'].value,
-            receipt_number:fields['receipt_number'].value,
         }
         elem = document.getElementById('new_transaction');
         instance = M.Modal.getInstance(elem)
