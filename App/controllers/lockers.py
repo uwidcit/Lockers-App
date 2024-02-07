@@ -87,7 +87,7 @@ def get_locker_id_locker(id):
     
 
 def get_all_lockers():
-    locker_list = db.session.query(Locker,Area,KeyHistory).join(Area.id == Locker.area,KeyHistory.locker_id == Locker.locker_code).filter(KeyHistory.isActive == Active.ACTIVE).all()
+    locker_list = db.session.query(Locker).join(Area,KeyHistory).filter(KeyHistory.isActive == Active.ACTIVE).all()
 
     if not locker_list:
         return []
