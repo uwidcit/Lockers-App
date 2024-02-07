@@ -1,5 +1,6 @@
 from App.models import Locker
-from App.models import Area, Rent, KeyHistory,Active
+from App.models import Area, Rent,Active
+from App.models.key_history import KeyHistory
 from App.models.rent import RentStatus as RStatus
 from App.models.locker import LockerStatus as Status, LockerTypes
 from App.database import db
@@ -87,7 +88,7 @@ def get_locker_id_locker(id):
     
 
 def get_all_lockers():
-    locker_list = db.session.query(Locker).join(Area,KeyHistory).filter(KeyHistory.isActive == Active.ACTIVE).all()
+    locker_list = db.session.query(Locker,Area,KeyHistory).join(Area,KeyHistory).filter(KeyHistory.isActive == Active.ACTIVE).all()
 
     if not locker_list:
         return []
