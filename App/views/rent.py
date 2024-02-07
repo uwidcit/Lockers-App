@@ -52,13 +52,12 @@ def create_new_rent():
         return jsonify({"Message": str(e)}),400 
     currency = request.json.get('currency')
     amount = request.json.get('amount')
-    r_number= request.json.get('r_number')
     t_date=request.json.get('t_date')
     t_type=request.json.get('t_type')
     
     if not rental:
         return jsonify({"Message": "Rental not created"}),400
-    if ''in [currency,amount,r_number,t_date,t_type]:
+    if ''in [currency,amount,t_date,t_type]:
        x = 1
     else:
         t_date = datetime.strptime(t_date,'%Y-%m-%dT%H:%M')
@@ -69,7 +68,7 @@ def create_new_rent():
         else:
             if amount < 0:
                 amount = amount * -1
-        newTransaction = add_new_transaction (rental.id,currency,t_date,amount,"Payment", t_type, r_number)
+        newTransaction = add_new_transaction (rental.id,currency,t_date,amount,"Payment", t_type)
         update_rent(rental.id)
     return jsonify(rental.toJSON()),201
 

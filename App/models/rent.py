@@ -17,7 +17,7 @@ class RentMethod(Enum):
 
 class Rent(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    student_id = db.Column (db.Integer, db.ForeignKey("student.student_id"), nullable= False)
+    student_id = db.Column (db.String, db.ForeignKey("student.student_id"), nullable= False)
     keyHistory_id = db.Column(db.Integer, db.ForeignKey("key_history.id"), nullable= False)
     rent_type =  db.Column(db.Integer, db.ForeignKey("rental_types.id"), nullable= False)
     rent_method = db.Column(db.Enum(RentMethod), nullable = False)
