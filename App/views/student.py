@@ -69,7 +69,7 @@ def render_manage_student_multi(offset):
         next = offset + 1
     search = SearchForm()
     search.submit.label.text = "Search Student"
-    return render_template("manage_student.html",studentData=studentData["data"],num_pages= studentData["num_pages"], current_page =offset ,previous = previous, next = next , form=StudentAdd(),search=search,query=query)
+    return render_template("manage_student.html",studentData=studentData["data"],num_pages= studentData["num_pages"], current_page=offset ,previous = previous, next = next , form=StudentAdd(),search=search,query=query)
 
 @student_views.route("/student/search/",methods=['GET'])
 @login_required
@@ -126,7 +126,7 @@ def update_student_info(id):
         email = str(request.form.get("email"))
         
         if str(student.student_id) != student_id and student_id != "":
-             if not update_student_id(id,f_name):
+             if not update_student_id(id,student_id):
                 flash("Error updating StudentID")
                 return redirect(url_for('.render_manage_student'))  
 
