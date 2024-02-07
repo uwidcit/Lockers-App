@@ -74,7 +74,7 @@ def get_lockers_by_area_description(description):
 
 
 def get_locker_id(id):
-    locker = db.session.query(Locker,Area,KeyHistory).join(Area,KeyHistory).filter(Locker.locker_code == id,KeyHistory.isActive == Active.ACTIVE).first()
+    locker = db.session.query(Locker,Area,KeyHistory).join(Area,"key_history").filter(Locker.locker_code == id,KeyHistory.isActive == Active.ACTIVE).first()
     if not locker:
         return None
     
