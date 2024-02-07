@@ -6,7 +6,7 @@ from flask.cli import with_appcontext, AppGroup
 from os import path
 from App.database import db, get_migrate
 from App.main import create_app
-from App.controllers import ( create_user, create_assistant, get_all_users_json, get_all_assistant_json,get_all_users, add_new_locker, import_all, new_key, new_masterkey, new_rentType, add_new_student)
+from App.controllers import ( create_user, create_assistant, get_all_users_json, get_all_assistant_json,get_all_users, add_new_locker, import_all, new_key,new_masterkey, new_rentType, add_new_student)
 
 # This commands file allow you to create convenient CLI commands for testing controllers
 
@@ -34,7 +34,24 @@ def restore_db():
     print('Trying to restore')
     with open(os.path.join('App/uploads/db_restore.xlsx'),"rb") as file:
         import_all(file)
-    print('Successful') 
+    print('Successful')
+
+@app.cli.command("space", help="Restore DB from file in App/uploads")
+def remove_space():
+    from App.models import Locker,KeyHistory
+    lockers = Locker.query.all()
+    keyH = KeyHistory.query.all()
+    print("Starting replacement")
+    for l in lockers:
+        l.locker_code = l.locker_code.replace(" ","")
+        db.session.add(l)
+        db.session.commit()
+    for k in keyH:
+        k.locker_id = k.locker_id.replace(" ","")
+        db.session.add(k)
+        db.session.commit()
+    print("finishing replacement")
+
     
 '''
 User Commands

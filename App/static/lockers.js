@@ -142,6 +142,7 @@ var lockerRow_list = []
 var actRent_list = []
 var comRent_list = []
 var row_id = 0
+var rentType_price = new Map()
 
 async function getAllStudents(){
     let result = await sendRequest('/api/student/available','GET').then((result)=>{
@@ -174,6 +175,7 @@ async function getAllRentTypes(){
     let result = await sendRequest('/api/rentType/group','GET').then((result)=>{
         for(r in result){
             rentType_list.push(result[r])
+
         }
     })
 }
@@ -352,7 +354,7 @@ function createRent(studentID,locker_code){
             rent_date_to: fields['rent_date_to'].value,
             date_returned: fields['date_returned'].value,
             currency:fields2['currency'].value,
-            amount:fields2['t_amount'].value,
+            amount:fields2['tL_amount'].value,
             t_date:fields2['transaction_date'].value,
             t_type:fields2['t_type'].value
         }
@@ -796,6 +798,7 @@ document.getElementById('rent_method').addEventListener('change',(event)=>{
     if(event.target.value === "Rate"){
         for (r in rentType_list[0]){
             html+= `<option value=${rentType_list[0][r].id}>${rentType_list[0][r].type}: $${rentType_list[0][r].price} Period: ${rentType_list[0][r].period_from} to ${rentType_list[0][r].period_to}</option>`
+            rentType_price.set(rentType_list[0][r].id,rentType_list[0][r])
        }
     }
     else{
@@ -803,6 +806,7 @@ document.getElementById('rent_method').addEventListener('change',(event)=>{
             if(rentType_list[1][r].type.toLowerCase().includes(data[0].locker_type.toLowerCase())){
             html+= `<option value=${rentType_list[1][r].id}>${rentType_list[1][r].type}: $${rentType_list[1][r].price} Period: ${rentType_list[1][r].period_from} to ${rentType_list[1][r].period_to}</option>`
         }
+        rentType_price.set(rentType_list[1][r].id,rentType_list[1][r])
     }
     }
 
@@ -862,6 +866,13 @@ document.getElementById('s_rent_method').addEventListener('change',(event)=>{
     rentTypes.innerHTML = html
 })
 
-    
+document.getElementById("rent_type").addEventListener("change",(event)=>{
+    amount = document.getElementById("tL_amount")
+    id = parseInt(event.target.value)
+    rentType = rentType_price.get(id)
+    console.log(rentType)
+    amount.value = rentType.price
+})
+
 
 
