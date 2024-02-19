@@ -17,6 +17,7 @@ from App.controllers import (
     update_key,
     update_locker_type,
     update_locker_status,
+    update_locker_area,
     swap_key,
     get_all_locker_names,
     get_all_keys_id,
@@ -146,6 +147,7 @@ def update_locker_api():
     try:
         locker = update_locker_type(id,data['locker_type'])
         locker = update_locker_status(id,data['status'])
+        locker = update_locker_area(id,data['area'])
         update_key(id,data['key'])
     except Exception as e:
         return jsonify({"message": str(e)}),500

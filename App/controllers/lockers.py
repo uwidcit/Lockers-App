@@ -263,6 +263,24 @@ def update_locker_type(id, new_type):
         except SQLAlchemyError as e:
             db.session.rollback()
             return None
+def update_locker_area(id,new_area):
+    locker = get_locker_id_locker(id)
+    if not locker:
+        return None
+    
+    if get_current_rental(id):
+        return None
+    else:
+        if locker.area == new_area:
+            return locker
+        try:
+                locker.area = new_area
+                db.session.add(locker)
+                db.session.commit()
+                return locker
+        except SQLAlchemyError:
+            db.session.rollback()
+            return None
 
 def get_locker_rent_history(id,size,offset):
     query = db.session.query(KeyHistory,Rent).join(Rent).filter(KeyHistory.locker_id == id).order_by(Rent.id.desc()).all()
