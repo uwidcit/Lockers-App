@@ -304,8 +304,11 @@ function enableOptionsSwap(d){
     if(d[0].status === "Free" && d[1].status === "Free"){
         html += `<li><a href="#" onclick="OpenSwapKey('${d[0].locker_code}','${d[1].locker_code}')" class="white-text"><i class="material-icons left white-text">swap_horiz</i>Swap Keys</a></li>`
     }
-    else if((d[0].status === "Rented" && d[1].status === "Free") || (d[0].status === "Free" && d[1].status === "Rented")){   
+    else if((d[0].status === "Rented" && d[1].status === "Free")){   
         html += `<li><a href="#" class="white-text" onclick="openSwapRent('${d[0].locker_code}','${d[1].locker_code}')"><i class="material-icons left white-text">swap_horiz</i>Swap Rent</a></li>`
+    }
+    else if ((d[0].status === "Free" && d[1].status === "Rented")){
+        html += `<li><a href="#" class="white-text" onclick="openSwapRent('${d[1].locker_code}','${d[0].locker_code}')"><i class="material-icons left white-text">swap_horiz</i>Swap Rent</a></li>`
     }
     else{
         html += `<li><a href="#" class="white-text">Cannot modify locker(s) while rented</a></li>`
