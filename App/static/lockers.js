@@ -1,4 +1,5 @@
 import { locker_validate,lockerEdit_validate } from "./validate_locker.js"
+import { SwapRentValidate } from "./validate_rent.js"
 
 async function addLocker(event){
     event.preventDefault()
@@ -358,9 +359,11 @@ function openSwapRent(old_locker_code,new_locker_code){
             rented_locker_id: fields['old_locker_code'].value,
             locker_id: fields['new_locker_code'].value,
         }
-        let elem = document.getElementById('swap_Rent');
-        let instance = M.Modal.getInstance(elem)
-        instance.close()
+        let isValid = SwapRentValidate(data,form)
+        if (isValid){
+             let elem = document.getElementById('swap_Rent');
+            let instance = M.Modal.getInstance(elem)
+            instance.close()
        
         let result = await sendRequest('/api/rent/swap','POST', data).then((response)=>{
             if (response.Message){
@@ -373,6 +376,13 @@ function openSwapRent(old_locker_code,new_locker_code){
         }).catch((response)=>{
              
         })
+    }
+    else {
+            let modal = document.getElementById('error_modal');
+            let mInstance = M.Modal.getInstance(modal)
+            mInstance.open()
+    }
+       
     })
     let elem = document.getElementById('swap_Rent');
     let instance = M.Modal.getInstance(elem)

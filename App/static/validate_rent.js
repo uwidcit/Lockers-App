@@ -17,69 +17,84 @@ function student_validate(input,form){
 
 function rent_datefrom_validate(input,form,mode){
     let element;
+    let form_name = 'rent_date_from'
     if (mode === "create"){
         element = document.getElementById('dfrom_helper')
     }
     else if (mode === "edit"){
         element = document.getElementById('u_dfrom_helper')
     }
+    else if (mode ==="swap"){
+        form_name = 's_rent_date_from'
+        element = document.getElementById('s_dfrom_helper')
+    }
     else{
         alert("Validate function missing mode")
         return false
     }
     if (is_empty(input)){
-        form['rent_date_from'].classList.add('invalid')
+        form[form_name].classList.add('invalid')
         element.dataset.error = "Date From cannot be empty"
         return false
     }
 
     else if (!is_validDate(input)) {
-        form['rent_date_from'].classList.add('invalid')
+        form[form_name].classList.add('invalid')
         element.dataset.error = "Date From: "+input+" is invalid"
         return false
     }
 
-    form['rent_date_from'].classList.add('valid')
+    form[form_name].classList.add('valid')
 
     return true
 }
 
 function rent_dateto_validate(input,form,mode){
     let element;
+    let form_name = 'rent_date_to'
     if (mode === "create"){
         element = document.getElementById('dto_helper')
     }
     else if (mode === "edit"){
         element = document.getElementById('u_dto_helper')
     }
+    else if(mode === "swap"){
+        form_name = 's_rent_date_to'
+        element = document.getElementById('s_dto_helper')
+    }
     else{
         alert("Validate function missing mode")
         return false
     }
     if (is_empty(input)){
-        form['rent_date_to'].classList.add('invalid')
+        form[form_name].classList.add('invalid')
         element.dataset.error = "Date To cannot be empty"
         return false
     }
     
     else if (!is_validDate(input)) {
-        form['rent_date_to'].classList.add('invalid')
+        form[form_name].classList.add('invalid')
         element.dataset.error = "Date To: "+input+" is invalid"
         return false
     }
 
-    form['rent_date_to'].classList.add('invalid')
+    form[form_name].classList.add('invalid')
     return true
 
 }
 
 function rent_datereturn_validate(input,form,mode){
      let element;
+     let form_name = 'date_returned'
     if (mode === "create"){
         element = document.getElementById('dreturn_helper')
     }
     else if (mode === "edit"){
         element = document.getElementById('u_dreturn_helper')
+    }
+    else if (mode === "swap"){
+        element = document.getElementById('u_dreturn_helper')
+        form_name = 's_date_returned'
     }
     else{
         alert("Validate function missing mode")
@@ -87,12 +102,12 @@ function rent_datereturn_validate(input,form,mode){
     }
     if (!is_empty(input)){
         if (!is_validDate(input)) {
-            form['date_returned'].classList.add('invalid')
+            form[form_name].classList.add('invalid')
             element.dataset.error = "Date Returned: "+input+" is invalid"
          return false
      }
     }
-    form['date_returned'].classList.add('valid')
+    form[form_name].classList.add('valid')
     
      return true
 }
@@ -288,4 +303,15 @@ function additionalChargeValidate(data,form){
         return test_rentID && test_rentType
 }
 
-export {rentValidate,rentEditValidate,additionalChargeValidate};
+function SwapRentValidate(data,form){
+    let test_rentMethod = rent_method_validate(data['rentMethod'],form),
+        test_rentType = rent_type_validate(data['rentType'],form),
+        test_rentFrom = rent_datefrom_validate(data['rent_date_from'],form,"swap"),
+        test_rentTo = rent_dateto_validate(data['rent_date_to'],form,"swap"),
+        test_date_return= rent_datereturn_validate(data['date_returned'],form,"swap")
+
+        return test_rentMethod && test_rentType && test_rentFrom && test_rentTo && test_date_return
+
+}
+
+export {rentValidate,rentEditValidate,additionalChargeValidate,SwapRentValidate};

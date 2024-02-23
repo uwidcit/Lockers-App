@@ -516,7 +516,7 @@ document.getElementById('u_rent_method').addEventListener('change',(event)=>{
 })
 
 document.getElementById('s_rent_method').addEventListener('change',(event)=>{
-    table = $('#lockerTable').DataTable();
+    let table = $('#lockerTable').DataTable();
     var temp = table.rows( lockerRow_list[0]).data()[0];
     var data;
     if (temp.status === "Rented"){
@@ -526,8 +526,8 @@ document.getElementById('s_rent_method').addEventListener('change',(event)=>{
         data = table.rows( lockerRow_list[0]).data()[0];
     }
 
-    rentTypes = document.getElementById("s_rent_type")
-    html = ' <option disabled selected>Select Rental Type </option>'
+    let rentTypes = document.getElementById("s_rent_type")
+    let html = ' <option disabled selected>Select Rental Type </option>'
     
     if(event.target.value === "Rate"){
         for (let r in rentType_list[0]){
