@@ -217,6 +217,7 @@ def update_key(id, new_key):
         if keyH2:
             swap_key(keyH1.locker_id,keyH2.locker_id)
         else:
+            deactivate(keyH1.id)
             new_keyHistory(new_key,id,datetime.now())
         return locker
 
