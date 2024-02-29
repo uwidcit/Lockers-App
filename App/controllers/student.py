@@ -192,14 +192,10 @@ def get_students_by_offset(size,offset):
 
 
 def search_student(query,size,offset):
-    try:
-        int_query = int(query)
-        data = Student.query.filter(Student.student_id == int_query).all()
-    except Exception as e:
-        if query.upper() in RentStanding.__members__:
-            data = Student.query.filter(or_(Student.rentStanding == RentStanding(query.upper()),Student.first_name.contains(query), Student.last_name.contains(query), Student.faculty.contains(query), Student.email.contains(query),Student.phone_number.contains(query))).all()
-        else:
-             data = Student.query.filter(or_(Student.first_name.contains(query), Student.last_name.contains(query), Student.faculty.contains(query), Student.email.contains(query),Student.phone_number.contains(query))).all()
+    if query.upper() in RentStanding.__members__:
+        data = Student.query.filter(or_(Student.student_id.contains(query),Student.rentStanding == RentStanding(query.upper()),Student.first_name.contains(query), Student.last_name.contains(query), Student.faculty.contains(query), Student.email.contains(query),Student.phone_number.contains(query))).all()
+    else:
+        data = Student.query.filter(or_(Student.student_id.contains(query),Student.first_name.contains(query), Student.last_name.contains(query), Student.faculty.contains(query), Student.email.contains(query),Student.phone_number.contains(query))).all()
     if not data:
         return {"num_pages":1,"data":[]}
     

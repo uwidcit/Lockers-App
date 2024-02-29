@@ -3,8 +3,6 @@ from App.models.key import Key_Status
 from App.database import db
 from sqlalchemy.exc import SQLAlchemyError
 
-
-
 def new_key(key_id, masterkey_id,key_status,date_added):
     try:
          new_key = Key(key_id,masterkey_id,key_status,date_added)
@@ -44,7 +42,7 @@ def get_all_keys(size,offset):
     
 
 def get_key_by_id(id):
-    key = Key.query.filter(Key.key_id.contains(id)).first()
+    key = Key.query.filter(Key.key_id == id).first()
 
     if not key:
         return None

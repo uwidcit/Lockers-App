@@ -59,13 +59,13 @@
           {% if current_page == 1  %}
               <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
           {% else %}
-              <li><a href="/student/search/page/{{previous}}/?search_query={{query}}"><i class="material-icons white-text">chevron_left</i></a></li>
+              <li><a href="/student/search/page/{{previous}}?search_query={{query}}"><i class="material-icons white-text">chevron_left</i></a></li>
           {% endif %} 
           <li class="active purple darken-4"><a href="#" style="color:white;">{{current_page}}</a></li>
           {% if current_page == num_pages %}
           <li class="disabled"><a href="#!"><i class="material-icons white-text">chevron_right</i></a></li>
           {% else %}
-          <li><a href="/student/search/page/{{next}}/?search_query={{query}}"><i class="material-icons">chevron_right</i></a></li>
+          <li><a href="/student/search/page/{{next}}?search_query={{query}}"><i class="material-icons white-text">chevron_right</i></a></li>
           {% endif %}
         {% else %}
           {% if current_page == 1  %}

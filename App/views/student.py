@@ -79,7 +79,7 @@ def search_student_page():
         previous = 1
         next = previous + 1
         query = request.args.get('search_query')
-        student = search_student(query,15,1)
+        student = search_student(query,size,1)
         if student:
             num_pages = student['num_pages']
             return render_template("manage_student.html",studentData=student["data"],num_pages= student["num_pages"], current_page =1 ,previous = previous, next = next , form=StudentAdd(),search=search,query=query)

@@ -7,6 +7,7 @@ from App.database import db
 from App.controllers.area import get_area_by_id,get_area_by_description
 from App.controllers.key_history import new_keyHistory,getKeyHistory,deactivate
 from datetime import datetime
+from App.controllers.key import get_key_by_id,new_key as create_key
 from sqlalchemy import or_,and_
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -18,6 +19,8 @@ def add_new_locker(locker_code,locker_type,status,key_id,area):
         locker = Locker(locker_code,locker_type,status,area)
         db.session.add(locker)
         db.session.commit()
+        if(get_key_by_id(key_id) is None):
+             print(create_key(key_id,'NoMKey',"AVAILABLE",datetime(2023,10,15)))
         new_keyHistory(key_id,locker.locker_code,datetime.now().date())
         return locker
     except SQLAlchemyError as e:
@@ -210,6 +213,8 @@ def update_key(id, new_key):
     if get_current_rental(id):
         return None
     else:
+        if(get_key_by_id(new_key) is None):
+            create_key(new_key,'NoMKey',"AVAILABLE",datetime(2023,10,15))
         keyH1 = locker.KeyH.order_by(KeyHistory.id.desc()).first()
         keyH2 = KeyHistory.query.filter(KeyHistory.key_id == new_key).order_by(KeyHistory.id.desc()).first()
         if keyH1.key_id == new_key:
