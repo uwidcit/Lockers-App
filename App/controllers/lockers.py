@@ -20,7 +20,7 @@ def add_new_locker(locker_code,locker_type,status,key_id,area):
         db.session.add(locker)
         db.session.commit()
         if(get_key_by_id(key_id) is None):
-             print(create_key(key_id,'NoMKey',"AVAILABLE",datetime(2023,10,15)))
+             create_key(key_id,'NoMKey',"AVAILABLE",datetime(2023,10,15))
         new_keyHistory(key_id,locker.locker_code,datetime.now().date())
         return locker
     except SQLAlchemyError as e:
