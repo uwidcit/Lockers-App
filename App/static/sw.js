@@ -1,19 +1,21 @@
 // https://developer.chrome.com/docs/workbox/modules/workbox-sw/
 
 importScripts(
-  'https://storage.googleapis.com/workbox-cdn/releases/6.4.1/workbox-sw.js'
+  'https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-sw.js'
 );
 
 self.skipWaiting()
+
 
 const {offlineFallback} = workbox.recipes;
 const {BackgroundSyncPlugin,Queue} = workbox.backgroundSync;
 const {registerRoute,setDefaultHandler} = workbox.routing;
 const {CacheFirst, StaleWhileRevalidate, NetworkOnly,NetworkFirst} = workbox.strategies;
-const {precacheAndRoute} = workbox.precaching;
+const {precacheAndRoute,cleanupOutdatedCaches,addRoute} = workbox.precaching;
 const {CacheableResponse, CacheableResponsePlugin} = workbox.cacheableResponse;
 
-precacheAndRoute([ { url: '/locker', revision: null }, ...[{"revision":"bc56a6869ac03cd8815461a8a58ca256","url":"autocomplete.js"},{"revision":"9d295ec8b213fdfaac1595e739a950ef","url":"keep_alive.js"},{"revision":"1d2137cd3d41f0235bce0a039ce18e96","url":"lockers.js"},{"revision":"870b5ea4295065881458d40c6df53a78","url":"main.js"},{"revision":"0eb9ea0555c15195c16cfd4f1d769e60","url":"manage_locker_offline.html"},{"revision":"5c939ef677a57602e5e12eaa34058ead","url":"map_init.js"},{"revision":"b0663391a6dd5efed956259f29fa18dd","url":"materialize.css"},{"revision":"74ac8fd1cd0b94f532c54d4c707a86ae","url":"materialize.js"},{"revision":"ec1df3ba49973dcb9ff212f052d39483","url":"materialize.min.css"},{"revision":"5dcfc8944ed380b2215dc28b3f13835f","url":"materialize.min.js"},{"revision":"0e56a665fbe09b5cc9476e9c8212cefd","url":"offline.html"},{"revision":"7a2b4050bd5b0159ba5101b00d60b40f","url":"static-user.html"},{"revision":"ceac046cad1656146e8d521968b87cda","url":"style.css"},{"revision":"1d8179f18fcc6c658c386f9f30ef126b","url":"util.js"},{"revision":"2cd1cbbe5f9d94f135c89263d2eb4d2b","url":"workbox-a482575e.js"}]]);
+cleanupOutdatedCaches()
+precacheAndRoute([{"revision":"bc56a6869ac03cd8815461a8a58ca256","url":"autocomplete.js"},{"revision":"9d295ec8b213fdfaac1595e739a950ef","url":"keep_alive.js"},{"revision":"0fda9a296e41254bb2fd735f713fead9","url":"lockers.js"},{"revision":"870b5ea4295065881458d40c6df53a78","url":"main.js"},{"revision":"71728b0cf3a7a88b822b376c69d863af","url":"manage_locker_offline.html"},{"revision":"5c939ef677a57602e5e12eaa34058ead","url":"map_init.js"},{"revision":"b0663391a6dd5efed956259f29fa18dd","url":"materialize.css"},{"revision":"74ac8fd1cd0b94f532c54d4c707a86ae","url":"materialize.js"},{"revision":"ec1df3ba49973dcb9ff212f052d39483","url":"materialize.min.css"},{"revision":"5dcfc8944ed380b2215dc28b3f13835f","url":"materialize.min.js"},{"revision":"b7a97dc36dffb61a3b3e165b9dbe20d2","url":"offline.html"},{"revision":"0fb6fd0b049bd0d880bdb20932250f0b","url":"rent.js"},{"revision":"7a2b4050bd5b0159ba5101b00d60b40f","url":"static-user.html"},{"revision":"ceac046cad1656146e8d521968b87cda","url":"style.css"},{"revision":"1d8179f18fcc6c658c386f9f30ef126b","url":"util.js"},{"revision":"22a2cad39dbdade0d7768ece607324ce","url":"validate_functions.js"},{"revision":"739a6a65fc99c74662841d53c9a988f6","url":"validate_locker.js"},{"revision":"455b81bc035b30f77cf9f8b454475f5f","url":"validate_rent.js"},{"revision":"2cd1cbbe5f9d94f135c89263d2eb4d2b","url":"workbox-a482575e.js"}]);
 
 setDefaultHandler(new NetworkFirst());
 
@@ -85,8 +87,9 @@ registerRoute(
 
 registerRoute(
   new RegExp('\/api/*'),
-  new StaleWhileRevalidate({
+  new NetworkFirst({
     cacheName: 'api-cache',
+    networkTimeoutSeconds: 8,
     plugins: [
       new CacheableResponsePlugin({
         statuses: [0, 200]

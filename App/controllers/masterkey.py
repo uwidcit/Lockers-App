@@ -1,8 +1,7 @@
-from App.models import MasterKey,Key,KeyHistory
+from App.models import MasterKey,Key
 from App.database import db
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import and_, or_
-from datetime import datetime
+from sqlalchemy import or_
 from App.models.masterkey import Key_Type
 
 def new_masterkey(masterkey_id, series,key_type,date_added):
@@ -52,7 +51,7 @@ def get_all_masterkeys_no_offset():
     
 
 def get_masterkey_by_id(id):
-    masterkey = MasterKey.query.filter(MasterKey.masterkey_id.like(id)).first()
+    masterkey = MasterKey.query.filter(MasterKey.masterkey_id.contains(id)).first()
 
     if not masterkey:
         return None
@@ -119,7 +118,11 @@ def update_masterkey_type(id, new_type):
         return None
 
 def search_masterkey(query,offset,size):
-    data = db.session.query(MasterKey).filter(or_( MasterKey.masterkey_id.like(query), MasterKey.series.like(query), MasterKey.key_type.like(query))).all()
+    if query.upper() in Key_Type.__members__:
+        data = db.session.query(MasterKey).filter(or_(MasterKey.key_type == Key_Type[query.upper()],MasterKey.masterkey_id.contains(query),MasterKey.series.contains(query))).all()
+    else:
+        data = db.session.query(MasterKey).filter(or_(MasterKey.masterkey_id.contains(query),MasterKey.series.contains(query))).all()
+
     if not data:
         return {'num_pages':1,'data':[]}
     

@@ -71,6 +71,14 @@
             {% endif %}
     
             <li class="active purple darken-4"><a href="#">{{current_page}}</a></li>
+
+            {% if current_page < num_pages %}
+            <li class="waves effect purple darken-4"><a href="#" style="color:white;">...</a></li>
+            <li class="waves effect purple darken-4"><a href="/masterkey/page/{{num_pages}}" style="color:white;">{{num_pages}}</a></li>
+            {% else %}
+            <li class="waves effect purple darken-4"><a href="#" style="color:white;">...</a></li>
+            <li class="waves effect purple darken-4"><a href="/masterkey/page/1" style="color:white;">1</a></li>
+            {% endif %}
            
             {% if current_page == num_pages %}
             <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>

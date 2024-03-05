@@ -1,22 +1,39 @@
 from App.database import db 
 from App.models import TransactionLog,Rent
-from datetime import datetime
-from flask import flash
-from App.controllers.log import create_log
 from App.models.transactionLog import TransactionType
 from sqlalchemy import or_,and_
-from sqlalchemy.sql import func
+from sqlalchemy.sql import func,Sequence
 from sqlalchemy.exc import SQLAlchemyError
 
-def add_new_transaction(rent_id, currency, transaction_date, amount, description, t_type,receipt_number):
+def add_new_transaction(rent_id, currency, transaction_date, amount, description, t_type):
     try:
-        new_transaction = TransactionLog(rent_id, currency,transaction_date, amount, description, t_type,receipt_number)
+        new_transaction = TransactionLog(rent_id, currency,transaction_date, amount, description, t_type)
+        rent = Rent.query.filter_by(id=rent_id).first()
+        rent.update_payments(amount)
         db.session.add(new_transaction)
+        db.session.add(rent)
         db.session.commit()
         return new_transaction
     except SQLAlchemyError as e:
-        create_log(rent_id, type(e), datetime.now())
-        flash("Unable to Add new Transaction.Check Error Log for more Details")
+        db.session.rollback()
+        return None
+
+def restore_transaction(id,rent_id, currency, transaction_date, amount, description, t_type,receipt_number):
+    try:
+        new_transaction = TransactionLog(rent_id, currency,transaction_date, amount, description, t_type)
+        new_transaction.id = id
+        new_transaction.receipt_number = id
+        rent = Rent.query.filter_by(id=rent_id).first()
+        rent.update_payments(amount)
+        db.session.add(new_transaction)
+        db.session.add(rent)
+        seq = Sequence(name='transaction_log_id_seq')
+        seq2 = Sequence(name='transaction_log_receipt_number_seq')
+        db.session.execute(seq)
+        db.session.execute(seq2)
+        db.session.commit()
+        return new_transaction
+    except SQLAlchemyError as e:
         db.session.rollback()
         return None
 
@@ -24,7 +41,6 @@ def get_transaction_id(id):
     transaction = TransactionLog.query.filter_by(id = id).first()
 
     if not transaction:
-        flash("Transaction does not exist")
         return None
     return transaction
 
@@ -35,43 +51,6 @@ def get_transaction_json(id):
         return None
     return transaction.toJSON()
 
-def get_transaction_by_receipt_number(receipt_no):
-    transaction = TransactionLog.query.filter_by(receipt_no = receipt_no).first()
-
-    if not transaction:
-        return None
-    return transaction
-
-def get_transaction_by_receipt_number_json(id):
-    transaction = get_transaction_by_receipt_number(id)
-
-    if not transaction:
-        return None
-    return transaction.toJSON()
-    
-def get_all_transactions_by_rent(rent_id):
-    transactions = TransactionLog.query.filter_by(rent_id= rent_id)
-
-    if not transactions:
-        return None
-    return transactions
-
-def get_all_transactions_by_rent_json(rent_id):
-    transactions = get_all_transactions_by_rent(rent_id=rent_id)
-    if not transactions:
-        return None
-    return [t.toJSON() for t in transactions]
-
-def cal_transaction_amount(rent_id):
-    transactions = get_all_transactions_by_rent(rent_id)
-
-    if not transactions:
-        return 0.00
-    
-    amount = 0
-    for t in transactions:
-        amount =  amount + t.amount
-    return round(amount,2)
 
 def get_all_transactions():
     transactions = TransactionLog.query.all()
@@ -110,7 +89,15 @@ def getT_Type():
     return [ e.value for e in TransactionType ]
 
 def search_transaction(query,size,offset):
-    data = db.session.query(TransactionLog,Rent).join(Rent).filter(or_(TransactionLog.id.like(query),TransactionLog.rent_id.like(query), Rent.student_id.like(query), TransactionLog.currency.like(query), TransactionLog.receipt_number.like(query), TransactionLog.amount.like(query), TransactionLog.description.like(query))).all()
+    try:
+        int_query = int(query)
+        data = db.session.query(TransactionLog,Rent).join(Rent).filter(or_(TransactionLog.id == int_query,TransactionLog.rent_id == int_query, Rent.student_id == query, TransactionLog.receipt_number == int_query, TransactionLog.amount== int_query)).all()
+    except:
+        if query.upper() in TransactionType.__members__:
+            data = db.session.query(TransactionLog,Rent).join(Rent).filter((TransactionLog.type == TransactionType[query.upper()])).all()
+        else:
+            return None
+
 
     if not data:
         return None

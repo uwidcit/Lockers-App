@@ -17,11 +17,12 @@ from App.controllers import (
     update_student_phone_number,
     update_student_email,
     update_student_faculty,
-    get_all_available_student
 
     )
 from App.views.forms import StudentAdd, SearchForm, TransactionAdd,RentAdd
 from flask_login import login_required
+
+size =6 
 
 student_views = Blueprint('student_views', __name__, template_folder='../templates')
 
@@ -44,7 +45,7 @@ def add_student():
 @student_views.route('/student',methods=['GET'])
 @login_required
 def render_manage_student():
-    studentData = get_students_by_offset(15,1)
+    studentData = get_students_by_offset(size,1)
     previous = 1
     next = previous + 1
     search = SearchForm()
@@ -53,10 +54,10 @@ def render_manage_student():
 
 @student_views.route('/student/page/<offset>',methods=['GET'])
 @login_required
-def render_manage_student_multi():
+def render_manage_student_multi(offset):
     offset = int(offset)
     query = request.args.get('search_query')
-    studentData = get_students_by_offset(15,offset)
+    studentData = get_students_by_offset(size,offset)
     if offset - 1 <= 0:
         previous = 1
         offset = 1
@@ -68,7 +69,7 @@ def render_manage_student_multi():
         next = offset + 1
     search = SearchForm()
     search.submit.label.text = "Search Student"
-    return render_template("manage_student.html",studentData=studentData["data"],num_pages= studentData["num_pages"], current_page =offset ,previous = previous, next = next , form=StudentAdd(),search=search,query=query)
+    return render_template("manage_student.html",studentData=studentData["data"],num_pages= studentData["num_pages"], current_page=offset ,previous = previous, next = next , form=StudentAdd(),search=search,query=query)
 
 @student_views.route("/student/search/",methods=['GET'])
 @login_required
@@ -78,7 +79,7 @@ def search_student_page():
         previous = 1
         next = previous + 1
         query = request.args.get('search_query')
-        student = search_student(query,15,1)
+        student = search_student(query,size,1)
         if student:
             num_pages = student['num_pages']
             return render_template("manage_student.html",studentData=student["data"],num_pages= student["num_pages"], current_page =1 ,previous = previous, next = next , form=StudentAdd(),search=search,query=query)
@@ -125,7 +126,7 @@ def update_student_info(id):
         email = str(request.form.get("email"))
         
         if str(student.student_id) != student_id and student_id != "":
-             if not update_student_id(id,f_name):
+             if not update_student_id(id,student_id):
                 flash("Error updating StudentID")
                 return redirect(url_for('.render_manage_student'))  
 
@@ -198,4 +199,4 @@ def get_student_render_multi(id,offset):
 @student_views.route('/api/student/available', methods=['GET'])
 @login_required
 def get_students_api():
-    return jsonify(get_all_available_student())
+    return jsonify(get_all_students())

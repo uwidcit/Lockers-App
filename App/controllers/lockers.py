@@ -1,27 +1,40 @@
 from App.models import Locker
-from App.models import Area, Rent, KeyHistory
+from App.models import Area, Rent,Active
+from App.models.key_history import KeyHistory
 from App.models.rent import RentStatus as RStatus
 from App.models.locker import LockerStatus as Status, LockerTypes
 from App.database import db
-from App.controllers.log import create_log
 from App.controllers.area import get_area_by_id,get_area_by_description
-from App.controllers.key_history import new_keyHistory,getKeyHistory
+from App.controllers.key_history import new_keyHistory,getKeyHistory,deactivate
 from datetime import datetime
-from flask import flash
+from App.controllers.key import get_key_by_id,new_key as create_key
 from sqlalchemy import or_,and_
 from sqlalchemy.exc import SQLAlchemyError
 
 def add_new_locker(locker_code,locker_type,status,key_id,area):
     try:
+        if len(key_id) == 0 or not key_id:
+            key_id = 'NoKey'
+            status = 'Repair'
         locker = Locker(locker_code,locker_type,status,area)
         db.session.add(locker)
         db.session.commit()
+        if(get_key_by_id(key_id) is None):
+             create_key(key_id,'NoMKey',"AVAILABLE",datetime(2023,10,15))
         new_keyHistory(key_id,locker.locker_code,datetime.now().date())
         return locker
     except SQLAlchemyError as e:
-        print(e)
         db.session.rollback()
-        flash(create_log(e, locker_code))
+        return None
+
+def restore_locker(locker_id,locker_type,status,area):
+    try:
+        locker = Locker(locker_id,locker_type,status,area)
+        db.session.add(locker)
+        db.session.commit()
+        return locker
+    except SQLAlchemyError as e:
+        db.session.rollback()
         return None
 
 def get_lockers_available():
@@ -30,21 +43,6 @@ def get_lockers_available():
         return []
     return [l.toJSON() for l in locker_list]
 
-def get_lockers_by_Status(status):
-    if status.upper() in Status.__members__:
-        locker_list = Locker.query.filter(Locker.status == Status[status.upper()]).all()
-        if not locker_list:
-            return None
-        return [l.toJSON() for l in locker_list]
-    return None
-
-def get_locker_by_type(l_type):
-    if l_type.upper() in LockerTypes.__members__:
-        locker_list = Locker.query.filter(Locker.locker_type == LockerTypes[l_type.upper()]).all()
-        if not locker_list:
-            return None
-        return [l.toJSON() for l in locker_list]
-    return None
 
 def get_locker_by_area_id(id):
     area = get_area_by_id(id)
@@ -79,7 +77,7 @@ def get_lockers_by_area_description(description):
 
 
 def get_locker_id(id):
-    locker = db.session.query(Locker,Area).join(Area).filter(Locker.locker_code == id).first()
+    locker = db.session.query(Locker,Area,KeyHistory).join(Area,KeyHistory).filter(Locker.locker_code == id,KeyHistory.isActive == Active.ACTIVE).first()
     if not locker:
         return None
     
@@ -90,100 +88,48 @@ def get_locker_id_locker(id):
     if not locker:
         return None
     return locker
-
-def search_lockers(query,offset,size):
-    data = db.session.query(Locker,Area).join(Area).filter(or_(Locker.locker_code.like(query), Locker.locker_type.like(query), Locker.status.like(query), Locker.status.like(query), Locker.key.like(query),Area.description.like(query))).all()
-
-    if not data:
-        return None
-    length_lockers = len(data)
-    if length_lockers == 0:
-         num_pages = 1
-    
-    if length_lockers%size != 0:
-        num_pages = int((length_lockers/size) + 1)
-    else:
-        num_pages = int(length_lockers/size)
-    
-    index = (offset * size) - size
-    stop = (offset * size)
-
-    if(stop > length_lockers):
-        stop = length_lockers
-    
-    l_list = []
-    for locker,area in data[index:stop]:
-        l = locker.toJSON()
-        l['area_description'] = area.description
-        l_list.append(l)
-    return {"num_pages": num_pages,"data":l_list}
     
 
 def get_all_lockers():
-    locker_list = db.session.query(Locker,Area).join(Area).all()
+    locker_list = db.session.query(Locker,Area,KeyHistory).join(Area,KeyHistory).filter(KeyHistory.isActive == Active.ACTIVE).all()
+
     if not locker_list:
         return []
     
     data = []
-    for locker,area in locker_list:
+
+    for locker,area,keyHistory in locker_list:
         l = locker.toJSON()
         l['area_description'] = area.description
-        if l['key_history']['rent']:
-            from App.controllers import update_rent
-            for r in l['key_history']['rent']:
-                if r["status"] != "Verified":
-                     l['current_rental'] = update_rent(r['id']).toJSON()           
+        l['key'] = keyHistory.key_id
+
+        #if l['status'] !='Repair' and (l['status'] == 'Rented' or l['status'] == 'Not Verified') :
+           #if l['key_history']['rent']:
+               # from App.controllers import update_rent
+                #for r in l['key_history']['rent']:
+                   # if r["status"] != "Verified":
+                       #l['current_rental'] = update_rent(r['id']).toJSON()
         data.append(l)
     return data
 
-def get_num_lockers():
-    try:
-        lockers = Locker.query.all()
-
-        if not lockers:
-            count = 1
-        else:
-            count = len(lockers)
-       
-        return count
-    except:
-        db.session.close()
-        db.session.begin()
-
-def get_num_locker_page(size):
-    count = get_num_lockers()
-
-    if count == 0:
-        return 1
-
-    if count%size != 0:
-        return int(count/size + 1)
-
-    return int(count/size)
-
-def get_lockers_by_offset(size,offset):
-     l_offset = (offset * size) - size
-     lockers = db.session.query(Locker,Area).join(Area).limit(size).offset(l_offset)
-     
-     if not lockers:
-        return None
-     data = []
-     for locker,area in lockers:
-        l = locker.toJSON()
-        keyH = locker.KeyH.order_by(KeyHistory.id.desc()).first().id
-        current_rental =  Rent.query.filter(and_(Rent.keyHistory_id == keyH, Rent.status != RStatus.VERIFIED)).first()
-        if current_rental:
-            l['current_rental'] = current_rental.toJSON()
-        l['area_description'] = area.description
-        data.append(l)
-     return data
 
 def get_current_rental(id):
     locker = get_locker_id_locker(id)
+    if locker is None:
+        return None
     keyH = locker.KeyH.order_by(KeyHistory.id.desc()).first().id
     current_rental =  Rent.query.filter(and_(Rent.keyHistory_id == keyH, Rent.status != RStatus.VERIFIED)).first()
     if current_rental:
         return current_rental.toJSON()
+    return None
+def get_current_rental_c(id):
+    locker = get_locker_id_locker(id)
+    if locker is None:
+        return None
+    keyH = locker.KeyH.order_by(KeyHistory.id.desc()).first().id
+    current_rental =  Rent.query.filter(and_(Rent.keyHistory_id == keyH, Rent.status != RStatus.VERIFIED)).first()
+    if current_rental:
+        return current_rental
     return None
 
 def get_current_locker_instance(id):
@@ -197,7 +143,6 @@ def get_current_locker_instance(id):
 def rent_locker(id):
     locker = get_locker_id_locker(id)
     if not locker or locker.status == Status.RENTED:
-        flash("locker already Rented")
         return None
     locker.status = Status.RENTED
     try:
@@ -205,8 +150,6 @@ def rent_locker(id):
         db.session.commit()
         return True
     except SQLAlchemyError as e:
-        create_log(id, type(e), datetime.now())
-        flash("Unable to Rent Locker. Check Error Log for more Details")
         db.session.rollback()
         return None
 
@@ -226,14 +169,11 @@ def not_verified(id):
         return locker
     except SQLAlchemyError as e:
         db.session.rollback()
-        create_log(id, type(e), datetime.now())
-        flash("Unable to release Locker. Check Error Log for more Details")
         return None
 
 def release_locker(id):
     keyH = getKeyHistory(id)
     locker = get_locker_id_locker(keyH.locker_id)
-    print(locker)
     if not locker:
         return None
     
@@ -244,8 +184,6 @@ def release_locker(id):
         db.session.commit()
         return locker
     except SQLAlchemyError as e:
-        create_log(id, type(e), datetime.now())
-        flash("Unable to release Locker. Check Error Log for more Details")
         db.session.rollback()
         return None
 
@@ -255,7 +193,6 @@ def delete_locker(id):
         return None
 
     if get_current_rental(id):
-        flash('Can not delete a locker currently being rented')
         return None
     else:
         try:
@@ -263,38 +200,44 @@ def delete_locker(id):
             db.session.commit()
             return locker
         except SQLAlchemyError as e:
-            create_log(id, type(e), datetime.now())
-            flash("Unable to delete Locker. Check Error Log for more Details")
             db.session.rollback()
             return None
     
 def update_key(id, new_key):
+    if len(new_key) == 0 or new_key is None:
+        raise Exception('Key cannot be empty')
     locker = get_locker_id_locker(id)
     if not locker:
         return None
 
     if get_current_rental(id):
-        flash('Can not delete a locker currently being rented')
         return None
     else:
-        try:
-            new_keyHistory(new_key,locker.locker_code,datetime.now().date())
-            return locker
-        except SQLAlchemyError as e:
-            create_log(id, type(e), datetime.now())
-            flash("Unable to update key. Check Error Log for more Details")
-            db.session.rollback()
+        if(get_key_by_id(new_key) is None):
+            create_key(new_key,'NoMKey',"AVAILABLE",datetime(2023,10,15))
+        keyH1 = locker.KeyH.order_by(KeyHistory.id.desc()).first()
+        keyH2 = KeyHistory.query.filter(KeyHistory.key_id == new_key).order_by(KeyHistory.id.desc()).first()
+        if keyH1.key_id == new_key:
             return None
+        if keyH2:
+            swap_key(keyH1.locker_id,keyH2.locker_id)
+        else:
+            deactivate(keyH1.id)
+            new_keyHistory(new_key,id,datetime.now())
+        return locker
 
 def update_locker_status(id, new_status):
+    if len(new_status) == 0 or new_status is None:
+        raise Exception('Locker Status cannot be set to empty')
     locker = get_locker_id_locker(id)
     if not locker:
         return None
     
     if get_current_rental(id):
-        flash('Can not delete a locker currently being rented')
         return None
     else:
+        if locker.status.value == new_status:
+            return locker
         try:
             if new_status.upper() in Status.__members__:
                 locker.status = Status[new_status.upper()]
@@ -306,14 +249,17 @@ def update_locker_status(id, new_status):
             return None
 
 def update_locker_type(id, new_type):
+    if len(new_type) == 0 or new_type is None:
+        raise Exception('Locker Type cannot be empty')
     locker = get_locker_id_locker(id)
     if not locker:
         return None
         
     if get_current_rental(id):
-        flash('Can not delete a locker currently being rented')
         return None
     else:
+        if locker.locker_type.value == new_type:
+            return locker
         try:
             if new_type.upper() in LockerTypes.__members__:
                 locker.locker_type = LockerTypes[new_type.upper()]
@@ -322,9 +268,24 @@ def update_locker_type(id, new_type):
                 return locker
         except SQLAlchemyError as e:
             db.session.rollback()
-            print(e.__dict__)
-            create_log(id, type(e), datetime.now())
-            flash("Unable to update locker status. Check Error Log for more Details")
+            return None
+def update_locker_area(id,new_area):
+    locker = get_locker_id_locker(id)
+    if not locker:
+        return None
+    
+    if get_current_rental(id):
+        return None
+    else:
+        if locker.area == new_area:
+            return locker
+        try:
+                locker.area = new_area
+                db.session.add(locker)
+                db.session.commit()
+                return locker
+        except SQLAlchemyError:
+            db.session.rollback()
             return None
 
 def get_locker_rent_history(id,size,offset):
@@ -363,13 +324,16 @@ def getLockerTypes():
 def swap_key(id1, id2):
     locker1 = get_locker_id_locker(id1)
     locker2 = get_locker_id_locker(id2)
+    
     if locker1 is None or locker2 is None:
         return None
-    temp = locker1.KeyH.order_by(KeyHistory.id.desc()).first().key_id
-    temp2 = locker2.KeyH.order_by(KeyHistory.id.desc()).first().key_id
+    temp = locker1.KeyH.order_by(KeyHistory.id.desc()).first()
+    temp2 = locker2.KeyH.order_by(KeyHistory.id.desc()).first()
     try:
-        new_keyHistory(temp2,locker1.locker_code,datetime.now().date())
-        new_keyHistory(temp,locker2.locker_code,datetime.now().date())
+        deactivate(temp.id)
+        deactivate(temp2.id)
+        new_keyHistory(temp2.key_id,locker1.locker_code,datetime.now().date())
+        new_keyHistory(temp.key_id,locker2.locker_code,datetime.now().date())
         locker2 = get_locker_id(id2)
         locker1 = get_locker_id(id1)
         return [locker1,locker2]

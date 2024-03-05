@@ -71,13 +71,13 @@
   {% if current_page == 1 %}
   <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
   {% else %}
-  <li><a href="/student/{{student.student_id}}/page/{{previous}}"><i class="material-icons">chevron_left</i></a></li>
+  <li><a href="/student/{{student.student_id}}/page/{{previous}}"><i class="material-icons white-text">chevron_left</i></a></li>
   {% endif %}
   <li class="waves effect purple darken-4"><a href="#" style="color:white;">{{current_page}}</a></li>
   {% if current_page == num_pages %}
   <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
   {% else %}
-  <li><a href="/student/{{student.student_id}}/page/{{next}}"><i class="material-icons">chevron_right</i></a></li>
+  <li><a href="/student/{{student.student_id}}/page/{{next}}"><i class="material-icons white-text">chevron_right</i></a></li>
   {% endif %}
 </ul>
 </div>
@@ -177,10 +177,6 @@
              {{subfield}}
             {% endfor %}
           </select>
-        </div>
-        <div class="col s6">
-          <p> Receipt Number </p>
-          {{trans.receipt_number(size=18, class="validate white-text")}}
         </div>
       </div>
     </div>

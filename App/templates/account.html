@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block title %}Manage Lockers {% endblock %}
+{% block page %}Manage Lockers{% endblock %}
+
+{{ super() }}
+
+{% block content %}
+<div class="row" style="height: 100vh;">
+      <div class="col s12 m8 offset-m1">
+        <h3>Change Password </h3>
+        <form method="POST" action="/users/password">
+          
+          <label for="current_password">
+            <span> Enter current password</span>
+            <input type="password" id="current_password" class="white-text" name="current_password" required>
+          </label>
+
+          <label for="new_password">
+            <span> Enter new password</span>
+            <input type="password" id="new_password" class="white-text" name="new_password" required>
+          </label>
+
+          <label for="confirm_password">
+            <span> Confirm new password</span>
+            <input type="password" id="confirm_password" class="white-text" name="confirm_password" required>
+          </label>
+
+          <input type="submit">
+        </form>
+
+  </div>
+</div>
+
+
+
+{% endblock %}

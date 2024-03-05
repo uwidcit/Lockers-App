@@ -3,9 +3,7 @@ from App.models.student import RentStanding
 from App.models.rent import RentStatus as RStatus
 from App.database import db
 from sqlalchemy.exc import SQLAlchemyError
-from flask import flash
 from sqlalchemy import or_, and_
-from App.controllers.log import create_log
 from datetime import datetime
 
 def add_new_student(s_id, f_name, l_name, faculty,p_no,email):
@@ -19,8 +17,6 @@ def add_new_student(s_id, f_name, l_name, faculty,p_no,email):
         return new_student
 
     except SQLAlchemyError as e:
-        #create_log(s_id, type(e), datetime.now())
-        flash("Unable to Add new Student. Check Error Log for more Details")
         db.session.rollback()
         return None
 
@@ -48,9 +44,8 @@ def update_student_id(s_id,new_s_id):
         db.session.commit()
 
     except SQLAlchemyError as e:
-        create_log(s_id, type(e), datetime.now())
-        flash("Unable to Update Student ID. Check Error Log for more Details")
         db.session.rollback()
+        return None
 
 def update_student_first_name(s_id, new_f_name):
     student = get_student_by_id(s_id)
@@ -64,9 +59,8 @@ def update_student_first_name(s_id, new_f_name):
         db.session.commit()
 
     except SQLAlchemyError as e:
-        create_log(s_id, type(e), datetime.now())
-        flash("Unable to Update Student First Name. Check Error Log for more Details")
         db.session.rollback()
+        return None
 
 
 def update_student_last_name(s_id, new_l_name):
@@ -81,8 +75,6 @@ def update_student_last_name(s_id, new_l_name):
         db.session.commit()
 
     except SQLAlchemyError as e:
-        create_log(s_id, type(e), datetime.now())
-        flash("Unable to Update Student Last Name. Check Error Log for more Details")
         db.session.rollback()
         return None
 
@@ -98,8 +90,6 @@ def update_student_phone_number(s_id, new_phone_no):
         db.session.commit()
 
     except SQLAlchemyError as e:
-        create_log(s_id, type(e), datetime.now())
-        flash("Unable to Update Student Phone Number. Check Error Log for more Details")
         db.session.rollback()
         return None
 
@@ -116,7 +106,6 @@ def update_student_email(s_id, new_email):
         db.session.commit()
 
     except SQLAlchemyError as e:
-        create_log(s_id, type(e), datetime.now())
         db.session.rollback()
         return None
 
@@ -133,8 +122,6 @@ def update_student_faculty(s_id, new_faculty):
 
         
     except SQLAlchemyError as e:
-        create_log(s_id, type(e), datetime.now())
-        flash("Unable to Update Student Faculty.Check Error Log for more Details")
         db.session.rollback()
         return None
 
@@ -151,14 +138,13 @@ def update_student_status(id,status):
         db.session.commit()
 
     except SQLAlchemyError as e:
-        flash("Unable to Update Student Faculty.Check Error Log for more Details")
         db.session.rollback()
         return None
 
 def get_available_student(size,offset):
     s_offset = (offset *size) - size
 
-    students = Student.query.filter_by(rentStanding = RentStanding.GOOD).limit(size).offset(s_offset)
+    students = Student.query.filter(Student.rentStanding != RentStanding.OVERDUE).limit(size).offset(s_offset)
 
     if not students:
         return {"num_pages":1,"data":[]}
@@ -206,8 +192,10 @@ def get_students_by_offset(size,offset):
 
 
 def search_student(query,size,offset):
-    data = Student.query.filter(or_(Student.student_id.like(query), Student.first_name.like(query), Student.last_name.like(query), Student.faculty.like(query), Student.rentStanding.like(query))).all()
-    
+    if query.upper() in RentStanding.__members__:
+        data = Student.query.filter(or_(Student.student_id.contains(query),Student.rentStanding == RentStanding(query.upper()),Student.first_name.contains(query), Student.last_name.contains(query), Student.faculty.contains(query), Student.email.contains(query),Student.phone_number.contains(query))).all()
+    else:
+        data = Student.query.filter(or_(Student.student_id.contains(query),Student.first_name.contains(query), Student.last_name.contains(query), Student.faculty.contains(query), Student.email.contains(query),Student.phone_number.contains(query))).all()
     if not data:
         return {"num_pages":1,"data":[]}
     
@@ -285,7 +273,7 @@ def get_rental_student(id,size,offset):
     return {"num_pages":num_pages,"data":r_list}
     
 def get_all_available_student():
-    students = Student.query.filter_by(rentStanding = RentStanding.GOOD).all()
+    students = Student.query.all()
     if not students:
         return {}
     return [S.toJSON() for S in students]

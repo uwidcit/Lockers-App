@@ -37,11 +37,11 @@
         <th>Status</th>
         <th>Key ID</th>
     </tr>
-    {% for l in area.locker %}
+    {% for l in locker %}
     <tr class="purple darken-4">
       <td><a href="/locker/{{l.locker_code}}">{{l.locker_code}}</a></td>
-      <td>{{l.locker_type.value}}</td>
-      <td>{{l.status.value}}</td>
+      <td>{{l.locker_type}}</td>
+      <td>{{l.status}}</td>
       <td>{{l.key}} </td>
     </tr>
     {% endfor %}
@@ -54,15 +54,22 @@
   {% if current_page == 1 %}
   <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
   {% else %}
-  <li><a href="/area/{{area.id}}/page/{{previous}}"><i class="material-icons">chevron_left</i></a></li>
+  <li><a href="/area/{{area.id}}/page/{{previous}}"><i class="material-icons white-text">chevron_left</i></a></li>
   {% endif %}
 
+  
   <li class="waves effect purple darken-4"><a href="#" style="color:white;">{{current_page}}</a></li>
- 
+  {% if current_page < num_pages %}
+  <li class="waves effect purple darken-4"><a href="#" style="color:white;">...</a></li>
+  <li class="waves effect purple darken-4"><a href="/area/{{area.id}}/page/{{num_pages}}" style="color:white;">{{num_pages}}</a></li>
+  {% else %}
+  <li class="waves effect purple darken-4"><a href="#" style="color:white;">...</a></li>
+  <li class="waves effect purple darken-4"><a href="/area/{{area.id}}/page/1" style="color:white;">1</a></li>
+  {% endif %}
   {% if current_page == num_pages %}
   <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
   {% else %}
-  <li><a href="/area/{{area.id}}/page/{{next}}"><i class="material-icons">chevron_right</i></a></li>
+  <li><a href="/area/{{area.id}}/page/{{next}}"><i class="material-icons white-text">chevron_right</i></a></li>
   {% endif %}
 </ul>
 </div>

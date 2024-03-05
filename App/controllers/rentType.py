@@ -1,10 +1,8 @@
 from App.models import RentTypes,Rent
 from App.models.rentTypes import Types
 from App.database import db
-from sqlalchemy import and_,or_
+from sqlalchemy import and_,Sequence
 from sqlalchemy.exc import SQLAlchemyError
-from flask import flash
-from App.controllers.log import create_log
 from datetime import datetime
 
 def new_rentType(period_from, period_to, type, price):
@@ -14,8 +12,19 @@ def new_rentType(period_from, period_to, type, price):
         db.session.commit()
         return rentType
     except SQLAlchemyError as e:
-        create_log(price, type(e), datetime.now())
-        flash("Unable to create new Rent Type. Check Error Log for more Details")
+        db.session.rollback()
+        return None
+    
+def restore_rentType(id,period_from, period_to, type, price):
+    seq = Sequence(name='rental_types_id_seq')
+    try:
+        rentType = RentTypes(period_from,period_to,type,price)
+        rentType.id = id
+        db.session.add(rentType)
+        db.session.execute(seq)
+        db.session.commit()
+        return rentType
+    except SQLAlchemyError as e:
         db.session.rollback()
         return None
 
@@ -23,7 +32,6 @@ def get_rentType_by_id(id):
     rentType = RentTypes.query.filter_by(id = id).first()
 
     if not rentType:
-        flash("Rent Type does not exist")
         return None
 
     return rentType
@@ -57,7 +65,6 @@ def update_rentType_price(id,new_price):
     rent = Rent.query.filter_by(rent_type = id).first()
 
     if rent:
-        flash("Unable to update Rent Type Period. A rent exists with this model")
         return []
     try:
         rentType = get_rentType_by_id(id)
@@ -69,8 +76,6 @@ def update_rentType_price(id,new_price):
         db.session.commit()
         return rentType
     except SQLAlchemyError as e:
-        create_log(id, type(e), datetime.now())
-        flash("Unable to update Rent Type. Check Error Log for more Details")
         db.session.rollback()
         return None
 
@@ -93,8 +98,6 @@ def update_rentType_period(id, period_from, period_to):
         return rent_type
 
     except SQLAlchemyError as e:
-        create_log(id, type(e), datetime.now())
-        flash("Unable to update Rent Type Period. Check Error Log for more Details")
         db.session.rollback()
         return None
 
@@ -116,8 +119,6 @@ def update_rentType_type(id,type):
             db.session.commit()
             return rent_type
     except SQLAlchemyError:
-        create_log(id, type(e), datetime.now())
-        flash("Unable to update Rent Type Period. Check Error Log for more Details")
         db.session.rollback()
         return []
         
@@ -137,18 +138,44 @@ def delete_rent_type(id):
         return rent_type
 
     except SQLAlchemyError:
-        create_log(id, type(e), datetime.now())
-        flash("Unable to update Rent Type Period. Check Error Log for more Details")
         db.session.rollback()
         return []    
 
 def get_All_rentType():
-    rentType = RentTypes.query.all()
+    rentType = RentTypes.query.filter(RentTypes.type != Types.KEYREPLACEMENT).all()
 
     if not rentType:
         return None
         
     return [r.toJSON() for r in rentType]
+
+def get_All_rentType_group():
+    rentType = RentTypes.query.filter(RentTypes.type != Types.KEYREPLACEMENT).all()
+
+    if not rentType:
+        return None
+
+    fixed = []
+    rates = []
+
+    for r in rentType:
+        if r.type == Types.DAILY or r.type == Types.HOURLY:
+            fixed.append(r.toJSON())
+        else:
+            rates.append(r.toJSON())
+    data = {
+        'fixed':fixed,
+        'rates': rates
+    }
+    return data
+
+def get_addtional_rentTypes():
+    rentType = RentTypes.query.filter(RentTypes.type == Types.KEYREPLACEMENT).all()
+
+    if not rentType:
+        return None
+
+    return [rt.toJSON() for rt in rentType]
 
 def get_all_rentType_tuple():
     rentType = get_All_rentType()
@@ -176,7 +203,19 @@ def get_all_rentType_current():
 
 
 def get_rt_Type():
-    return [rt.value for rt in Types]
+    data = {
+        "Semester":[],
+        "Rate":[],
+        "Yearly":[]
+    }
+    for rt in Types:
+        if rt.value.__contains__("Semester"):
+            data["Semester"].append((rt.name, rt.value))
+        elif rt.value.__contains__("Yearly"):
+            data["Yearly"].append((rt.name, rt.value))
+        else:
+           data["Rate"].append((rt.name, rt.value))
+    return data
 
 def get_rentType_by_offset(size,offset):
     l_offset = (offset * size) - size
@@ -206,7 +245,11 @@ def get_rentType_by_offset(size,offset):
     return {"num_pages":count, "data":r_list}
 
 def search_rentType(query,size,offset):
-    data = RentTypes.query.filter(or_(RentTypes.id.like(query), RentTypes.price.like(query))).all()
+    try:
+        int_query = int(query)
+        data = RentTypes.query.filter(RentTypes.id == int_query, RentTypes.price == query).all()
+    except:
+        raise Exception('Invalid search data entered')
 
     if not data:
         return None

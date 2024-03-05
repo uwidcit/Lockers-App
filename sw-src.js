@@ -1,19 +1,21 @@
 // https://developer.chrome.com/docs/workbox/modules/workbox-sw/
 
 importScripts(
-  'https://storage.googleapis.com/workbox-cdn/releases/6.4.1/workbox-sw.js'
+  'https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-sw.js'
 );
 
 self.skipWaiting()
+
 
 const {offlineFallback} = workbox.recipes;
 const {BackgroundSyncPlugin,Queue} = workbox.backgroundSync;
 const {registerRoute,setDefaultHandler} = workbox.routing;
 const {CacheFirst, StaleWhileRevalidate, NetworkOnly,NetworkFirst} = workbox.strategies;
-const {precacheAndRoute} = workbox.precaching;
+const {precacheAndRoute,cleanupOutdatedCaches,addRoute} = workbox.precaching;
 const {CacheableResponse, CacheableResponsePlugin} = workbox.cacheableResponse;
 
-precacheAndRoute([ { url: '/locker', revision: null }, ...self.__WB_MANIFEST]);
+cleanupOutdatedCaches()
+precacheAndRoute(self.__WB_MANIFEST);
 
 setDefaultHandler(new NetworkFirst());
 
@@ -85,8 +87,9 @@ registerRoute(
 
 registerRoute(
   new RegExp('\/api/*'),
-  new StaleWhileRevalidate({
+  new NetworkFirst({
     cacheName: 'api-cache',
+    networkTimeoutSeconds: 8,
     plugins: [
       new CacheableResponsePlugin({
         statuses: [0, 200]

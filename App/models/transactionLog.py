@@ -2,6 +2,10 @@ from datetime import datetime
 from App.database import db
 from enum import Enum
 
+from sqlalchemy import Sequence
+
+seq = Sequence('transaction_log_receipt_number_seq')
+
 class TransactionType(Enum):
     CREDIT = "credit"
     DEBIT = "debit"
@@ -13,10 +17,10 @@ class TransactionLog(db.Model):
     transaction_date = db.Column(db.Date,nullable = False)
     amount = db.Column(db.Float , nullable = False)
     description = db.Column(db.String, nullable = False)
-    receipt_number = db.Column(db.Integer,nullable=False,unique=True)
+    receipt_number = db.Column(db.Integer,seq,nullable=False,unique=True)
     type = db.Column(db.Enum(TransactionType), nullable = False)
 
-    def __init__(self, rent_id, currency, transaction_date, amount, description, type,receipt_number):
+    def __init__(self, rent_id, currency, transaction_date, amount, description, type):
         self.rent_id = rent_id
         self.currency = currency
         self.transaction_date = transaction_date
@@ -24,7 +28,6 @@ class TransactionLog(db.Model):
         self.description = description
         if type.upper() in TransactionType.__members__:
             self.type = TransactionType[type.upper()]
-        self.receipt_number = receipt_number
     
     def toJSON(self):
         return {

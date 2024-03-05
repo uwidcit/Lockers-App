@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, SubmitField,DecimalField, DateField,DateTimeLocalField,IntegerField
-from wtforms.validators import InputRequired, EqualTo, Email
+from wtforms.validators import InputRequired, Email
 
 from App.controllers import (
     getT_Type,
@@ -39,7 +39,7 @@ class TransactionAdd(FlaskForm):
 class RentTypeAdd(FlaskForm):
     period_from = DateField('period_from', validators=[InputRequired()])
     period_to = DateField('period_to', validators=[InputRequired()])
-    type =  SelectField('type', choices=get_rt_Type(),validators=[InputRequired()])
+    type =  SelectField('type',choices=get_rt_Type(), validators=[InputRequired()])
     price = DecimalField('price',validators=[InputRequired()],places=2)
     submit = SubmitField('New Price Model', render_kw={'class': 'btn waves-effect waves-light white-text'})
 

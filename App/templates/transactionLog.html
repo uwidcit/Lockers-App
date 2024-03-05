@@ -56,19 +56,19 @@
               {% if current_page == 1  %}
                 <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
                 {% else %}
-                <li><a href="/masterkey/search/page/{{previous}}/?search_query={{query}}"><i class="material-icons white-text">chevron_left</i></a></li>
+                <li><a href="/transactionLog/search/page/{{previous}}/?search_query={{query}}"><i class="material-icons white-text">chevron_left</i></a></li>
                 {% endif %}
                 <li class="active purple darken-4">{{current_page}}</li>
                 {% if current_page == num_pages %}
                 <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
                 {% else %}
-                <li><a href="/masterkey/search/page/{{next}}/?search_query={{query}}"><i class="material-icons white-text">chevron_right</i></a></li>
+                <li><a href="/transactionLog/search/page/{{next}}/?search_query={{query}}"><i class="material-icons white-text">chevron_right</i></a></li>
                 {% endif %}
             {% else %}
             {% if current_page == 1  %}
             <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
             {% else %}
-            <li><a href="/masterkey/page/{{previous}}"><i class="material-icons white-text">chevron_left</i></a></li>
+            <li><a href="/transactionLog/page/{{previous}}"><i class="material-icons white-text">chevron_left</i></a></li>
             {% endif %}
     
             <li class="active purple darken-4"><a href="#">{{current_page}}</a></li>
@@ -76,7 +76,7 @@
             {% if current_page == num_pages %}
             <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
             {% else %}
-            <li><a href="/masterkey/page/{{next}}"><i class="material-icons white-text">chevron_right</i></a></li>
+            <li><a href="/transactionLog/page/{{next}}"><i class="material-icons white-text">chevron_right</i></a></li>
             {% endif %}
           {% endif %}
 
@@ -127,11 +127,6 @@
             {% endfor %}
           </select>
         </div>
-    
-        <div class="input-field col s12 m4">
-          <p> Receipt Number </p>
-          {{form.receipt_number(size=18, class="validate white-text")}}
-          </div>
     
           <div class="input-field col s8 m8 offset-m4" style="display:inline;">
             {{form.submit(class=" right purple darken-4 waves-light btn")}}

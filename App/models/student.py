@@ -8,12 +8,12 @@ class RentStanding(Enum):
     OWED = "OWED"
 
 class Student(db.Model):
-    student_id = db.Column(db.Integer, primary_key = True)
+    student_id = db.Column(db.String, primary_key = True)
     first_name = db.Column(db.String, nullable= False)	
     last_name = db.Column(db.String, nullable= False)	
     faculty = db.Column(db.String(3), nullable= False)	
     phone_number = db.Column(db.String, nullable= False) 	
-    email = db.Column(db.String, nullable= False, unique = True)
+    email = db.Column(db.String, nullable= False)
     rentStanding = db.Column(db.Enum(RentStanding), nullable=False)
     rentals = db.relationship('Rent', backref='student',lazy=True, cascade="all, delete-orphan")
     

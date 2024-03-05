@@ -1,20 +1,21 @@
 from datetime import datetime
-from App.database import db
 import pandas as pd
-import io,os
+import io
 from App.models import *
+from sqlalchemy import Sequence
+from App.models.rentTypes import Types as RType
 from App.controllers import (
     new_masterkey,
     new_key,
-    new_keyHistory,
-    add_new_area,
+    restore_keyHistory,
+    restore_area,
     add_new_student,
-    add_new_locker,
+    restore_locker,
     import_verified_rent,
-    create_rent,
-    new_rentType,
+    init_amount_owed,
+    restore_rentType,
     create_comment,
-    add_new_transaction
+    restore_transaction
 )
 
 model_list = [
@@ -90,54 +91,88 @@ def import_area(uploaded_file):
     reader = pd.read_excel(uploaded_file,"area")
     area_json = reader.to_dict('records')
     for a in area_json:
-        add_new_area(a["description"], a['longitude'], a['latitude'])
+        restore_area(a['id'],a["description"], a['longitude'], a['latitude'])
+    
+    seq = Sequence(name='area_id_seq')
+    key = db.session.execute(seq)
+    
+    while (key < area_json[len(area_json)-1]['id']):
+        key = db.session.execute(seq)
+    
     return True
 
 def import_student(uploaded_file):
     reader = pd.read_excel(uploaded_file,"student")
     student_json = reader.to_dict('records')
     for s in student_json:
+        if len(str(s['faculty'])) > 3:
+            s['faculty'] = str(s['faculty'])[0:2].upper()
         add_new_student(s['student_id'], s['first_name'], s['last_name'], s['faculty'], s['phone_number'],s['email'])
     return True
 
 
 def import_locker(uploaded_file):
     reader = pd.read_excel(uploaded_file,"locker")
+    
     locker_json = reader.to_dict('records')
     for l in locker_json:
         if l['status'] == 'Rented':
-            add_new_locker(l['locker_code'], l['locker_type'],'Free',l['key'],l['area'])
+            restore_locker(l['locker_code'], l['locker_type'],'Free',l['area'])
         else:
-            add_new_locker(l['locker_code'], l['locker_type'],l['status'],l['key'],l['area'])
-            
+            restore_locker(l['locker_code'], l['locker_type'],l['status'],l['area'])
+       
     return True
 
 def import_keyHistory(uploaded_file):
     reader = pd.read_excel(uploaded_file,"key_history")
+    seq = Sequence(name='key_history_id_seq')
     keyH_json = reader.to_dict('records')
     for kh in keyH_json:
-        new_keyHistory(kh['key_id'], kh['locker_id'],kh['date_moved'])
+        k = restore_keyHistory(kh['id'],kh['key_id'], kh['locker_id'],kh['date_moved'])
+    key = db.session.execute(seq)
+    
+    while (key < keyH_json[len(keyH_json)-1]['id']):
+        key = db.session.execute(seq)
+
     return True
 
 def import_rentTypes(uploaded_file):
     reader = pd.read_excel(uploaded_file,"rental_types")
     rentTypes_json = reader.to_dict('records')
     for rT in rentTypes_json:
-        new_rentType(datetime.strptime(rT['period_from'],'%Y-%m-%d'),datetime.strptime(rT['period_to'],'%Y-%m-%d'),rT['type'],rT['price'])
+        for r in RType.__members__:
+            if (rT['type'] == RType[r].value):
+                 rT['type'] = RType[r].name
+        restore_rentType(rT['id'],datetime.strptime(rT['period_from'],'%Y-%m-%d'),datetime.strptime(rT['period_to'],'%Y-%m-%d'),rT['type'],rT['price'])
+    seq = Sequence(name='rental_types_id_seq')
+    key = db.session.execute(seq)
+    
+    while (key < rentTypes_json[len(rentTypes_json)-1]['id']):
+        key = db.session.execute(seq)
+    
     return True
 
 def import_rent(uploaded_file):
     reader = pd.read_excel(uploaded_file,"rent")
     rent_json = reader.to_dict('records')
+    r_dfrom= None
+    r_dto= None
+    d_return = None
     for r in rent_json:
-        r_dfrom = datetime.strptime(r['rent_date_to'],'%Y-%m-%d %H:%M:%S')
-        r_dto = datetime.strptime(r['rent_date_from'],'%Y-%m-%d %H:%M:%S')
-        if r['status'] == 'Verified':
+        try:
+            r_dfrom = datetime.strptime(r['rent_date_to'],'%Y-%m-%d %H:%M:%S')
+            r_dto = datetime.strptime(r['rent_date_from'],'%Y-%m-%d %H:%M:%S')
             d_return = datetime.strptime(r['date_returned'],'%Y-%m-%d %H:%M:%S')
-            import_verified_rent(r['student_id'],r['locker_id'], r['rent_type'],r_dfrom,r_dto,r['amount_owed'],r['status'],d_return)
-        else:
-            create_rent(r['student_id'],r['locker_id'], r['rent_type'],r_dfrom,r_dto)
-    return True
+        except:
+            d_return = None
+        amount_owed = init_amount_owed(r['rent_type'],r_dfrom,r_dto)
+        import_verified_rent(r['id'],r['student_id'],r['keyHistory_id'], r['rent_type'],r_dfrom,r_dto,amount_owed,r['status'],d_return,r['rent_method'],r['additional_fees'], r['late_fees'])
+    seq = Sequence(name='rent_id_seq')
+    key = db.session.execute(seq)
+    
+    while (key < rent_json[len(rent_json)-1]['id']):
+        key = db.session.execute(seq)
+        return True
 
 def import_notes(uploaded_file):
     reader = pd.read_excel(uploaded_file,"notes")
@@ -155,26 +190,22 @@ def import_transactionLog(uploaded_file):
     reader = pd.read_excel(uploaded_file,"transaction_log")
     tLog_json = reader.to_dict('records')
     for tL in tLog_json:
-        if type(tL['transaction_date']) is not datetime:
+        try:
             tL['transaction_date'] = datetime.strptime(tL['transaction_date'],'%Y-%m-%d')
-        add_new_transaction(tL['rent_id'], tL['currency'],tL['transaction_date'], tL['amount'], tL['description'], tL['type'], tL['receipt_number'])
+        except:
+            print('Invalid date conversation')
+        restore_transaction(tL['id'],tL['rent_id'], tL['currency'],tL['transaction_date'], tL['amount'], tL['description'], tL['type'], tL['receipt_number'])
+    seq = Sequence(name='transaction_log_id_seq') 
+    seq2 = Sequence(name='transaction_log_receipt_number_seq')
+    key = db.session.execute(seq)
+    key2 = db.session.execute(seq2)
+    
+    while (key < tLog_json[len(tLog_json)-1]['id']):
+        key = db.session.execute(seq)
+        db.session.execute(seq2)
+    
     return True
 
-def delete_all():
-    if os.environ.get('ENV') == "PRODUCTION":
-        string = 'TRUNCATE TABLE '
-        for m in model_list:
-            string= string +'public.'+m.__tablename__+','
-        
-        string = string[:-1]
-        string = string + ' RESTART IDENTITY'
-        db.session.execute(string)
-        db.session.commit()
-    else:
-        for m in model_list: 
-            db.session.query(m).delete()
-            db.session.commit()
-    return True
         
 
 
