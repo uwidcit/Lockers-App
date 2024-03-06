@@ -1,8 +1,8 @@
 import os, pytest, logging, unittest
-from database import create_db
-from main import app
-from models import RentTypes,Rent,TransactionLog
-from controllers import (
+from App.database import create_db
+from App.main import create_app
+from App.models import RentTypes,Rent,TransactionLog
+from App.controllers import (
     add_new_transaction,
     create_rent,
     init_amount_owed,
@@ -14,8 +14,9 @@ from controllers import (
     recal_amount_owed,
     release_rental
 )
-from models.rent import Status
+from App.models.rent import RentStatus
 from datetime import datetime,timedelta
+from wsgi import app
 
 LOGGER = logging.getLogger(__name__)
 

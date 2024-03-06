@@ -1,9 +1,9 @@
 import os, pytest, logging, unittest
-from models import RentTypes
-from models.rentTypes import Types
-from main import app
-from database import create_db
-from controllers import (
+from App.models import RentTypes
+from App.models.rentTypes import Types
+from App.main import create_app
+from App.database import create_db
+from App.controllers import (
     new_rentType,
     delete_rent_type,
     get_All_rentType,
@@ -14,6 +14,7 @@ from controllers import (
     update_rentType_type,
 )
 from datetime import datetime
+from wsgi import app
 
 LOGGER = logging.getLogger(__name__)
 

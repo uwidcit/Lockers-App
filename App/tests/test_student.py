@@ -1,6 +1,6 @@
 import os, pytest, logging, unittest,tempfile
-from models import Student
-from controllers import (
+from App.models import Student
+from App.controllers import (
     add_new_student,
     get_student_by_id,
     get_student_by_id_json,
@@ -10,8 +10,9 @@ from controllers import (
     update_student_phone_number,
     update_student_faculty
 )
-from main import app
-from database import create_db,get_migrate
+from App.main import create_app
+from App.database import create_db,get_migrate
+from wsgi import app
 
 LOGGER = logging.getLogger(__name__)
 

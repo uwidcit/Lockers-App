@@ -1,16 +1,15 @@
 import os, pytest, logging, unittest
-from main import app
-from database import create_db
-from models import Locker
-from models.locker import Status,Key,LockerTypes
-from controllers import (
+from App.main import create_app
+from App.database import create_db
+from App.models import Locker
+from App.models.locker import LockerStatus,LockerTypes 
+from App.controllers import (
     add_new_locker,
     get_lockers_available,
     get_locker_id,
     get_all_lockers,
     getLockerTypes,
     getStatuses,
-    getKey,
     rent_locker,
     release_locker,
     delete_locker,
@@ -18,6 +17,8 @@ from controllers import (
     update_locker_type,
     update_locker_status
 )
+
+from wsgi import app
 
 LOGGER = logging.getLogger(__name__)
 
@@ -178,9 +179,4 @@ class LockerIntegrationTests(unittest.TestCase):
     def test_getLockerTypes(self):
         expectedList =['Small','Medium','Combination']
         result = getLockerTypes()
-        self.assertListEqual(expectedList,result)
-    
-    def test_getKey(self):
-        expectedList =['Available','Unavailable','Lost']
-        result = getKey()
         self.assertListEqual(expectedList,result)

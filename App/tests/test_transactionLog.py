@@ -1,15 +1,16 @@
 import os, pytest, logging, unittest
-from models import TransactionLog,Rent,RentTypes
-from main import app
-from database import create_db
+from App.models import TransactionLog,Rent,RentTypes
+from App.main import create_app
+from App.database import create_db
 from datetime import datetime
-from controllers import (
+from App.controllers import (
     add_new_transaction,
     get_transaction_id,
     get_transaction_json,
     get_all_transactions,
     getT_Type
 )
+from wsgi import app
 
 LOGGER = logging.getLogger(__name__)
 

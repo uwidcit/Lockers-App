@@ -15,7 +15,6 @@ from App.controllers import (
 
 from wsgi import app
 
-
 LOGGER = logging.getLogger(__name__)
 
 '''
