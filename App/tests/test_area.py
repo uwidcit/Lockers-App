@@ -30,7 +30,7 @@ class AreaUnitTests(unittest.TestCase):
             'id':None,
             'description':'A locker description',
             'longitude': 10.259674,
-            'latitude': -61.411548f
+            'latitude': -61.411548
         }
         self.assertDictEqual(expected_json,new_area.toJSON())
 

@@ -25,25 +25,24 @@ LOGGER = logging.getLogger(__name__)
 class LockerUnitTests(unittest.TestCase):
 
     def test_new_locker(self):
-        new_locker = Locker('A1001','MEDIUM','FREE','AVAILABLE')
+        new_locker = Locker('A1001','MEDIUM','FREE',2)
         assert new_locker.locker_code =='A1001' 
         assert new_locker.locker_type.value == 'Medium' 
         assert new_locker.status.value == 'Free'
-        assert new_locker.key.value == 'Available'
+        assert new_locker.area == 2
 
     def test_new_locker_toJSON(self):
-        new_locker = Locker('A2010','SMALL','RENTED','UNAVAILABLE')
+        new_locker = Locker('A2010','SMALL','RENTED', 1)
 
         expected_json = {
             'locker_code':'A2010',
             'locker_type':'Small',
             'status':'Rented',
-            'key': 'Unavailable',
-            'area': []
+            'area': 1
             }
         self.assertDictEqual(new_locker.toJSON(),expected_json)
 
-@pytest.fixture(autouse=True, scope="class")
+@pytest.fixture(autouse=True, scope="module")
 def empty_db():
     app.config.update({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///py_test.db'})
     create_db(app)
@@ -52,15 +51,15 @@ def empty_db():
 
 class LockerIntegrationTests(unittest.TestCase):
     def test_add_new_locker(self):
-        new_locker = add_new_locker('A1001','MEDIUM','FREE','AVAILABLE')
+        new_locker = add_new_locker('A1001','MEDIUM','FREE','test01', 1)
         self.assertIsNotNone(new_locker)
         assert new_locker.locker_code =='A1001' 
         assert new_locker.locker_type.value == 'Medium' 
         assert new_locker.status.value == 'Free'
-        assert new_locker.key.value == 'Available'
+        assert new_locker.area == 1
     
     def test_add_new_locker_duplicate(self):
-        new_locker = add_new_locker('A1001','MEDIUM','FREE','AVAILABLE')
+        new_locker = add_new_locker('A1001','MEDIUM','FREE','TEST', 1)
         self.assertIsNone(new_locker)
     
     def test_get_available_lockers(self):
@@ -110,7 +109,7 @@ class LockerIntegrationTests(unittest.TestCase):
         self.assertIsNone(result)
     
     def test_delete_locker(self):
-        add_new_locker('A1111','COMBINATION','RENTED','UNAVAILABLE')
+        add_new_locker('A1111','COMBINATION','RENTED','TEST', 1)
         locker = delete_locker('A1111')
         self.assertIsNotNone(locker)
         self.assertIsNone(get_locker_id('A1111'))
@@ -172,11 +171,11 @@ class LockerIntegrationTests(unittest.TestCase):
          self.assertIsNone(locker)
     
     def test_getStatuses(self):
-        expectedList =['Rented','Repair','Free']
+        expectedList =['Rented','Repair','Free','Not Verified']
         result = getStatuses()
         self.assertListEqual(expectedList,result)
     
     def test_getLockerTypes(self):
-        expectedList =['Small','Medium','Combination']
+        expectedList =['Small','Medium','Large','Combination']
         result = getLockerTypes()
         self.assertListEqual(expectedList,result)

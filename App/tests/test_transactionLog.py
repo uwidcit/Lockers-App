@@ -36,11 +36,12 @@ class TransactionLogUnitTests(unittest.TestCase):
             'transaction_date':date,
             'amount':40.00,
             'description':'Overdue Payment',
-            'type': 'debit'
+            'type': 'debit',
+            'receipt_number': None
         }
         self.assertDictEqual(expected_json,new_trans.toJSON())
 
-@pytest.fixture(autouse=True, scope="class")
+@pytest.fixture(autouse=True, scope="module")
 def empty_db():
     app.config.update({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///py_test.db'})
     create_db(app)

@@ -40,7 +40,7 @@ class StudentUnitTests(unittest.TestCase):
 
          self.assertDictEqual(expected_json,new_student.toJSON())
 
-@pytest.fixture(autouse=True, scope="class")
+@pytest.fixture(autouse=True, scope="module")
 def empty_db():
     app.config.update({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///py_test.db'})
     create_db(app)
@@ -51,8 +51,8 @@ def empty_db():
 class StudentIntegrationTest(unittest.TestCase):
     def test_add_student(self):
         add_new_student('816000111','Remmy','Dreamer','FST','18684981333','remmy.dreamer@my.uwi.edu')
-        result = get_student_by_id(816000111)
-        assert result.student_id == 816000111
+        result = get_student_by_id('816000111')
+        assert result.student_id == '816000111'
         assert result.first_name == 'Remmy'
         assert result.last_name == 'Dreamer'
         assert result.faculty == 'FST'
@@ -61,9 +61,9 @@ class StudentIntegrationTest(unittest.TestCase):
 
     def test_get_student_by_id_json(self):
         add_new_student('816000111','Remmy','Dreamer','FST','18684981333','remmy.dreamer@my.uwi.edu')
-        result = get_student_by_id_json(816000111)
+        result = get_student_by_id_json('816000111')
         expected_json = {
-            'student_id':816000111,
+            'student_id':'816000111',
             'first_name':'Remmy',
             'last_name': 'Dreamer',
             'faculty':'FST',
@@ -74,7 +74,7 @@ class StudentIntegrationTest(unittest.TestCase):
         self.assertDictEqual(expected_json,result)
     
     def test_get_student_by_id_json_invalid(self):
-        result = get_student_by_id_json(816000000)
+        result = get_student_by_id_json('816000000')
         self.assertIsNone(None,result)
 
     def test_update_student_fName(self):
@@ -90,7 +90,7 @@ class StudentIntegrationTest(unittest.TestCase):
     def test_update_student_lName(self):
          add_new_student('816000111','Remmy','Dreamer','FST','18684981333','remmy.dreamer@my.uwi.edu')
          update_student_last_name('816000111', 'Sleeper')
-         result = get_student_by_id(816000111)
+         result = get_student_by_id('816000111')
          assert result.last_name == "Sleeper" 
 
     def test_update_student_lName_invalid(self):
@@ -100,7 +100,7 @@ class StudentIntegrationTest(unittest.TestCase):
     def test_update_student_phone_number(self):
          add_new_student('816000111','Remmy','Dreamer','FST','18684981333','remmy.dreamer@my.uwi.edu')
          update_student_phone_number('816000111', 18681112222)
-         result = get_student_by_id(816000111)
+         result = get_student_by_id('816000111')
          assert result.phone_number == '18681112222'
 
     def test_update_student_phone_number_invalid(self):
@@ -110,7 +110,7 @@ class StudentIntegrationTest(unittest.TestCase):
     def test_update_student_faculty(self):
          add_new_student('816000111','Remmy','Dreamer','FST','18684981333','remmy.dreamer@my.uwi.edu')
          update_student_faculty('816000111', 'ENG')
-         result = get_student_by_id(816000111)
+         result = get_student_by_id('816000111')
          assert result.faculty == 'ENG'
 
     def test_update_student_lName_invalid(self):
@@ -120,7 +120,7 @@ class StudentIntegrationTest(unittest.TestCase):
     def test_get_all_students(self):
         result = get_all_students()
         expected_list = [{
-            'student_id':816000111,
+            'student_id':'816000111',
             'first_name':'Remmy',
             'last_name': 'Dreamer',
             'faculty':'FST',
@@ -129,9 +129,3 @@ class StudentIntegrationTest(unittest.TestCase):
             'rentStanding' :'GOOD'
         }]
         self.assertListEqual(expected_list,result)
-    
-
-
-
-
-
