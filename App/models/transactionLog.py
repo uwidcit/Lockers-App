@@ -17,7 +17,7 @@ class TransactionLog(db.Model):
     transaction_date = db.Column(db.Date,nullable = False)
     amount = db.Column(db.Float , nullable = False)
     description = db.Column(db.String, nullable = False)
-    receipt_number = db.Column(db.Integer,seq,nullable=False,unique=True)
+    receipt_number = db.Column(db.Integer,seq,nullable=True)
     type = db.Column(db.Enum(TransactionType), nullable = False)
 
     def __init__(self, rent_id, currency, transaction_date, amount, description, type):

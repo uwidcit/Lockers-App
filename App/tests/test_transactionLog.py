@@ -2,13 +2,20 @@ import os, pytest, logging, unittest
 from App.models import TransactionLog,Rent,RentTypes
 from App.main import create_app
 from App.database import create_db
-from datetime import datetime
+from datetime import datetime, timedelta
 from App.controllers import (
     add_new_transaction,
     get_transaction_id,
     get_transaction_json,
     get_all_transactions,
-    getT_Type
+    getT_Type,
+    new_key,
+    new_masterkey,
+    add_new_area,
+    add_new_locker,
+    add_new_student,
+    new_rentType,
+    create_rent
 )
 from wsgi import app
 
@@ -49,9 +56,17 @@ def empty_db():
     os.unlink(os.getcwd()+"/App/py_test.db")
 
 class TransactionLogIntegrationTest(unittest.TestCase):
-    def test_add_transaction(self):
+    def test_add_transaction(self): 
         date = datetime.now()
-        transaction = add_new_transaction('1','TTD',date,'100', 'Downpayment','DEBIT')
+        masterkey = new_masterkey('test101','series','lock',date)
+        key = new_key('k101','test101','Free',date)
+        area = add_new_area('description', 10, 12)
+        locker = add_new_locker('locker101','Small','Free','k101',area.id)
+        student = add_new_student('816024666', 'Chris', 'Rock', 'FST','18681234567','chrisrock@myuwi.edu')
+        rentType = new_rentType(date, timedelta(days = 2555) + date, 'SemesterSmall', 5)
+        rent = create_rent('816024666', 'locker101',rentType.id, date, timedelta(weeks = 8) + date,'fixed',None)
+        transaction = add_new_transaction(rent.id,'TTD',date,'100', 'Downpayment','DEBIT')
+        print(transaction)
         self.assertIsNotNone(transaction)
         new_trans = get_transaction_id(1)
         assert new_trans.rent_id == 1
@@ -72,7 +87,8 @@ class TransactionLogIntegrationTest(unittest.TestCase):
             'transaction_date':date.date(),
             'amount':100.00,
             'description':'Downpayment',
-            'type': 'debit'
+            'type': 'debit',
+            'receipt_number': None
         }
 
         self.assertDictEqual(expected_json,result)
@@ -88,7 +104,8 @@ class TransactionLogIntegrationTest(unittest.TestCase):
             'transaction_date':date.date(),
             'amount':100.00,
             'description':'Downpayment',
-            'type': 'debit'
+            'type': 'debit',
+            'receipt_number': None
         }]
 
         self.assertListEqual(expected_list,result)
