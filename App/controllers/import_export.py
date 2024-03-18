@@ -107,7 +107,7 @@ def import_student(uploaded_file):
     for s in student_json:
         if len(str(s['faculty'])) > 3:
             s['faculty'] = str(s['faculty'])[0:2].upper()
-        add_new_student(s['student_id'], s['first_name'], s['last_name'], s['faculty'], s['phone_number'],s['email'])
+        add_new_student(str(s['student_id']), s['first_name'], s['last_name'], s['faculty'], s['phone_number'],s['email'])
     return True
 
 
@@ -160,8 +160,8 @@ def import_rent(uploaded_file):
     d_return = None
     for r in rent_json:
         try:
-            r_dfrom = datetime.strptime(r['rent_date_to'],'%Y-%m-%d %H:%M:%S')
-            r_dto = datetime.strptime(r['rent_date_from'],'%Y-%m-%d %H:%M:%S')
+            r_dfrom = datetime.strptime(r['rent_date_from'],'%Y-%m-%d %H:%M:%S')
+            r_dto = datetime.strptime(r['rent_date_to'],'%Y-%m-%d %H:%M:%S')
             d_return = datetime.strptime(r['date_returned'],'%Y-%m-%d %H:%M:%S')
         except:
             d_return = None

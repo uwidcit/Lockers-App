@@ -21,119 +21,99 @@ from App.controllers import (
 def report_page():
     return render_template('report.html')
 
-@report_views.route('/report/transactions', methods=['GET'])
+@report_views.route('/api/report/pdf', methods=['POST'])
 @login_required
 @admin_only
 def transactions_report():
-    transactions_data=get_all_transactions()
+    json_start_date = request.json.get('start_date')
+    json_end_date = request.json.get('end_date')
+    try:
+        start_date = datetime.strptime(json_start_date,'%Y-%m-%d')
+        end_date = datetime.strptime(json_end_date,'%Y-%m-%d')
+        start_date = start_date.replace(hour=0,minute=0,second=0)
+        end_date = end_date.replace(hour=23,minute=59,second=59)
+        if start_date > end_date:
+            return jsonify({"Message": "Invalid date entered"}),400
+    except Exception as e:
+        return jsonify({"Message": str(e)}),400
+    cumalative_amount = 0
+    cumalative_length = 0
+    if start_date.month < 8:
+        semester_start = start_date.year-1
+    else:
+        semester_start = start_date.year
+    semester_end = end_date.year
+
+    rents = get_rents_range(start_date,end_date)
+    returns = get_rents_returned_range(start_date,end_date)
+    page_title = 'Student Activity Center (SAC) Locker Rentals Report: Academic Year '+str(semester_start)+'/'+str(semester_end)
+    period = "Period: "+datetime.strftime(start_date,'%Y-%m-%d')+" to "+datetime.strftime(end_date,'%Y-%m-%d')
     pdf = FPDF()
     pdf.add_page()
     page_width = pdf.w - 2 * pdf.l_margin
+    pg_width = 63.5
     pdf.set_font('Times','B',14.0) 
-    pdf.cell(page_width, 0.0, 'Transaction Data', align='C')
+    pdf.cell(page_width, 0.0, page_title, align='C',ln=1)
     pdf.ln(10)
-    pdf.set_font('Courier', '', 12)
+    pdf.set_font('Times', '', 12)
+    pdf.cell(page_width, 0.0, period, align='C',ln=1)
     pdf.ln(10)
-    pdf.set_font('Courier', '', 12)
-    col_width = page_width/4
-    pdf.ln(1)	
-    th = pdf.font_size
-    for row in transactions_data:
-        pdf.cell(col_width, th, str(row['id']), border=1)
-        pdf.cell(col_width, th, row['rent_id'], border=1)
-        pdf.cell(col_width, th, row['currency'], border=1)
-        pdf.cell(col_width, th, row['transaction_date'], border=1)
-        pdf.cell(col_width, th, row['amount'], border=1)
-        pdf.cell(col_width, th, row['description'], border=1)
-        pdf.cell(col_width, th, row['receipt_number'], border=1)
-        pdf.cell(col_width, th, str(row['type']), border=1)
-        pdf.cell(col_width, th, "", border=1)
-        pdf.ln(th)
-
-    flash("success")
+    pdf.set_draw_color(0, 0, 0)
+    pdf.set_fill_color(255, 255, 255)
+    pdf.set_text_color(0, 0, 0)
+    pdf.cell(page_width, 9, "Active", align='C',ln=1, border=1)
+    for rent in rents:
+        pdf.cell(page_width,9,rent.capitalize(),1,1,"L",1)
+        pdf.cell(pg_width,9,"",True,0)
+        pdf.cell(pg_width,9,"No. of Rents",True,0)
+        pdf.cell(pg_width,9,"Revenue",True,1)
+        for r in rents[rent]:
+            pdf.cell(pg_width,9,r,True,0)
+            pdf.cell(pg_width,9,str(rents[rent][r]["length"]),True,0)
+            pdf.cell(pg_width,9,"$"+str(rents[rent][r]["amount"]),True,1)
+        cumalative_length = cumalative_length + rents[rent]["Total"]["length"]
+        cumalative_amount = cumalative_amount + rents[rent]["Total"]["amount"]
+        pdf.cell(page_width,9,"",1,1,"L",1)
+    pdf.cell(page_width, 9, "Completed", align='C',ln=1, border=1)
+    for rent in returns:
+        pdf.cell(page_width,9,rent.capitalize(),1,1,"L",1)
+        pdf.cell(pg_width,9,"",True,0)
+        pdf.cell(pg_width,9,"No. of Rents",True,0)
+        pdf.cell(pg_width,9,"Revenue",True,1)
+        for r in returns[rent]:
+            pdf.cell(pg_width,9,r,True,0)
+            pdf.cell(pg_width,9,str(returns[rent][r]["length"]),True,0)
+            pdf.cell(pg_width,9,"$"+str(returns[rent][r]["amount"]),True,1)
+        cumalative_length = cumalative_length + returns[rent]["Total"]["length"]
+        cumalative_amount = cumalative_amount + returns[rent]["Total"]["amount"]
+        pdf.cell(page_width,9,"",1,1,"L",1)
+    pdf.cell(pg_width,9,"Cumalative Total: ",True,0)
+    pdf.cell(pg_width,9,str(cumalative_length),True,0)
+    pdf.cell(pg_width,9,"$"+str(cumalative_amount),True,0)
     return Response(pdf.output(dest='S').encode('latin-1'), mimetype='application/pdf', headers={'Content-Disposition':'attachment;filename=transaction_report.pdf'})
 
-
-@report_views.route('/report/lockers', methods=['GET'])
-@admin_only
+@report_views.route('/api/report/period', methods=['POST'])
 @login_required
-def lockers_report():
-    lockers_data=get_all_lockers()
-    pdf = FPDF()
-    pdf.add_page()
-    page_width = pdf.w - 2 * pdf.l_margin
-    pdf.set_font('Times','B',14.0) 
-    pdf.cell(page_width, 0.0, 'Locker Data', align='C')
-    pdf.ln(10)
-    pdf.set_font('Courier', '', 12)
-    col_width = page_width/4
-    pdf.ln(1)	
-    th = pdf.font_size
-    for row in lockers_data:
-        pdf.cell(col_width, th, row['locker_code'], border=1)
-        pdf.cell(col_width, th, row['locker_type'], border=1)
-        pdf.cell(col_width, th, row['status'], border=1)
-        pdf.cell(col_width, th, row['key'], border=1)
-        pdf.cell(col_width, th, str(row['area']), border=1)
-        pdf.cell(col_width, th, "", border=1)
-        pdf.ln(th)
-    flash("success")
-    return Response(pdf.output(dest='S').encode('latin-1'), mimetype='application/pdf', headers={'Content-Disposition':'attachment;filename=locker_report.pdf'})
-
-
-@report_views.route('/report/keys', methods=['GET'])
-@admin_only
-@login_required
-def keys_report():
-    keys_data=get_all_keys(6,1)
-    pdf = FPDF()
-    pdf.add_page()
-    page_width = pdf.w - 2 * pdf.l_margin
-    pdf.set_font('Times','B',14.0) 
-    pdf.cell(page_width, 0.0, 'Transaction Data', align='C')
-    pdf.ln(10)
-    pdf.set_font('Courier', '', 12)
-    col_width = page_width/4
-    pdf.ln(1)	
-    th = pdf.font_size
-    for row in keys_data:
-        pdf.cell(col_width, th, row['key_id'], border=1)
-        pdf.cell(col_width, th, str(row['masterkey_id']), border=1)
-        pdf.cell(col_width, th, row['key_status'], border=1)
-        pdf.cell(col_width, th, row['date_added'], border=1)
-        pdf.cell(col_width, th, "", border=1)
-        pdf.ln(th)
-
-    flash("success")
-
-
-    return Response(pdf.output(dest='S').encode('latin-1'), mimetype='application/pdf', headers={'Content-Disposition':'attachment;filename=key_report.pdf'})
-
-@report_views.route('/api/report/monthly', methods=['GET'])
-@login_required
-def get_daily_report():
-    date = datetime.now()
-    if  [1,3,5,7,8,10,12].index(date.month):
-        e_days = 31
-    elif [4,6,9,11].index(date.month):
-        e_days = 30
-    else:
-        import calendar
-        if calendar.isleap(date.year):
-            e_days = 29
-        else:
-            e_days = 28
-    start_date = datetime(date.year,date.month,1)
-    end_date = datetime(date.year,date.month,e_days)
-    revenue = get_revenue(start_date,end_date)
+def get_period_report():
+    json_start_date = request.json.get('start_date')
+    json_end_date = request.json.get('end_date')
+    try:
+        start_date = datetime.strptime(json_start_date,'%Y-%m-%d')
+        end_date = datetime.strptime(json_end_date,'%Y-%m-%d')
+        start_date = start_date.replace(hour=0,minute=0,second=0)
+        end_date = end_date.replace(hour=23,minute=59,second=59)
+        if start_date > end_date:
+            return jsonify({"Message": "Invalid date entered"}),400
+    except Exception as e:
+        return jsonify({"Message": str(e)}),400
     rents = get_rents_range(start_date,end_date)
     returns = get_rents_returned_range(start_date,end_date)
     data = {
         "start_date": datetime.strftime(start_date,'%Y-%m-%d'),
         "end_date":datetime.strftime(end_date,'%Y-%m-%d'),
-        "revenue":revenue,
-        "num_of_rents":rents,
-        "num_of_returns":returns
+        "rents": rents,
+        "returns":returns
     }
+    
     
     return jsonify(data),200
