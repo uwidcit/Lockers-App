@@ -170,8 +170,7 @@ var row_id = 0
 
 async function getLockers(){
     let result = await sendRequest('/api/locker','GET')
-    
-    for (let r in result){
+    for (r in result){
         locker_list.push(result[r])
     }
     initTable(locker_list)

@@ -1,7 +1,7 @@
 from App.database import db 
 from App.models import TransactionLog,Rent
 from App.models.transactionLog import TransactionType
-from sqlalchemy import or_,Sequence
+from sqlalchemy import or_,and_,Sequence
 from sqlalchemy.exc import SQLAlchemyError
 
 def add_new_transaction(rent_id, currency, transaction_date, amount, description, t_type):
@@ -119,5 +119,17 @@ def search_transaction(query,size,offset):
     for transactions,rent in data[index:stop]:
         t_list.append(transactions.toJSON())
     return {"num_pages": num_pages,"data":t_list}
+
+def get_revenue(start_date, end_date): 
+    trans_query = db.session.query(TransactionLog.amount).filter(and_(TransactionLog.transaction_date >= start_date, TransactionLog.transaction_date < end_date)).all()
+
+    if not trans_query:
+        return 0  
+    sum = 0
+    data = []
+    for t in trans_query:
+        sum += t[0]
+        #data.append(t.toJSON())
+    return {"sum":sum}
 
     

@@ -140,7 +140,6 @@ def update_rentType(id):
                 return redirect(url_for('.render_rentType_all'))
         
         if rentType.price != price:
-            print("yes")
             if not update_rentType_price(id,price):
                 flash("Error updating rentType")
                 return redirect(url_for('.render_rentType_all'))
