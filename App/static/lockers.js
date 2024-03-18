@@ -21,7 +21,7 @@ async function addLocker(event){
     let instance = M.Modal.getInstance(elem)
     instance.close()
 
-    let result = await sendRequest('/api/locker/','POST', data).then((response)=>{
+    let result = await sendRequest('/api/locker','POST', data).then((response)=>{
         if (response.status == 201){
             window.location.reload()
             toast("Success");
@@ -60,7 +60,7 @@ async function updateLocker(event){
         let instance = M.Modal.getInstance(elem)
         instance.close()
 
-        let result = await sendRequest('/api/locker/','PUT', data).then((response)=>{
+        let result = await sendRequest('/api/locker','PUT', data).then((response)=>{
             if (response.Message){
                 toast(response.Message)
             }
@@ -84,7 +84,7 @@ async function updateLocker(event){
 
 async function getAllAreas(){
     let html = `<option value=”” disabled selected>Select a Area Status</option>`
-    let result = await sendRequest('/api/area/','GET')
+    let result = await sendRequest('/api/area','GET')
     
     
     let data = document.querySelector('#area')

@@ -41,9 +41,6 @@ def unauthorized_access(e):
     flash('You need to be logged in to see this content')
     return redirect(url_for("index_views.index_page"))
 
-@index_views.route('/flaskwebgui-dumb-request-for-middleware-keeping-the-server-online', methods=['GET'])
-def empty_function():
-    return {},200
 
 @index_views.route('/unauthorized', methods=['GET'])
 def unauthorized_page():
