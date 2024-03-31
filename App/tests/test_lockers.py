@@ -2,8 +2,11 @@ import os, pytest, logging, unittest
 from App.main import create_app
 from App.database import create_db
 from App.models import Locker
-from App.models.locker import LockerStatus,LockerTypes 
+from App.models.locker import LockerStatus as Status,LockerTypes 
 from App.controllers import (
+    add_new_area,
+    get_locker_id_locker,
+    get_current_locker_instance,
     add_new_locker,
     get_lockers_available,
     get_locker_id,
@@ -15,7 +18,8 @@ from App.controllers import (
     delete_locker,
     update_key,
     update_locker_type,
-    update_locker_status
+    update_locker_status,
+    swap_key
 )
 
 from wsgi import app
@@ -51,6 +55,7 @@ def empty_db():
 
 class LockerIntegrationTests(unittest.TestCase):
     def test_add_new_locker(self):
+        new_area = add_new_area('A locker description',10.283759,-61.404937)
         new_locker = add_new_locker('A1001','MEDIUM','FREE','test01', 1)
         self.assertIsNotNone(new_locker)
         assert new_locker.locker_code =='A1001' 
@@ -68,8 +73,7 @@ class LockerIntegrationTests(unittest.TestCase):
             'locker_code':'A1001',
             'locker_type':'Medium',
             'status':'Free',
-            'key': 'Available',
-            'area': []
+            'area': 1
             }]
         self.assertListEqual(expected_list, result)
     
@@ -79,15 +83,16 @@ class LockerIntegrationTests(unittest.TestCase):
             'locker_code':'A1001',
             'locker_type':'Medium',
             'status':'Free',
-            'key': 'Available',
-            'area': []
+            'key': 'test01',
+            'area': 1,
+            'area_description': 'A locker description'
             }]
         self.assertListEqual(expected_list, result)
 
     def test_rent_locker(self):
         result = rent_locker('A1001')
         self.assertTrue(result)
-        locker = get_locker_id('A1001')
+        locker = get_locker_id_locker('A1001')
         assert locker.status == Status.RENTED
 
     def test_rent_locker_rented(self):
@@ -99,13 +104,14 @@ class LockerIntegrationTests(unittest.TestCase):
         self.assertIsNone(result)
 
     def test_release_locker(self):
-        result = release_locker('A1001')
+        keyHistoryID = get_current_locker_instance('A1001')
+        result = release_locker(keyHistoryID.id)
         self.assertTrue(result)
-        locker = get_locker_id('A1001')
+        locker = get_locker_id_locker('A1001')
         assert locker.status == Status.FREE
     
     def test_release_locker_invalid(self):
-        result = release_locker('A1241')
+        result = release_locker(654321)
         self.assertIsNone(result)
     
     def test_delete_locker(self):
@@ -117,26 +123,6 @@ class LockerIntegrationTests(unittest.TestCase):
     def test_delete_locker_invalid(self):
         result = delete_locker('A1241')
         self.assertIsNone(result)
-
-    def test_update_key_unavailble(self):
-         locker = update_key('A1001','Unavailable')
-         assert locker.key == Key.UNAVAILABLE
-
-    def test_update_key_Lost(self):
-         locker = update_key('A1001','Lost')
-         assert locker.key == Key.LOST
-
-    def test_update_key_available(self):
-         locker = update_key('A1001','available')
-         assert locker.key == Key.AVAILABLE
-
-    def test_update_key_invalidLocker(self):
-         locker = update_key('A1111','Unavailable')
-         self.assertIsNone(locker)
-
-    def test_update_key_invalidKeyStatus(self):
-         locker = update_key('A1001','Not available')
-         self.assertIsNone(locker)
 
     def test_update_locker_type_small(self):
          locker = update_locker_type('A1001','Small')
@@ -151,7 +137,7 @@ class LockerIntegrationTests(unittest.TestCase):
          assert locker.locker_type == LockerTypes.MEDIUM
 
     def test_update_locker_type_invalid(self):
-         locker = update_locker_type('A1001','Large')
+         locker = update_locker_type('A1001','Circle')
          self.assertIsNone(locker)
 
     def test_update_locker_status_rented (self):
@@ -179,3 +165,29 @@ class LockerIntegrationTests(unittest.TestCase):
         expectedList =['Small','Medium','Large','Combination']
         result = getLockerTypes()
         self.assertListEqual(expectedList,result)
+
+    def test_swap_key(self):
+        locker1 = add_new_locker('A2001','MEDIUM','FREE','K201', 1)
+        locker2 = add_new_locker('A3001','MEDIUM','FREE','K301', 1)
+        result = swap_key(locker1.locker_code, locker2.locker_code)
+        assert result[0][2].key_id == 'K301'
+        assert result[1][2].key_id == 'K201'
+
+    def test_swap_key_invalid(self):
+        result = swap_key('invalid', 'invalid2')
+        self.assertIsNone(result)
+
+    def test_update_key(self):
+        update = update_key('A1001', 'K101')
+        locker = get_locker_id('A1001')
+        assert locker[2].key_id == 'K101'
+
+    def test_update_key_invalid_key(self):
+        with pytest.raises(Exception) as e:
+            update = update_key('A1001', None)
+            update2 = update_key('A1001', '')
+            assert str(e) == 'Key cannot be empty'
+
+    def test_update_key_invalid_locker(self):
+            update = update_key('A1001', 'K101')
+            self.assertIsNone(update)

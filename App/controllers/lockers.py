@@ -173,6 +173,8 @@ def not_verified(id):
 
 def release_locker(id):
     keyH = getKeyHistory(id)
+    if keyH is None:
+        return None
     locker = get_locker_id_locker(keyH.locker_id)
     if not locker:
         return None
