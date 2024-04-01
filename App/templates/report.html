@@ -121,18 +121,26 @@
       "small":{
       "length":0,
       "amount":0,
+      "late_fees":0,
+      "additional_fees":0,
     },
     "medium":{
       "length":0,
       "amount":0,
+      "late_fees":0,
+      "additional_fees":0,
     },
     "large":{
       "length":0,
       "amount":0,
+      "late_fees":0,
+      "additional_fees":0,
     },
     "combination":{
       "length":0,
       "amount":0,
+      "late_fees":0,
+      "additional_fees":0,
     }
     }
     if(is_validDate(data['start_date']) && is_validDate(data['end_date'])){
@@ -177,6 +185,26 @@
 }
   function populate_tables_active(response,element_id,rentType){
       let element = document.getElementById(element_id)
+
+      total_check["small"]["length"] = total_check["small"]["length"] + response.rents[rentType].Small.length
+      total_check["small"]["amount"] = total_check["small"]["amount"] + response.rents[rentType].Small.amount
+      total_check["small"]["late_fees"] = total_check["small"]["late_fees"] + response.rents[rentType].Small.late_fees
+      total_check["small"]["additional_fees"] = total_check["small"]["additional_fees"] + response.rents[rentType].Small.additional_fees
+
+      total_check["medium"]["length"] = total_check["medium"]["length"] + response.rents[rentType].Medium.length
+      total_check["medium"]["amount"] = total_check["medium"]["amount"] + response.rents[rentType].Medium.amount
+      total_check["medium"]["late_fees"] = total_check["medium"]["late_fees"] + response.rents[rentType].Medium.late_fees
+      total_check["medium"]["additional_fees"] = total_check["medium"]["additional_fees"] + response.rents[rentType].Medium.additional_fees
+
+      total_check["large"]["length"] = total_check["large"]["length"] + response.rents[rentType].Large.length
+      total_check["large"]["amount"] = total_check["large"]["amount"] + response.rents[rentType].Large.amount
+      total_check["large"]["late_fees"] = total_check["large"]["late_fees"] + response.rents[rentType].Large.late_fees
+      total_check["large"]["additional_fees"] = total_check["large"]["additional_fees"] + response.rents[rentType].Large.additional_fees
+
+      total_check["combination"]["length"] = total_check["combination"]["length"] + response.rents[rentType].Combination.length
+      total_check["combination"]["amount"] = total_check["combination"]["amount"] + response.rents[rentType].Combination.amount
+      total_check["combination"]["late_fees"] = total_check["combination"]["late_fees"] + response.rents[rentType].Combination.late_fees
+      total_check["combination"]["additional_fees"] = total_check["combination"]["additional_fees"] + response.rents[rentType].Combination.additional_fees
       element.innerHTML = 
       ` <table>
             <thead>
@@ -184,6 +212,8 @@
                 <th>Locker Type</th>
                 <th>Number of Rents</th>
                 <th>Revenue</th>
+                <th>Late Fees</th>
+                <th>Additional Fees</th>
               </tr>
             </thead>
             <tbody>
@@ -191,41 +221,45 @@
                 <td>Small</td>
                 <td>${response.rents[rentType].Small.length}</td>
                 <td>$${response.rents[rentType].Small.amount}</td>
+                <td>$${response.rents[rentType].Small.late_fees}</td>
+                <td>$${response.rents[rentType].Small.additional_fees}</td>
               </tr>
               <tr>
                 <td>Medium</td>
                 <td>${response.rents[rentType].Medium.length}</td>
                 <td>$${response.rents[rentType].Medium.amount}</td>
+                <td>$${response.rents[rentType].Medium.late_fees}</td>
+                <td>$${response.rents[rentType].Medium.additional_fees}</td>
               </tr>
               <tr>
                 <td>Large</td>
                 <td>${response.rents[rentType].Large.length}</td>
                 <td>$${response.rents[rentType].Large.amount}</td>
+                <td>$${response.rents[rentType].Large.late_fees}</td>
+                <td>$${response.rents[rentType].Large.additional_fees}</td>
               </tr>
               <tr>
                 <td>Combination</td>
                 <td>${response.rents[rentType].Combination.length}</td>
                 <td>$${response.rents[rentType].Combination.amount}</td>
+                <td>$${response.rents[rentType].Combination.late_fees}</td>
+                <td>$${response.rents[rentType].Combination.additional_fees}</td>
               </tr>
               <tr>
                 <td>Total</td>
                 <td>${response.rents[rentType].Total.length}</td>
                 <td>$${response.rents[rentType].Total.amount}</td>
+                <td>$${response.rents[rentType].Total.late_fees}</td>
+                <td>$${response.rents[rentType].Total.additional_fees}</td>
+              </tr>
+              <tr>
+                <td>Cumaltive Total</td>
+                <td></td>
+                <td>$${response.rents[rentType].Total.amount + response.rents[rentType].Total.late_fees+ response.rents[rentType].Total.additional_fees }</td>
               </tr>
             </tbody>
           </table>
           `
-      total_check["small"]["length"] = total_check["small"]["length"] + response.rents[rentType].Small.length
-      total_check["small"]["amount"] = total_check["small"]["amount"] + response.rents[rentType].Small.amount
-
-      total_check["medium"]["length"] = total_check["medium"]["length"] + response.rents[rentType].Medium.length
-      total_check["medium"]["amount"] = total_check["medium"]["amount"] + response.rents[rentType].Medium.amount
-
-      total_check["large"]["length"] = total_check["large"]["length"] + response.rents[rentType].Large.length
-      total_check["large"]["amount"] = total_check["large"]["amount"] + response.rents[rentType].Large.amount
-
-      total_check["combination"]["length"] = total_check["combination"]["length"] + response.rents[rentType].Combination.length
-      total_check["combination"]["amount"] = total_check["combination"]["amount"] + response.rents[rentType].Combination.amount
   }
   function populate_tables_comp(response,element_id,rentType){
       let element = document.getElementById(element_id)
@@ -236,6 +270,8 @@
                 <th>Locker Type</th>
                 <th>Number of Rents</th>
                 <th>Revenue</th>
+                <th>Late Fees</th>
+                <th>Additional_Fees</th>
               </tr>
             </thead>
             <tbody>
@@ -243,43 +279,69 @@
                 <td>Small</td>
                 <td>${response.returns[rentType].Small.length}</td>
                 <td>$${response.returns[rentType].Small.amount}</td>
+                <td>$${response.returns[rentType].Small.late_fees}</td>
+                <td>$${response.returns[rentType].Small.additional_fees}</td>
               </tr>
               <tr>
                 <td>Medium</td>
                 <td>${response.returns[rentType].Medium.length}</td>
                 <td>$${response.returns[rentType].Medium.amount}</td>
+                <td>$${response.returns[rentType].Medium.late_fees}</td>
+                <td>$${response.returns[rentType].Medium.additional_fees}</td>
               </tr>
               <tr>
                 <td>Large</td>
                 <td>${response.returns[rentType].Large.length}</td>
                 <td>$${response.returns[rentType].Large.amount}</td>
+                <td>$${response.returns[rentType].Large.late_fees}</td>
+                <td>$${response.returns[rentType].Large.additional_fees}</td>
               </tr>
               <tr>
                 <td>Combination</td>
                 <td>${response.returns[rentType].Combination.length}</td>
                 <td>$${response.returns[rentType].Combination.amount}</td>
+                <td>$${response.returns[rentType].Combination.late_fees}</td>
+                <td>$${response.returns[rentType].Combination.additional_fees}</td>
               </tr>
               <tr>
                 <td>Total</td>
                 <td>${response.returns[rentType].Total.length}</td>
                 <td>$${response.returns[rentType].Total.amount}</td>
+                <td>$${response.returns[rentType].Total.late_fees}</td>
+                <td>$${response.returns[rentType].Total.additional_fees}</td>
+              </tr>
+              <tr>
+                <td>Cumalative Total <td>
+                <td></td>
+                <td>$${response.returns[rentType].Total.amount + response.returns[rentType].Total.late_fees+ response.returns[rentType].Total.additional_fees }</td>
               </tr>
             </tbody>
           </table>
       `
       total_check["small"]["length"] = total_check["small"]["length"] + response.returns[rentType].Small.length
       total_check["small"]["amount"] = total_check["small"]["amount"] + response.returns[rentType].Small.amount
+      total_check["small"]["late_fees"] = total_check["small"]["late_fees"] + response.returns[rentType].Small.late_fees
+      total_check["small"]["additional_fees"] = total_check["small"]["additional_fees"] + response.returns[rentType].Small.additional_fees
 
       total_check["medium"]["length"] = total_check["medium"]["length"] + response.returns[rentType].Medium.length
       total_check["medium"]["amount"] = total_check["medium"]["amount"] + response.returns[rentType].Medium.amount
+      total_check["medium"]["late_fees"] = total_check["medium"]["late_fees"] + response.returns[rentType].Medium.late_fees
+      total_check["medium"]["additional_fees"] = total_check["medium"]["additional_fees"] + response.returns[rentType].Medium.additional_fees
 
       total_check["large"]["length"] = total_check["large"]["length"] + response.returns[rentType].Large.length
       total_check["large"]["amount"] = total_check["large"]["amount"] + response.returns[rentType].Large.amount
+      total_check["large"]["late_fees"] = total_check["large"]["late_fees"] + response.returns[rentType].Large.late_fees
+      total_check["large"]["additional_fees"] = total_check["large"]["additional_fees"] + response.returns[rentType].Large.additional_fees
 
       total_check["combination"]["length"] = total_check["combination"]["length"] + response.returns[rentType].Combination.length
       total_check["combination"]["amount"] = total_check["combination"]["amount"] + response.returns[rentType].Combination.amount
+      total_check["combination"]["late_fees"] = total_check["combination"]["late_fees"] + response.returns[rentType].Combination.late_fees
+      total_check["combination"]["additional_fees"] = total_check["combination"]["additional_fees"] + response.returns[rentType].Combination.additional_fees
   }
   function populate_total(element_id){
+    let cumalative_total = total_check.small.amount + total_check.medium.amount+ total_check.large.amount + total_check.combination.amount+
+    total_check.small.late_fees + total_check.medium.late_fees+ total_check.large.late_fees + total_check.combination.late_fees+
+    total_check.small.additional_fees + total_check.medium.additional_fees+ total_check.large.additional_fees + total_check.combination.additional_fees
     let element = document.getElementById(element_id)
       element.innerHTML = 
       ` <table>
@@ -288,6 +350,8 @@
                 <th>Locker Type</th>
                 <th>Number of Rents</th>
                 <th>Revenue</th>
+                <th>Late Fees</th>
+                <th>Additional Fees</th>
               </tr>
             </thead>
             <tbody>
@@ -295,26 +359,41 @@
                 <td>Small</td>
                 <td>${total_check.small.length}</td>
                 <td>$${total_check.small.amount}</td>
+                <td>$${total_check.small.late_fees}</td>
+                <td>$${total_check.small.additional_fees}</td>
               </tr>
               <tr>
                 <td>Medium</td>
                 <td>${total_check.medium.length}</td>
                 <td>$${total_check.medium.amount}</td>
+                <td>$${total_check.medium.late_fees}</td>
+                <td>$${total_check.medium.additional_fees}</td>
               </tr>
               <tr>
                 <td>Large</td>
                 <td>${total_check.large.length}</td>
                 <td>$${total_check.large.amount}</td>
+                <td>$${total_check.large.late_fees}</td>
+                <td>$${total_check.large.additional_fees}</td>
               </tr>
               <tr>
                 <td>Combination</td>
-                <td>0</td>
-                <td>$0</td>
+                <td>${total_check.combination.length}</td>
+                <td>$${total_check.combination.amount}</td>
+                <td>$${total_check.combination.late_fees}</td>
+                <td>$${total_check.combination.additional_fees}</td>
               </tr>
               <tr>
                 <td>Total</td>
                 <td>${total_check.small.length + total_check.medium.length + total_check.large.length + total_check.combination.length}</td>
                 <td>$${total_check.small.amount + total_check.medium.amount+ total_check.large.amount + total_check.combination.amount }</td>
+                <td>$${total_check.small.late_fees + total_check.medium.late_fees+ total_check.large.late_fees + total_check.combination.late_fees }</td>
+                <td>$${total_check.small.additional_fees + total_check.medium.additional_fees+ total_check.large.additional_fees + total_check.combination.additional_fees }</td>
+              </tr>
+              <tr>
+                <td>Cumulative Total</td>
+                <td></td>
+                <td>$${cumalative_total}</td>
               </tr>
             </tbody>
           </table>
