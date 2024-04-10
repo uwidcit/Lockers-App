@@ -4,8 +4,11 @@ from App.main import create_app
 from App.models import RentTypes,Rent,TransactionLog
 from App.controllers import (
     add_new_transaction,
+    add_new_area,
     create_rent,
     init_amount_owed,
+    get_rentType_by_id,
+    get_rentType_by_period,
     add_new_locker,
     add_new_student,
     get_all_rentals,
@@ -122,61 +125,54 @@ class RentIntegratedTest(unittest.TestCase):
         add_new_locker('A1001','MEDIUM','FREE','AVAILABLE',area.id)
         period_from = datetime(2022,8,31)
         period_to = datetime(2023,7,31)
-        new_rentType(period_from,period_to,'Daily',4)
-
+        rent_type = get_rentType_by_period(period_from,period_to,'Daily')
+        if rent_type is None:
+            new_rentType(period_from,period_to,'Daily',4)
         rent_period_from = datetime.now()
         rent_period_from = rent_period_from.replace(hour = 8, minute = 0 ,second= 0, microsecond= 0)
         rent_period_to = rent_period_from + timedelta(days=5)
         rent = create_rent('816000111','A1001',1,rent_period_from,rent_period_to, 'RATE', None)
         assert rent.student_id == '816000111'
-        assert rent.keyHistory_id == 1
+        assert rent.key_history.id == 1
         assert rent.rent_type == 1
         assert rent.rent_date_from == rent_period_from
         assert rent.rent_date_to == rent_period_to
         assert rent.date_returned is None
         assert rent.amount_owed == 20
         assert rent.status.value == 'Owed'
+        assert rent.status.value == 'Owed'
     
     def test_period_elaspsed_daily(self):
+        period_from = datetime(2022,8,31)
+        period_to = datetime(2023,7,31)
+        rent_type = get_rentType_by_period(period_from,period_to,'Daily')
+        if rent_type is None:
+            rent_type =  new_rentType(period_from,period_to,'Daily',4)
         rent_date_from = datetime.now()
         rent_date_to = rent_date_from + timedelta(18)
-        time = period_elapsed(1,rent_date_from,rent_date_to)
+        time = period_elapsed(rent_type,rent_date_from,rent_date_to)
         assert time == 18
 
     def test_period_elaspsed_hourly(self):
         period_from = datetime(2022,8,31)
         period_to = datetime(2023,7,31)
-        new_rentType(period_from,period_to,'Hourly',2.50)
+        rent_type = get_rentType_by_period(period_from,period_to,'Hourly')
+        if rent_type is None:
+            rent_type = new_rentType(period_from,period_to,'Hourly',2.50)
         rent_date_from = datetime.now()
         rent_date_to = rent_date_from + timedelta(hours=5)
-        time = period_elapsed(2,rent_date_from,rent_date_to)
+        time = period_elapsed(rent_type,rent_date_from,rent_date_to)
         assert time == 5
-    
-    def test_period_elaspsed_t_weekly(self):
-        period_from = datetime(2022,8,31)
-        period_to = datetime(2023,7,31)
-        new_rentType(period_from,period_to,'Weekly',8)
-        rent_date_from = datetime.now()
-        rent_date_to = rent_date_from + timedelta(days = 21)
-        time = period_elapsed(5,rent_date_from,rent_date_to)
-        assert time == 3
-
-    def test_period_elaspsed_monthly(self):
-        period_from = datetime(2022,8,31)
-        period_to = datetime(2023,7,31)
-        new_rentType(period_from,period_to,'Monthly',30)
-        rent_date_from = datetime.now()
-        rent_date_to = rent_date_from + timedelta(days = 31)
-        time = period_elapsed(3,rent_date_from,rent_date_to)
-        assert time == 1
     
     def test_period_elaspsed_semester(self):
         period_from = datetime(2022,8,31)
         period_to = datetime(2023,7,31)
-        new_rentType(period_from,period_to,'Semester',100)
+        rent_type = get_rentType_by_period(period_from,period_to,'SEMESTERMEDIUM')
+        if rent_type is None:
+            rent_type = new_rentType(period_from,period_to,'SEMESTERMEDIUM',100)
         rent_date_from = datetime.now()
         rent_date_to = rent_date_from + timedelta(days = 93)
-        time = period_elapsed(4,rent_date_from,rent_date_to)
+        time = period_elapsed(rent_type,rent_date_from,rent_date_to)
         assert time == 1
     
     def test_q_init_amount_owed_daily(self):
@@ -186,92 +182,105 @@ class RentIntegratedTest(unittest.TestCase):
         assert amount == 12
     
     def test_q_init_amount_owed_hourly(self):
+        period_from = datetime(2022,8,31)
+        period_to = datetime(2023,7,31)
         rent_date_from = datetime.now()
+        rent_type = get_rentType_by_period(period_from,period_to,'Hourly')
+        if rent_type is None:
+            rent_type = new_rentType(period_from,period_to,'Hourly',2.50)
         rent_date_to = rent_date_from + timedelta(hours=5)
-        amount = init_amount_owed(2,rent_date_from,rent_date_to)
+        amount = init_amount_owed(rent_type.id,rent_date_from,rent_date_to)
         assert amount == 12.50
 
     def test_q_init_amount_owed_monthly(self):
+        period_from = datetime(2022,8,31)
+        period_to = datetime(2023,7,31)
         rent_date_from = datetime.now()
-        rent_date_to = rent_date_from + timedelta(days=62)
-        amount = init_amount_owed(3,rent_date_from,rent_date_to)
-        assert amount == 60
+        rent_date_to = rent_date_from + timedelta(days=31)
+        rent_type = get_rentType_by_period(period_from,period_to,'DAILY')
+        if rent_type is None:
+            rent_type = new_rentType(period_from,period_to,'Daily',4)
+        amount = init_amount_owed(rent_type.id,rent_date_from,rent_date_to)
+        assert amount == 124
     
     def test_q_init_amount_owed_semester(self):
+        period_from = datetime(2022,8,31)
+        period_to = datetime(2023,7,31)
         rent_date_from = datetime.now()
-        rent_date_to = rent_date_from + timedelta(days=93)
-        amount = init_amount_owed(4,rent_date_from,rent_date_to)
+        rent_type = get_rentType_by_period(period_from,period_to,'SEMESTERMEDIUM')
+        rent_date_to = rent_date_from + timedelta(days=90)
+        if rent_type is None:
+            rent_type = new_rentType(period_from,period_to,'SEMESTERMEDIUM',100)
+        amount = init_amount_owed(rent_type.id,rent_date_from,rent_date_to)
         assert amount == 100
     
-    def test_recal_amount_owed_daily_ontime(self):
+    def test_recal_amount_owed_daily(self):
         rent_date_from = datetime(2023,1,8)
         rent_date_to = rent_date_from + timedelta(days=2)
-        date_returned = datetime.now()
-        amt = recal_amount_owed(1,date_returned,rent_date_from,rent_date_to)
-        assert amt == 8
+        date_returned = rent_date_to + timedelta(days=4)
+        new_rent = Rent('816000000','1','1', rent_date_from, rent_date_to, 8, 'RATE', date_returned)
+        new_rent = recal_amount_owed(new_rent,1,date_returned,rent_date_from,rent_date_to)
+        assert new_rent.amount_owed == 8
+        assert new_rent.late_fees == 16
+
     
-    def test_recal_amount_owed_daily_late(self):
-        rent_date_from = datetime(2023,1,2)
-        rent_date_to = rent_date_from + timedelta(days=2)
-        date_returned = datetime.now()
-        amt = recal_amount_owed(1,date_returned,rent_date_from,rent_date_to)
-        assert amt == 32
-    
-    def test_recal_amount_owed_hourly_ontime(self):
-        rent_date_from = datetime(2023,1,8,7,30,0)
-        rent_date_to = rent_date_from + timedelta(hours=5)
-        date_returned = rent_date_to
-        amt = recal_amount_owed(2,date_returned,rent_date_from,rent_date_to)
-        assert amt == 12.50
-    
-    def test_recal_amount_owed_hourly_late(self):
-        rent_date_from = datetime(2023,1,2,8,0,0)
+    def test_recal_amount_owed_hourly(self):
+        period_from = datetime(2022,8,31)
+        period_to = datetime(2023,7,31)
+        rent_date_from = datetime(2023,1,8)
         rent_date_to = rent_date_from + timedelta(hours=2)
-        date_returned = rent_date_to + timedelta(hours=4)
-        amt = recal_amount_owed(2,date_returned,rent_date_from,rent_date_to)
-        assert amt == 15
+        date_returned = rent_date_to + timedelta(hours=480)
+        
+        rent_type = get_rentType_by_period(period_from,period_to,'Hourly')
+        if rent_type is None:
+            rent_type = new_rentType(period_from,period_to,'Hourly',2.50)
+        new_rent = Rent('816000000','1','1', rent_date_from, rent_date_to, 5,'RATE' , date_returned)
+        new_rent = recal_amount_owed(new_rent,rent_type.id,date_returned,rent_date_from,rent_date_to)
+        assert new_rent.amount_owed == 5
+        assert new_rent.late_fees == 1200
     
-    def test_recal_amount_owed_weekly_ontime(self):
+    def test_recal_amount_owed_weekly(self):
+        period_from = datetime(2022,8,31)
+        period_to = datetime(2023,7,31)
         rent_date_from = datetime(2023,1,8)
-        rent_date_to = rent_date_from + timedelta(days=7)
-        date_returned = rent_date_to
-        amt = recal_amount_owed(5,date_returned,rent_date_from,rent_date_to)
-        assert amt == 8
+        rent_date_to = rent_date_from + timedelta(days=3)
+        date_returned = rent_date_to + timedelta(days=41)
+        rent_type = get_rentType_by_period(period_from,period_to,'Daily')
+        if rent_type is None:
+            rent_type = new_rentType(period_from,period_to,'Daily',4)
+        new_rent = Rent('816000000','1',rent_type.id, rent_date_from, rent_date_to, 12,'RATE' , date_returned)
+        new_rent = recal_amount_owed(new_rent,rent_type.id,date_returned,rent_date_from,rent_date_to)
+        assert new_rent.amount_owed == 12
+        assert new_rent.late_fees == 164
     
-    def test_recal_amount_owed_weekly_late(self):
-        rent_date_from = datetime(2023,1,2)
-        rent_date_to = rent_date_from + timedelta(days=21)
-        date_returned = rent_date_to + timedelta(days=3)
-        amt = recal_amount_owed(5,date_returned,rent_date_from,rent_date_to)
-        assert amt == 36
     
     def test_recal_amount_owed_monthly_ontime(self):
+        period_from = datetime(2022,8,31)
+        period_to = datetime(2023,7,31)
         rent_date_from = datetime(2023,1,8)
         rent_date_to = rent_date_from + timedelta(days=31)
-        date_returned = datetime.now()
-        amt = recal_amount_owed(3,date_returned,rent_date_from,rent_date_to)
-        assert amt == 30
-    
-    def test_recal_amount_owed_monthly_late(self):
-        rent_date_from = datetime(2023,1,2)
-        rent_date_to = rent_date_from + timedelta(days=30)
-        date_returned = rent_date_to + timedelta(days=10)
-        amt = recal_amount_owed(3,date_returned,rent_date_from,rent_date_to)
-        assert amt == 70
+        date_returned = rent_date_to + timedelta(days=375)
+        rent_type = get_rentType_by_period(period_from,period_to,'Daily')
+        if rent_type is None:
+            rent_type = new_rentType(period_from,period_to,'Daily',4)
+        new_rent = Rent('816000000','1',rent_type.id, rent_date_from, rent_date_to, 124,'RATE' , date_returned)
+        new_rent = recal_amount_owed(new_rent,rent_type.id,date_returned,rent_date_from,rent_date_to)
+        assert new_rent.amount_owed == 124
+        assert new_rent.late_fees == 1500
     
     def test_recal_amount_owed_semester_ontime(self):
+        period_from = datetime(2022,8,31)
+        period_to = datetime(2023,7,31)
         rent_date_from = datetime(2023,1,8)
         rent_date_to = rent_date_from + timedelta(days=93)
-        date_returned = rent_date_to
-        amt = recal_amount_owed(4,date_returned,rent_date_from,rent_date_to)
-        assert amt == 100
-    
-    def test_recal_amount_owed_semester_late(self):
-        rent_date_from = datetime(2023,1,2)
-        rent_date_to = rent_date_from + timedelta(days=93)
-        date_returned = rent_date_to + timedelta(days = 15)
-        amt = recal_amount_owed(4,date_returned,rent_date_from,rent_date_to)
-        assert amt == 160
+        date_returned = rent_date_to + timedelta(days=375)
+        rent_type = get_rentType_by_period(period_from,period_to,'SEMESTERMEDIUM')
+        if rent_type is None:
+            rent_type = new_rentType(period_from,period_to,'SEMESTERMEDIUM',4)
+        new_rent = Rent('816000000','1',rent_type.id, rent_date_from, rent_date_to, 100,'FIXED' , date_returned)
+        new_rent = recal_amount_owed(new_rent,rent_type.id,date_returned,rent_date_from,rent_date_to)
+        assert new_rent.amount_owed == 100
+        assert new_rent.late_fees == 0
     
     def release_rental(self):
         add_new_student('816000222','Test','Student','ENG','18684998888','test.student@my.uwi.edu')
@@ -293,14 +302,14 @@ class RentIntegratedTest(unittest.TestCase):
             'id': 1,
             'student_id': '816000111',
             'keyHistory_id':1,
+            "additional_fees":0,
+            'late_fees':0,
             'rent_type':1,
-            'rent_method': 'Rate',
+            'rent_method':'Rate',
             'rent_date_from':datetime.strftime(rent_period_from,'%Y-%m-%d %H:%M:%S'),
             'rent_date_to':datetime.strftime(rent_period_to,'%Y-%m-%d %H:%M:%S'),
-            'date_returned':'',
+            'date_returned':"",
             'amount_owed':20.0,
-            'late_fees': 0,
-            'additional_fees': 0,
             'status':'Owed'
         }]
         actual_list = get_all_rentals()

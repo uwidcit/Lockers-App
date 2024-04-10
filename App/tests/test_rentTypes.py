@@ -7,7 +7,6 @@ from App.controllers import (
     new_rentType,
     delete_rent_type,
     get_All_rentType,
-    get_rentType_daily_period,
     get_rentType_by_id,
     update_rentType_period,
     update_rentType_price,

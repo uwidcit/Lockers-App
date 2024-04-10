@@ -58,7 +58,6 @@ def recal_amount_owed(rent,rentType_id,date_returned,rent_date_from,rent_date_to
     timestamp = datetime.now()
     semester_period = get_rentType_by_id(rentType_id)
     orignal_duration = period_elapsed(semester_period,rent_date_from,rent_date_to)
-
     if date_returned:
         date_returned_1 = date_returned
         return_duration = period_elapsed(semester_period,rent_date_from,date_returned)
@@ -82,7 +81,6 @@ def late_fees(type, duration, original_duration):
     timestamp = datetime.now()
     if not type:
         return -1
-    
     return (duration - original_duration) * type.price
 
 def cal_fixed_price(rentType_id):

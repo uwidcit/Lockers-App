@@ -36,9 +36,13 @@ def get_rentType_by_id(id):
 
     return rentType
 
-def get_rentType_daily_period(period_from, period_to):
-    rentType = RentTypes.query.filter(and_(RentTypes.period_to >= period_to, RentTypes.period_from <= period_from,RentTypes.type == Types.DAILY)).first()
-     
+def get_rentType_by_period(period_from, period_to,type):
+    if type.upper() in Types.__members__:
+        typeEnum = Types[type.upper()]
+    else:
+        raise Exception("Type doesn't exist")
+    rentType = RentTypes.query.filter(and_(RentTypes.period_to <= period_to, RentTypes.period_from >= period_from,RentTypes.type == typeEnum)).first()
+    print(rentType)
     if not rentType:
         return None
 
