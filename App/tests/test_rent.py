@@ -12,7 +12,8 @@ from App.controllers import (
     new_rentType,
     period_elapsed,
     recal_amount_owed,
-    release_rental
+    release_rental,
+    add_new_area
 )
 from App.models.rent import RentStatus
 from datetime import datetime,timedelta
@@ -116,8 +117,9 @@ def empty_db():
 
 class RentIntegratedTest(unittest.TestCase):
     def test_create_rent(self):
+        area = add_new_area('ENG', 12, 20)
         add_new_student('816000111','Remmy','Dreamer','FST','18684981333','remmy.dreamer@my.uwi.edu')
-        add_new_locker('A1001','MEDIUM','FREE','AVAILABLE','1')
+        add_new_locker('A1001','MEDIUM','FREE','AVAILABLE',area.id)
         period_from = datetime(2022,8,31)
         period_to = datetime(2023,7,31)
         new_rentType(period_from,period_to,'Daily',4)
@@ -125,15 +127,15 @@ class RentIntegratedTest(unittest.TestCase):
         rent_period_from = datetime.now()
         rent_period_from = rent_period_from.replace(hour = 8, minute = 0 ,second= 0, microsecond= 0)
         rent_period_to = rent_period_from + timedelta(days=5)
-        rent = create_rent('816000111','A1001',1,rent_period_from,rent_period_to, 'FIXED', None)
-        assert rent.student_id == 816000111
-        assert rent.locker_id == 'A1001'
+        rent = create_rent('816000111','A1001',1,rent_period_from,rent_period_to, 'RATE', None)
+        assert rent.student_id == '816000111'
+        assert rent.keyHistory_id == 1
         assert rent.rent_type == 1
         assert rent.rent_date_from == rent_period_from
         assert rent.rent_date_to == rent_period_to
         assert rent.date_returned is None
         assert rent.amount_owed == 20
-        assert rent.status == Status.OWED
+        assert rent.status.value == 'Owed'
     
     def test_period_elaspsed_daily(self):
         rent_date_from = datetime.now()
@@ -289,14 +291,17 @@ class RentIntegratedTest(unittest.TestCase):
         rent_period_to = rent_period_from + timedelta(days=5)
         expected_list = [{
             'id': 1,
-            'student_id': 816000111,
-            'locker_id':'A1001',
+            'student_id': '816000111',
+            'keyHistory_id':1,
             'rent_type':1,
-            'rent_date_from':rent_period_from,
-            'rent_date_to':rent_period_to,
-            'date_returned':None,
+            'rent_method': 'Rate',
+            'rent_date_from':datetime.strftime(rent_period_from,'%Y-%m-%d %H:%M:%S'),
+            'rent_date_to':datetime.strftime(rent_period_to,'%Y-%m-%d %H:%M:%S'),
+            'date_returned':'',
             'amount_owed':20.0,
-            'status':Status.OWED
+            'late_fees': 0,
+            'additional_fees': 0,
+            'status':'Owed'
         }]
         actual_list = get_all_rentals()
         self.assertListEqual(expected_list,actual_list)
