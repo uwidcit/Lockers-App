@@ -221,24 +221,6 @@ def search_student(query,size,offset):
 
     return {"num_pages":num_pages,"data":s_list}
 
-def get_student_by_first_name(query):
-    student = Student.query.filter_by(first_name = query).all()
-    if not student:
-        return None
-    return [s.toJSON() for s in student]
-
-def get_student_by_last_name(query):
-    student = Student.query.filter_by(last_name = query).all()
-    if not student:
-        return None
-    return [s.toJSON() for s in student]
-
-def get_student_by_faculty(query):
-    student = Student.query.filter_by(faculty = query).all()
-    if not student:
-        return None
-    return [s.toJSON() for s in student]
-
 def get_student_current_rental(id):
     current_rental = Rent.query.filter(and_(Rent.student_id == id, Rent.status != RStatus.VERIFIED)).first()
     if current_rental:

@@ -39,19 +39,6 @@ def get_lockers_in_area(id):
         raise("Area does not exist")
     return area.getLockersInArea()
 
-def get_area_by_description(description):
-    areas = Area.query.filter(Area.description.contains(description)).all()
-    if not areas:
-        return None
-    return areas
-
-def get_area_by_description_toJSON(description):
-    areas = get_area_by_description(description)
-    if not areas:
-        return None
-    return [a.toJSON() for a in areas]
-
-
 def set_description(id,new_description):
     area = get_area_by_id(id)
     if not area: 
@@ -91,9 +78,7 @@ def set_longitude(id,new_longitude):
     except SQLAlchemyError as e:
         db.session.rollback()
         raise("Unable to set longitude. Check Error Log for more Details")
-        
-        
-
+              
 def delete_area(id):
     area = get_area_by_id(id)
     if not area: 
