@@ -4,9 +4,11 @@ from App.database import create_db
 from App.models import Locker, Area
 from App.controllers import (
     add_new_area,
+    add_new_locker,
     delete_area,
     get_area_by_id,
     get_area_all,
+    get_lockers_in_area,
     set_description,
     set_latitude,
     set_longitude,
@@ -109,3 +111,29 @@ class AreaIntegratedTests (unittest.TestCase):
             'latitude': -61.404937
         }]
         self.assertListEqual(expectedList,results)
+    
+    def test_get_lockers_in_area(self):
+        add_new_locker('AreaTestLocker','LARGE', 'FREE','TESTKEY1',1)
+        add_new_locker('AreaTestLocker2','LARGE', 'FREE','TESTKEY2',1)
+        lockers = get_lockers_in_area(1)
+        expectedList = [{
+            'locker_code':'AreaTestLocker',
+            'locker_type':'Large',
+            'status':'Free',
+            'area':1
+        },{
+            'locker_code':'AreaTestLocker2',
+            'locker_type':'Large',
+            'status':'Free',
+            'area':1
+        }]
+        self.assertListEqual(expectedList,lockers)
+    
+    def test_get_lockers_in_area_invalid(self):
+        with pytest.raises(Exception) as E:
+            lockers = get_lockers_in_area(999)
+            lockers1 = get_lockers_in_area(None)
+            lockers2 = get_lockers_in_area('1')
+            self.assertIsNone(locker)
+            self.assertIsNone(locker1)
+            self.assertIsNone(locker2)

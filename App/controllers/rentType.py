@@ -48,21 +48,6 @@ def get_rentType_by_period(period_from, period_to,type):
 
     return rentType
 
-def get_rentType_period(period_to):
-    rentType = RentTypes.query.filter_by(period_to = period_to)
-
-    if not rentType:
-        return None
-        
-    return [r.toJSON() for r in rentType]
-
-def get_rentType_price(price):
-    rentType = RentTypes.query.filter_by(price = price)
-
-    if not rentType:
-        return None
-        
-    return [r.toJSON() for r in rentType]
 
 def update_rentType_price(id,new_price):
     #first check to see if a rentType exist in rent
@@ -149,7 +134,7 @@ def get_All_rentType():
     rentType = RentTypes.query.filter(RentTypes.type != Types.KEYREPLACEMENT).all()
 
     if not rentType:
-        return None
+        retuget_All_rentType_grouprn None
         
     return [r.toJSON() for r in rentType]
 

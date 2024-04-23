@@ -8,21 +8,30 @@ from App.controllers import (
     get_locker_id_locker,
     get_current_locker_instance,
     add_new_locker,
+    add_new_student,
+    new_rentType,
     get_lockers_available,
+    get_locker_by_area_id_toJSON,
     get_locker_id,
     get_all_lockers,
     getLockerTypes,
     getStatuses,
     rent_locker,
     release_locker,
+    update_locker_area,
     delete_locker,
+    not_verified,
     update_key,
     update_locker_type,
     update_locker_status,
-    swap_key
+    swap_key,
+    create_rent,
+    get_locker_rent_history,
+    get_current_rental_c,
 )
 
 from wsgi import app
+from datetime import datetime,timedelta
 
 LOGGER = logging.getLogger(__name__)
 
@@ -114,6 +123,17 @@ class LockerIntegrationTests(unittest.TestCase):
         result = release_locker(654321)
         self.assertIsNone(result)
     
+    def test_not_verified(self):
+        keyHistoryID = get_current_locker_instance('A1001')
+        result = not_verified(keyHistoryID.id)
+        self.assertTrue(result)
+        locker = get_locker_id_locker('A1001')
+        assert locker.status == Status.NVERIFIED
+    
+    def test_not_verified_invalid(self):
+        result = not_verified(654321)
+        self.assertIsNone(result)
+    
     def test_delete_locker(self):
         add_new_locker('A1111','COMBINATION','RENTED','TEST', 1)
         locker = delete_locker('A1111')
@@ -189,5 +209,70 @@ class LockerIntegrationTests(unittest.TestCase):
             assert str(e) == 'Key cannot be empty'
 
     def test_update_key_invalid_locker(self):
-            update = update_key('A1001', 'K101')
-            self.assertIsNone(update)
+        update = update_key('A1001', 'K101')
+        self.assertIsNone(update)
+    
+    def test_get_lockers_by_area_id(self):
+        lockers = get_locker_by_area_id_toJSON(1)
+        expected_list = [{
+            'locker_code':'A1001',
+            'locker_type':'Medium',
+            'status':'Free',
+            'area': 1,
+            }]
+        self.assertListEqual(expected_list, lockers)
+    
+    def test_update_locker_area(self):
+        new_area = add_new_area('An area description',10.283759,-61.404937)
+        new_locker = add_new_locker('TEST10101','MEDIUM','FREE','test01', new_area.id)
+        result = update_locker_area(new_locker.locker_code,new_area.id)
+        assert result.locker_code == 'TEST10101'
+        assert result.area == new_area.id
+    
+    def test_get_current_rental_c(self):
+        new_area = add_new_area('Area3?',10.283759,-61.404937)
+        new_locker = add_new_locker('NewLocker2','MEDIUM','FREE','TestlockerKey', new_area.id)
+        add_new_student('123456789','Victory','Friends','FSS','18684981333','victoria.friends@my.uwi.edu')
+        period_from = datetime(2022,8,31)
+        period_to = datetime(2023,7,31)
+        rent_type = new_rentType(period_from,period_to,'Daily',4)
+        rent_period_from = datetime.now()
+        rent_period_from = rent_period_from.replace(hour = 8, minute = 0 ,second= 0, microsecond= 0)
+        rent_period_to = rent_period_from + timedelta(days=5)
+        create_rent('123456789','NewLocker2',1,rent_period_from,rent_period_to, 'RATE', None)
+        rent = get_current_rental_c('NewLocker2')
+        assert rent.student_id == '123456789'
+        assert rent.rent_type == 1
+        assert rent.rent_date_from == rent_period_from
+        assert rent.rent_date_to == rent_period_to
+        assert rent.date_returned is None
+        assert rent.amount_owed == 20
+        assert rent.status.value == 'Owed'
+    
+    def test_get_locker_rent_history(self):
+        rent_period_from = datetime.now()
+        rent_period_from = rent_period_from.replace(hour = 8, minute = 0 ,second= 0, microsecond= 0)
+        rent_period_to = rent_period_from + timedelta(days=5)
+        locker_rents = get_locker_rent_history('NewLocker2',6,1)
+        expected_list= [{
+            'id': 1,
+            'student_id': '123456789',
+            'keyHistory_id':2,
+            "additional_fees":0.0,
+            'late_fees':0.0,
+            'rent_type':1,
+            'rent_method':'Rate',
+            'rent_date_from':datetime.strftime(rent_period_from,'%Y-%m-%d %H:%M:%S'),
+            'rent_date_to':datetime.strftime(rent_period_to,'%Y-%m-%d %H:%M:%S'),
+            'date_returned':"",
+            'amount_owed':20.0,
+            'status':'Owed'
+        }]
+        self.assertListEqual(expected_list, locker_rents["data"])
+
+
+
+
+
+
+    

@@ -8,6 +8,9 @@ from App.controllers import (
     create_rent,
     init_amount_owed,
     get_rentType_by_id,
+    get_rent_by_id,
+    get_all_rentals_active,
+    get_all_rentals_inactive,
     get_rentType_by_period,
     add_new_locker,
     add_new_student,
@@ -16,7 +19,12 @@ from App.controllers import (
     period_elapsed,
     recal_amount_owed,
     release_rental,
-    add_new_area
+    add_new_area,
+    swap_rent,
+    verify_rental,
+    get_transactions,
+    rent_additional_payments,
+    update_rent_values,
 )
 from App.models.rent import RentStatus
 from datetime import datetime,timedelta
@@ -140,7 +148,7 @@ class RentIntegratedTest(unittest.TestCase):
         assert rent.date_returned is None
         assert rent.amount_owed == 20
         assert rent.status.value == 'Owed'
-        assert rent.status.value == 'Owed'
+        
     
     def test_period_elaspsed_daily(self):
         period_from = datetime(2022,8,31)
@@ -314,3 +322,117 @@ class RentIntegratedTest(unittest.TestCase):
         }]
         actual_list = get_all_rentals()
         self.assertListEqual(expected_list,actual_list)
+
+    def test_get_rent_by_id(self):
+        rent_period_from = datetime.now()
+        rent_period_from = rent_period_from.replace(hour = 8, minute = 0 ,second= 0, microsecond= 0)
+        rent_period_to = rent_period_from + timedelta(days=5)
+        rent = get_rent_by_id(1)
+        assert rent.student_id == '816000111'
+        assert rent.key_history.id == 1
+        assert rent.rent_type == 1
+        assert rent.rent_date_from == rent_period_from
+        assert rent.rent_date_to == rent_period_to
+        assert rent.date_returned is None
+        assert rent.amount_owed == 20
+        assert rent.status.value == 'Owed'
+    
+    def test_get_all_rentals_active(self):
+        rent_period_from = datetime.now()
+        rent_period_from  = rent_period_from.replace(hour = 8, minute = 0 ,second= 0, microsecond= 0)
+        rent_period_to = rent_period_from + timedelta(days=5)
+        rents = get_all_rentals_active()
+        expected_list = [{
+            'key':'AVAILABLE',
+            'keyHistory_id':1,
+            'id':1,
+            'late_fees':0.0,
+            'amount_owed':20.0,
+            'additional_fees':0.0,
+            'locker_code':'A1001',
+            'rent_type':1,
+            'rent_date_from':datetime.strftime(rent_period_from,'%Y-%m-%d %H:%M:%S'),
+            'rent_date_to':datetime.strftime(rent_period_to,'%Y-%m-%d %H:%M:%S'),
+            'date_returned':'',
+            'rent_types':'Daily',
+            'rent_method':'Rate',
+            'status':'Owed',
+            'student_id':'816000111',
+            'rent_size':'Medium',
+            }]
+        self.assertListEqual(expected_list,rents)
+    
+    def test_get_all_rentals_inactive(self):
+        rent_period_from = datetime.now()
+        rent_period_to = timedelta(days = 30) + rent_period_from
+        add_new_locker('TESTINACTIVE','Small','FREE','TKEY6',1)
+        rent = create_rent('180058823','TESTINACTIVE',1,rent_period_from,rent_period_to,'RATE',None)
+        add_new_transaction(rent.id,'TTD',rent_period_from,rent.amount_owed,'Description','DEBIT')
+        release_rental(rent.id,rent_period_to)
+        verify_rental(rent.id)
+        rents = get_all_rentals_inactive()
+        expected_list = [{
+            'key':'TKEY6',
+            'keyHistory_id':2,
+            'id':2,
+            'late_fees':0.0,
+            'amount_owed':0.0,
+            'additional_fees':0.0,
+            'locker_code':'TESTINACTIVE',
+            'rent_type':1,
+            'rent_date_from':datetime.strftime(rent_period_from,'%Y-%m-%d %H:%M:%S'),
+            'rent_date_to':datetime.strftime(rent_period_to,'%Y-%m-%d %H:%M:%S'),
+            'date_returned':datetime.strftime(rent_period_to,'%Y-%m-%d %H:%M:%S'),
+            'rent_types':'Daily',
+            'rent_method':'Rate',
+            'status':'Verified',
+            'student_id':'180058823',
+            }]
+        self.assertListEqual(expected_list,rents)
+    def test_swap_rent(self):
+        rent_period_from = datetime.now()
+        rent_period_to = timedelta(days = 30) + rent_period_from
+        add_new_locker('TESTSWAPRENT1','Small','FREE','TKEY6',1)
+        add_new_locker('TESTSWAPRENT2','Small','FREE','TKEY7',1)
+        create_rent('180058823','TESTSWAPRENT1',1,rent_period_from,rent_period_to,'RATE',None)
+        rent = swap_rent('TESTSWAPRENT1','TESTSWAPRENT2',1,rent_period_from,rent_period_to,'RATE',None)
+        assert rent.student_id == '180058823'
+        assert rent.key_history.id == 4
+        assert rent.date_returned is None
+        assert rent.amount_owed == 120
+        assert rent.status.value == 'Owed' 
+    
+    def test_rent_additional_payments(self):
+        rent = rent_additional_payments(1,30)
+        assert rent.additional_fees == 30
+    
+    def test_update_rent_values(self):
+        rent_period_from = datetime.now()
+        rent_period_to = timedelta(days = 90) + rent_period_from
+        rent_type = new_rentType(rent_period_from,rent_period_from + timedelta(days=2782),'SEMESTERLARGE',170)
+        add_new_locker('TESTUPDATERENT','Large','FREE','TKEY9',1)
+        rent = create_rent('180058823','TESTUPDATERENT',1,rent_period_from,rent_period_to,'RATE',None)
+        updated_rent = update_rent_values(rent.id,rent_type.id,'FIXED',rent_period_from,rent_period_to,None,0,0)
+        assert rent.student_id == '180058823'
+        assert rent.rent_type == rent_type.id
+        assert rent.rent_method.value == "Period"
+        assert rent.rent_date_from == rent_period_from
+        assert rent.rent_date_to == rent_period_to
+        assert rent.date_returned is None
+        assert rent.amount_owed == 170
+        assert rent.status.value == 'Owed'
+
+    def test_get_transaction(self):
+        date = datetime.now()
+        transactions = get_transactions(2,6,1)
+        expected_list = [{
+            'id': 1,
+            'rent_id':2,
+            'currency':'TTD',
+            'transaction_date':date.date(),
+            'amount':120.00,
+            'description':'Description',
+            'type': 'debit',
+            'receipt_number': None
+        }]
+        self.assertListEqual(expected_list, transactions['data'])

@@ -5,6 +5,7 @@ from App.database import create_db
 from datetime import datetime, timedelta
 from App.controllers import (
     add_new_transaction,
+    get_transactions_by_offset,
     get_transaction_id,
     get_transaction_json,
     get_all_transactions,
@@ -15,6 +16,7 @@ from App.controllers import (
     add_new_locker,
     add_new_student,
     new_rentType,
+    search_transaction,
     create_rent
 )
 from wsgi import app
@@ -114,4 +116,46 @@ class TransactionLogIntegrationTest(unittest.TestCase):
         expected_list = ['credit','debit']
         result = getT_Type()
         self.assertListEqual(expected_list,result)
+    
+    def test_search_transaction(self):
+        search_id = search_transaction(1,6,1)
+        search_student = search_transaction('816024666',6,1)
+        search_amount  = search_transaction(100,6,1)
+        search_tType = search_transaction('debit', 6, 1)
+        
+        date = datetime.now()
+        expected_list = [{
+            'id': 1,
+            'rent_id':1,
+            'currency':'TTD',
+            'transaction_date':date.date(),
+            'amount':100.00,
+            'description':'Downpayment',
+            'type': 'debit',
+            'receipt_number': None
+        }]
+        self.assertIsNotNone(search_id)
+        self.assertIsNotNone(search_student)
+        self.assertIsNotNone(search_amount)
+        self.assertIsNotNone(search_tType)
+        self.assertListEqual(expected_list,search_id['data'])
+        self.assertListEqual(expected_list,search_student['data'])
+        self.assertListEqual(expected_list,search_amount['data'])
+        self.assertListEqual(expected_list,search_tType['data'])
+
+    def test_get_transaction_by_offset(self):
+        date = datetime.now()
+        transactions = get_transactions_by_offset(6,1)
+        expected_list = [{
+            'id': 1,
+            'rent_id':1,
+            'currency':'TTD',
+            'transaction_date':date.date(),
+            'amount':100.00,
+            'description':'Downpayment',
+            'type': 'debit',
+            'receipt_number': None
+        }]
+        self.assertListEqual(expected_list,transactions)
+
     

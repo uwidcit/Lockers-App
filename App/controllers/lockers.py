@@ -143,6 +143,9 @@ def rent_locker(id):
 
 def not_verified(id):
     keyH = getKeyHistory(id)
+    if not keyH:
+        return None
+        
     locker = get_locker_id_locker(keyH.locker_id)
     
     if not locker :

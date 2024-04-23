@@ -193,6 +193,7 @@ def rent_additional_payments(id,monetary_value):
     try:
         db.session.add(rent)
         db.session.commit()
+        return rent
     except:
         db.session.rollback()
         return None
@@ -228,20 +229,6 @@ def update_rent(id):
         db.session.rollback()
         raise("Unable to create rent. Check Error Log for more Details")
 
-
-def get_overdue_rent_by_student(s_id):
-    rent = Rent.query.filter(and_(Rent.student_id == s_id,Rent.status == Status.OVERDUE)).first()
-    if not rent :
-        return None
-    rent = update_rent(rent.id)
-    return rent
-
-def get_owed_rent_by_student(s_id):
-    rent = Rent.query.filter(and_(Rent.student_id== s_id,Rent.status == Status.OWED)).first()
-    if not rent :
-        return None
-    rent = update_rent(rent.id)
-    return rent
 
 def get_student_current_rental(s_id):
     rent = Rent.query.filter(and_(Rent.student_id == s_id, Rent.status != Status.RETURNED, Rent.status != Status.VERIFIED)).first()
