@@ -128,7 +128,7 @@ def import_keyHistory(uploaded_file):
     seq = Sequence(name='key_history_id_seq')
     keyH_json = reader.to_dict('records')
     for kh in keyH_json:
-        k = restore_keyHistory(kh['id'],kh['key_id'], kh['locker_id'],kh['date_moved'])
+        k = restore_keyHistory(kh['id'],kh['key_id'], kh['locker_id'],kh['date_moved'],kh['isActive'])
     key = db.session.execute(seq)
     
     while (key < keyH_json[len(keyH_json)-1]['id']):

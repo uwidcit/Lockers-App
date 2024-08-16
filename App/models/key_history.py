@@ -33,5 +33,5 @@ class KeyHistory(db.Model):
             "key_id":self.key_id,
             "locker_id":self.locker_id,
             "date_moved":self.date_moved,
-            #"rent":self.getRents()
+            "isActive":self.isActive
         }

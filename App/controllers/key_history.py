@@ -13,10 +13,12 @@ def new_keyHistory(key_id,locker_id,date_moved):
         db.session.rollback()
         return None
     
-def restore_keyHistory(id,key_id,locker_id,date_moved):
+def restore_keyHistory(id,key_id,locker_id,date_moved,isActive):
     seq = Sequence(name='key_history_id_seq')
     try:
-        keyHistory = KeyHistory(key_id,locker_id,date_moved,"Active")
+        if not isActive:
+            isActive = "Active"
+        keyHistory = KeyHistory(key_id,locker_id,date_moved,isActive)
         keyHistory.id = id 
         db.session.execute(seq)
         db.session.add(keyHistory)
