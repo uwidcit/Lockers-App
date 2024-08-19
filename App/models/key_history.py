@@ -18,7 +18,7 @@ class KeyHistory(db.Model):
         self.key_id = key_id
         self.locker_id = locker_id
         self.date_moved = date_moved
-        if isActive.upper() is Active.__members__:
+        if isActive.upper() in Active.__members__:
             self.isActive = Active[isActive.upper()]
     
     def getRents(self):

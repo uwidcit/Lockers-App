@@ -21,7 +21,7 @@ def index_page():
         return redirect(url_for("locker_views.return_offline_page"))
     return render_template('index.html')
 
-@index_views.app_errorhandler(400)
+@index_views.app_errorhandler(404)
 def render_not_found(e):
     flash('Page not found')
     return redirect(url_for("index_views.index_page"))
