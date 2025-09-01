@@ -39,7 +39,7 @@ jobs:
 
     
     - name: Set up SSH key
-      if: ${{ github.event_name == "push" }}
+      if: ${{ contains(fromJSON('["push"]'), github.event_name) }}
       run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.ARTIFACT_SSH_KEY }}" > ~/.ssh/id_rsa
@@ -47,7 +47,7 @@ jobs:
           echo ${{ secrets.ARTIFACT_HOST }} >> ~/.ssh/known_hosts
           sudo apt-get install sshpass
     - name: Execute remote SSH
-      if: ${{ github.event_name == "push" }}
+      if: ${{ contains(fromJSON('["push"]'), github.event_name) }}
       run: |
         sshpass -p '${{ secrets.SERVER_PASS }}' ssh -v -o StrictHostKeyChecking=no ${{ secrets.SERVERLOGIN }}@${{ secrets.SERVER_ADDR }} <<'ENDSSH'
         echo ${{ secrets.SERVER_PASS }} | sudo -S systemctl stop sacsock
@@ -61,4 +61,5 @@ jobs:
     #     cache: 'npm'
     # - run: npm install
     # - run: npm run api-test
+
 
