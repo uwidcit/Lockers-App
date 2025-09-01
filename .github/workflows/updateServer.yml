@@ -25,9 +25,9 @@ jobs:
     - name: Execute remote SSH
       run: |
         sudo apt-get install sshpass
-        sshpass -p ${{ server_pass }} SSH ${{ serverlogin }}@ $ {{ server_addr }}
+        sshpass -p ${{ secrets.server_pass }} SSH ${{ secrets.serverlogin }}@ $ {{ secrets.server_addr }}
         sudo systemctl restart sacsock
-        ${{ server_pass }}
+        ${{ secrets.server_pass }}
         
       
       
