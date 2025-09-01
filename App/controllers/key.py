@@ -66,16 +66,18 @@ def update_key_id(id,new_key_id):
 
 
 def update_key_masterkey_id(id,new_id):
+    from App.controllers import get_masterkey_by_id
     key = get_key_by_id(id)
+    masterkey = get_masterkey_by_id(new_id)
 
-    if not key:
+    if not key or not masterkey:
         return None
     
     try:
         key.masterkey_id = new_id
         db.session.add(key)
         db.session.commit()
-        return Key
+        return key
     except SQLAlchemyError:
         db.session.rollback()
         return None
@@ -83,12 +85,14 @@ def update_key_masterkey_id(id,new_id):
 def update_key_status(id,new_status):
     key = get_key_by_id(id)
 
-    if not key:
+    if not key or new_status is None:
         return None
     
     try:
         if new_status.upper() in Key_Status.__members__:
             key.key_status = Key_Status[new_status.upper()]
+        else:
+            return None
         db.session.add(key)
         db.session.commit()
         return key

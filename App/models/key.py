@@ -27,7 +27,10 @@ class Key(db.Model):
     
     def toJSON(self):
         from App.models import KeyHistory
-        keyHistory = self.KeyH.order_by(KeyHistory.id.desc()).first()
+        try:
+            keyHistory = self.KeyH.order_by(KeyHistory.id.desc()).first()
+        except:
+            keyHistory = None
         if keyHistory:
             historyJSON = keyHistory.toJSON()
         else:

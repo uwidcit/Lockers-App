@@ -5,6 +5,7 @@ from App.database import db
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import or_, and_
 from datetime import datetime
+from math import ceil
 
 def add_new_student(s_id, f_name, l_name, faculty,p_no,email):
     if get_student_by_id(s_id):
@@ -104,6 +105,7 @@ def update_student_email(s_id, new_email):
         student.email = new_email
         db.session.add(student)
         db.session.commit()
+        return student
 
     except SQLAlchemyError as e:
         db.session.rollback()
@@ -136,12 +138,18 @@ def update_student_status(id,status):
             student.rentStanding = RentStanding[status.upper()]
         db.session.add(student)
         db.session.commit()
+        return student
 
     except SQLAlchemyError as e:
         db.session.rollback()
         return None
 
 def get_available_student(size,offset):
+    if size < 1 or type(size) is not int:
+        size = 6
+    if offset < 1 or type(offset) is not int:
+        offset = 1
+    
     s_offset = (offset *size) - size
 
     students = Student.query.filter(Student.rentStanding != RentStanding.OVERDUE).limit(size).offset(s_offset)
@@ -151,7 +159,7 @@ def get_available_student(size,offset):
     s_list = []
     for s in students:
         s_list.append(s.toJSON())
-    return {"num_pages":len(s_list), "data":s_list}
+    return {"num_pages":ceil(len(s_list)/size), "data":s_list}
 
 def get_all_students():
     students = Student.query.all()
@@ -221,24 +229,6 @@ def search_student(query,size,offset):
 
     return {"num_pages":num_pages,"data":s_list}
 
-def get_student_by_first_name(query):
-    student = Student.query.filter_by(first_name = query).all()
-    if not student:
-        return None
-    return [s.toJSON() for s in student]
-
-def get_student_by_last_name(query):
-    student = Student.query.filter_by(last_name = query).all()
-    if not student:
-        return None
-    return [s.toJSON() for s in student]
-
-def get_student_by_faculty(query):
-    student = Student.query.filter_by(faculty = query).all()
-    if not student:
-        return None
-    return [s.toJSON() for s in student]
-
 def get_student_current_rental(id):
     current_rental = Rent.query.filter(and_(Rent.student_id == id, Rent.status != RStatus.VERIFIED)).first()
     if current_rental:
@@ -271,9 +261,3 @@ def get_rental_student(id,size,offset):
         r_list.append(r.toJSON())
 
     return {"num_pages":num_pages,"data":r_list}
-    
-def get_all_available_student():
-    students = Student.query.all()
-    if not students:
-        return {}
-    return [S.toJSON() for S in students]

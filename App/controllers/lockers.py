@@ -4,7 +4,7 @@ from App.models.key_history import KeyHistory
 from App.models.rent import RentStatus as RStatus
 from App.models.locker import LockerStatus as Status, LockerTypes
 from App.database import db
-from App.controllers.area import get_area_by_id,get_area_by_description
+from App.controllers.area import get_area_by_id
 from App.controllers.key_history import new_keyHistory,getKeyHistory,deactivate
 from datetime import datetime
 from App.controllers.key import get_key_by_id,new_key as create_key
@@ -62,18 +62,6 @@ def get_locker_by_area_id_toJSON(id):
     if not lockers:
         return {}
     return [l.toJSON() for l in lockers]
-
-
-def get_lockers_by_area_description(description):
-    area = get_area_by_description(description)
-    
-    lockers = []
-
-    if not area:
-        return None
-    for a in area:
-        lockers = lockers + get_locker_by_area_id_toJSON(a.id)
-    return lockers
 
 
 def get_locker_id(id):
@@ -155,6 +143,9 @@ def rent_locker(id):
 
 def not_verified(id):
     keyH = getKeyHistory(id)
+    if not keyH:
+        return None
+        
     locker = get_locker_id_locker(keyH.locker_id)
     
     if not locker :
@@ -173,6 +164,8 @@ def not_verified(id):
 
 def release_locker(id):
     keyH = getKeyHistory(id)
+    if keyH is None:
+        return None
     locker = get_locker_id_locker(keyH.locker_id)
     if not locker:
         return None

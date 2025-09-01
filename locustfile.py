@@ -1,11 +1,29 @@
-import time, uuid, random
+import time, uuid
+from random import random,randint
+import sys
 from locust import User, HttpUser, task, between
+from locust.clients import HttpSession
 
 class QuickstartUser(HttpUser):
-    wait_time = between(1, 5)
+    wait_time = between(0.09, 0.4)
 
-    @task(5)
-    def testLocker(self):
+    def on_start(self):
+        self.client.post("/login",data={"username":"bob","password":"bobpass"},headers={"content-type":"application/x-www-form-urlencoded"})
+ 
+    def on_end(self):
+        self.client.cookies.clear()
+    @task(1)
+    def testLockerPUT(self):  
+        payload = {
+        "locker_code":"A104",
+        "locker_type":"Large",
+        "area":19,
+        "status":"Free",
+        "key":str(randint(10000,11000)),
+        }
+        self.client.request('PUT',"/api/locker",json=payload,headers={'Content-Type':'application/json'})
+
+    """def testLocker(self):
         self.client.get("/locker")
         payload = {
             "locker_code": str(uuid.uuid4()).split("-")[0]+"TEST4",
@@ -38,7 +56,7 @@ class QuickstartUser(HttpUser):
 
     @task(4)
     def testTransactionLog(self):
-        self.client.get("/transactionLog")
+        #self.client.get("/transactionLog")
 
     @task(3)
     def testStudent(self):
@@ -64,8 +82,8 @@ class QuickstartUser(HttpUser):
 
     @task(4)
     def testKey(self):
-        self.client.get("/key")
+        #self.client.get("/key")
     
     @task(4)
     def testMasterkey(self):
-        self.client.get("/masterkey")
+        #self.client.get("/masterkey")"""

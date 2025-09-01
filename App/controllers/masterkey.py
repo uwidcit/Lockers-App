@@ -51,6 +51,9 @@ def get_all_masterkeys_no_offset():
     
 
 def get_masterkey_by_id(id):
+    if id == '' or id is None:
+        return None 
+
     masterkey = MasterKey.query.filter(MasterKey.masterkey_id.contains(id)).first()
 
     if not masterkey:
@@ -60,6 +63,9 @@ def get_masterkey_by_id(id):
 
 def update_series(id,new_series):
     masterkey = get_masterkey_by_id(id)
+
+    if new_series is None or new_series == '':
+        return None
 
     if not masterkey:
         return None
@@ -103,6 +109,8 @@ def delete_masterkey(id):
         return None
 
 def update_masterkey_type(id, new_type):
+    if new_type is None:
+        return None
     masterkey = get_masterkey_by_id(id)
     if not masterkey:
         return None
@@ -118,6 +126,8 @@ def update_masterkey_type(id, new_type):
         return None
 
 def search_masterkey(query,offset,size):
+    if query is None or query == '':
+        return None
     if query.upper() in Key_Type.__members__:
         data = db.session.query(MasterKey).filter(or_(MasterKey.key_type == Key_Type[query.upper()],MasterKey.masterkey_id.contains(query),MasterKey.series.contains(query))).all()
     else:
