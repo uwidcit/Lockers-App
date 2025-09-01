@@ -41,10 +41,10 @@ class KeyHistoryUnitTest(unittest.TestCase):
 
 @pytest.fixture(autouse=True, scope="module")
 def empty_db():
-    os.unlink(os.getcwd()+"/App/py_test.db")
     app.config.update({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///py_test.db'})
     create_db(app)
     yield app.test_client()
+    os.unlink(os.getcwd()+"/App/py_test.db")
     
 
 class KeyHistoryIntegratedTest(unittest.TestCase):
