@@ -134,7 +134,7 @@ def get_All_rentType():
     rentType = RentTypes.query.filter(RentTypes.type != Types.KEYREPLACEMENT).all()
 
     if not rentType:
-        retuget_All_rentType_grouprn None
+        return None
         
     return [r.toJSON() for r in rentType]
 

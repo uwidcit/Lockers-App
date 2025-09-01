@@ -35,6 +35,21 @@ jobs:
 
     - name: Run Tests
       run: pytest
+
+    - name: Set up SSH key
+      run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.ARTIFACT_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          echo ${{ secrets.ARTIFACT_HOST }} >> ~/.ssh/known_hosts
+          sudo apt-get install sshpass
+    - name: Execute remote SSH
+      run: |
+        sshpass -p '${{ secrets.SERVER_PASS }}' ssh -v -o StrictHostKeyChecking=no ${{ secrets.SERVERLOGIN }}@${{ secrets.SERVER_ADDR }} <<'ENDSSH'
+        echo ${{ secrets.SERVER_PASS }} | sudo -S systemctl stop sacsock
+        echo ${{ secrets.SERVER_PASS }} | sudo -S systemctl start sacsock
+        ENDSSH
+    
     # - name: Use Node.js ${{ matrix.node-version }}
     #   uses: actions/setup-node@v3
     #   with:

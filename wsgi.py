@@ -114,7 +114,7 @@ def user_tests_command(type):
     elif type == "int":
         sys.exit(pytest.main(["-k", "UserIntegrationTests"]))
     else:
-        sys.exit(pytest.main(["-k", "App"]))
+        sys.exit(pytest.main(["-x", "App/tests"]))
     
 
 app.cli.add_command(test)
