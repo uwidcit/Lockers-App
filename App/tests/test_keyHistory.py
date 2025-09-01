@@ -34,7 +34,8 @@ class KeyHistoryUnitTest(unittest.TestCase):
             'id': None,
             'key_id':'K101',
             'locker_id':'A101',
-            'date_moved': date
+            'date_moved': date,
+            'isActive':'Active'
         }
         self.assertDictEqual(expected_json,key_history.toJSON())
 
@@ -82,7 +83,8 @@ class KeyHistoryIntegratedTest(unittest.TestCase):
             'id': 1,
             'key_id':'K101',
             'locker_id':'A101',
-            'date_moved': datetime.now().date()
+            'date_moved': datetime.now().date(),
+            'isActive':'Inactive'
         }]}
         getkeyH_id = getKeyHistory_by_id('K101',6,1)
         self.assertDictEqual(expected_json, getkeyH_id)
