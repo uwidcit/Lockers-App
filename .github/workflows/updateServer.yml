@@ -25,7 +25,7 @@ jobs:
     - name: Execute remote SSH
       run: |
         sudo apt-get install sshpass
-        sshpass -p '${{ secrets.server_pass }}' ssh -v -o StrictHostKeyChecking=no ${{ secrets.serverlogin }}@ $ {{ secrets.server_addr }}  <<'ENDSSH'
+        sshpass -p '${{ secrets.server_pass }}' ssh -v -o StrictHostKeyChecking=no ${{ secrets.serverlogin }}@ ${{ secrets.server_addr }} <<'ENDSSH'
         sudo systemctl restart sacsock
         ${{ secrets.server_pass }}
         
