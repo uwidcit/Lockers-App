@@ -1,5 +1,6 @@
 from App.models import Rent,RentTypes,KeyHistory
 from App.models.locker import Locker
+from App.models.rentTypes import Types as RTypes
 from App.models.rent import RentStatus as Status, RentMethod as Method
 from math import floor
 
@@ -22,8 +23,9 @@ from App.controllers.student import update_student_status
 from App.controllers.key_history import getKeyHistory
 from datetime import datetime
 from App.database import db 
-from sqlalchemy import and_, Sequence
+from sqlalchemy import and_,or_, Sequence
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.sql import func
 
 def period_elapsed(type, rent_date_from, rent_date_to):
 
@@ -115,7 +117,6 @@ def create_rent(student_id, locker_id,rentType, rent_date_from, rent_date_to,ren
                 return rent
             return None
         except SQLAlchemyError as e:
-            print(e)
             db.session.rollback()   
             raise("Unable to create rent. Check Error Log for more Details")
             
@@ -139,7 +140,6 @@ def import_verified_rent(id,student_id,keyHistory_id,rentType,rent_date_from,ren
         db.session.commit()
         return rent
     except SQLAlchemyError as e:
-        print(e)
         db.session.rollback()   
         return None
 
@@ -393,6 +393,74 @@ def get_transactions(id,size,offset):
         s_list.append(d.toJSON())
 
     return {"num_pages":num_pages,"data":s_list}
+
+def report_definition():
+    return {
+        "Small":{"amount":0, "length":0,"late_fees":0,"additional_fees":0},
+        "Medium":{"amount":0, "length":0,"late_fees":0,"additional_fees":0},
+        "Large":{"amount":0, "length":0,"late_fees":0,"additional_fees":0},
+        "Combination":{"amount":0, "length":0,"late_fees":0,"additional_fees":0},
+        "Total":{"amount":0, "length":0,"late_fees":0,"additional_fees":0}
+    }
+
+def get_rents_range(start_date, end_date):
+    rents_query = db.session.query(Locker.locker_type, RentTypes.type, func.count(Rent.rent_type), func.sum(Rent.amount_owed),func.sum(Rent.late_fees), func.sum(Rent.additional_fees)).join(RentTypes,KeyHistory,Locker).filter(and_(Rent.rent_date_from >= start_date,Rent.rent_date_from <= end_date,Rent.status != Status.VERIFIED)).group_by(Locker.locker_type,RentTypes.type).all()
+    data = {
+          "semester": report_definition(),
+          "yearly":report_definition(),
+          "daily":report_definition(),
+          "hourly":report_definition()
+      }
+    index = ''
+    if rents_query is None:
+        return data
+    else:
+      for rent in rents_query:
+        if "Semester" in rent[1].value:
+            index = "semester" 
+        elif "Yearly" in rent[1].value:
+            index = "yearly"
+        elif "Daily" in rent[1].value:
+            index = "daily"
+        elif "Hourly"in rent[1].value:
+            index = "hourly"
+        data[index].update({rent[0].value:{"amount":rent[3],"length":rent[2],"late_fees":rent[4],"additional_fees":rent[5]}}) 
+        data[index]["Total"]["amount"] = data[index]["Total"]["amount"] + rent[3] 
+        data[index]["Total"]["length"] = data[index]["Total"]["length"] + rent[2]
+        data[index]["Total"]["late_fees"] = data[index]["Total"]["late_fees"] + rent[4]
+        data[index]["Total"]["additional_fees"] = data[index]["Total"]["additional_fees"] + rent[5]
+
+    return data       
+
+def get_rents_returned_range(start_date, end_date):
+    rents_query = db.session.query(Locker.locker_type, RentTypes.type, func.count(Rent.rent_type), func.sum(Rent.amount_owed),func.sum(Rent.late_fees), func.sum(Rent.additional_fees)).join(RentTypes,KeyHistory,Locker).filter(and_(Rent.rent_date_from >= start_date,Rent.rent_date_from <= end_date,Rent.status == Status.VERIFIED)).group_by(Locker.locker_type,RentTypes.type).all()
+    data = {
+          "semester":report_definition(),
+          "yearly":report_definition(),
+          "daily":report_definition(),
+          "hourly":report_definition()
+      }
+    index = ''
+    if rents_query is None:
+        return data
+    else:
+      for rent in rents_query:
+        if "Semester" in rent[1].value:
+            index = "semester"
+        elif "Yearly" in rent[1].value:
+            index = "yearly"
+        elif "Daily" in rent[1].value:
+            index = "daily"
+        elif "Hourly"in rent[1].value:
+            index = "hourly"
+        data[index].update({rent[0].value:{"amount":rent[3],"length":rent[2],"late_fees":rent[4],"additional_fees":rent[5]}}) 
+        data[index]["Total"]["amount"] = data[index]["Total"]["amount"] + rent[3]
+        data[index]["Total"]["length"] = data[index]["Total"]["length"] + rent[2]
+        data[index]["Total"]["late_fees"] = data[index]["Total"]["late_fees"] + rent[4]
+        data[index]["Total"]["additional_fees"] = data[index]["Total"]["additional_fees"] + rent[5]
+        
+    return data
+
     
     
 
