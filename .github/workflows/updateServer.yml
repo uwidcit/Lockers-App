@@ -22,12 +22,19 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+    - name: Set up SSH key
+      run: |
+          env
+          mkdir -p ~/.ssh
+          echo "${{ secrets.ARTIFACT_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p 22 ${{ secrets.ARTIFACT_HOST }} >> ~/.ssh/known_hosts
+          sudo apt-get install sshpass
     - name: Execute remote SSH
       run: |
-        sudo apt-get install sshpass
-        sshpass -p '${{ secrets.server_pass }}' ssh -v -o StrictHostKeyChecking=no ${{ secrets.serverlogin }}@ ${{ secrets.server_addr }} <<'ENDSSH'
+        sshpass -p '${{ secrets.SERVER_PASS }}' ssh -v -o StrictHostKeyChecking=no ${{ secrets.SERVERLOGIN }}@ ${{ secrets.SERVER_ADDR }} <<'ENDSSH'
         sudo systemctl restart sacsock
-        ${{ secrets.server_pass }}
+        ${{ secrets.SERVER_PASS }}
         
       
       
